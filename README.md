@@ -1,43 +1,110 @@
-# Astro Starter Kit: Minimal
+# Azure Data Project Platform
 
-```sh
-npm create astro@latest -- --template minimal
-```
+This repository contains an Astro public website for showcasing deployed technical data projects. The site is designed as an Azure-hosted technical project platform, not a resume-style portfolio.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The platform focuses on SQL, Python/R, Azure data pipelines, dashboards, data quality validation, analytics engineering, and reproducible methods.
 
-## 🚀 Project Structure
+## Data Safety
 
-Inside of your Astro project, you'll see the following folders and files:
+All datasets, screenshots, schemas, table names, metrics, and dashboard outputs used in this repository must be synthetic or public-safe.
+
+Do not add:
+
+- Real SHA data
+- Patient data
+- Internal screenshots
+- Internal table names
+- Private operational numbers
+- Confidential documents
+- Behavioral interview content
+- Resume-style job descriptions
+
+## Tech Stack
+
+- Astro
+- TypeScript-flavored Astro content collections
+- Static HTML/CSS output
+- Planned Azure Static Web Apps hosting
+- Planned Azure Blob Storage sample assets
+- Planned Azure Function Python ETL demos
+- Planned Azure SQL Database reporting models
+
+## Project Structure
 
 ```text
 /
+├── demos/
+│   ├── data-quality/
+│   ├── graduate-statistics/
+│   ├── healthcare-capacity/
+│   ├── recruitment-analytics/
+│   └── sql-optimization/
 ├── public/
+│   └── images/
 ├── src/
+│   ├── content/
+│   │   └── projects/
+│   ├── layouts/
 │   └── pages/
-│       └── index.astro
+│       └── projects/
 └── package.json
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Run Locally
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Install dependencies:
 
-Any static assets, like images, can be placed in the `public/` directory.
+```sh
+npm install
+```
 
-## 🧞 Commands
+Start the Astro development server in background mode:
 
-All commands are run from the root of the project, from a terminal:
+```sh
+astro dev --background
+```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+Manage the background server:
 
-## 👀 Want to learn more?
+```sh
+astro dev status
+astro dev logs
+astro dev stop
+```
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Build
+
+```sh
+npm run build
+```
+
+The production site is generated in `dist/`.
+
+## Future Azure Static Web Apps Deployment
+
+Use these settings when configuring Azure Static Web Apps:
+
+- App location: `/`
+- API location: blank
+- Output location: `dist`
+
+## Planned Project Areas
+
+- Healthcare Capacity Analytics Pipeline
+- Recruitment Process Analytics Dashboard
+- SQL Reporting Optimization Demo
+- Data Quality Validation Framework
+- Graduate Statistics / Data Science Project
+
+Each project page follows this technical structure:
+
+- Objective
+- Synthetic data design
+- Azure services used
+- Pipeline architecture
+- Transformation logic
+- Validation checks
+- Output tables / reports
+- Dashboard or visual output
+- Code repository / files
+- Future improvements

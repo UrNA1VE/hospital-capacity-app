@@ -1,17 +1,70 @@
 ---
-
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+  title="Azure Data Project Platform"
+  description="Azure-hosted technical data project platform for SQL, Python, R, pipelines, dashboards, and analytics engineering demos."
+>
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Azure-hosted technical project platform</p>
+      <h1>Cloud data demos built around safe, synthetic project workflows.</h1>
+      <p class="lead">
+        A public site for deployed technical data projects covering SQL, Python/R, Azure, data
+        pipelines, dashboards, data quality, analytics engineering, and reproducible methods.
+      </p>
+      <div class="button-row">
+        <a class="button" href="/projects/">View projects</a>
+        <a class="button secondary" href="/azure-architecture/">Architecture plan</a>
+      </div>
+      <div class="chip-row" aria-label="Focus areas">
+        <span class="chip">SQL</span>
+        <span class="chip">Python/R</span>
+        <span class="chip">Azure</span>
+        <span class="chip">ETL pipelines</span>
+        <span class="chip">Dashboards</span>
+        <span class="chip">Data quality</span>
+      </div>
+    </div>
+    <aside class="system-panel" aria-label="Planned platform flow">
+      <header><span></span><span></span><span></span></header>
+      <pre><code>Azure Static Web Apps
+  -> project pages
+  -> Blob Storage sample files
+  -> Python ETL in Azure Functions
+  -> Azure SQL curated tables
+  -> dashboard/report outputs</code></pre>
+    </aside>
+  </section>
+
+  <section class="band">
+    <div class="band-inner">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Platform intent</p>
+          <h2>Technical work first.</h2>
+        </div>
+        <p>
+          This site is intentionally not a resume page. It is a public technical workspace for
+          showing cloud data architecture, transformation logic, validation design, and visual
+          outputs without exposing private operational information.
+        </p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>Safe data boundary</h3>
+          <p>All demo datasets, screenshots, schemas, and metrics are synthetic or public-safe.</p>
+        </article>
+        <article class="card">
+          <h3>Azure deployment path</h3>
+          <p>Static site front end with low-cost serverless ETL and storage components behind it.</p>
+        </article>
+        <article class="card">
+          <h3>Method documentation</h3>
+          <p>Each project will document objective, pipeline, transformations, checks, outputs, and code.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

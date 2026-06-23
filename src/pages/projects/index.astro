@@ -1,0 +1,66 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const projects = await getCollection("projects");
+projects.sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+const structureItems = [
+  "Objective",
+  "Synthetic data design",
+  "Azure services used",
+  "Pipeline architecture",
+  "Transformation logic",
+  "Validation checks",
+  "Output tables / reports",
+  "Dashboard or visual output",
+  "Code repository / files",
+  "Future improvements",
+];
+---
+
+<BaseLayout
+  title="Projects | Azure Data Project Platform"
+  description="Technical project placeholders for Azure data pipelines, dashboards, SQL optimization, validation frameworks, and analytics methods."
+>
+  <section class="page">
+    <p class="eyebrow">Project catalog</p>
+    <h1>Technical project cards.</h1>
+    <p class="lead">
+      Each project is structured around the engineering and analytics work: objective, synthetic
+      data design, Azure services, pipeline architecture, transformation logic, validation checks,
+      outputs, visuals, code files, and future improvements.
+    </p>
+    <div class="grid" style="margin-top: 34px;">
+      {
+        projects.map((project) => (
+          <article class="card">
+            <p class="eyebrow">{project.data.status}</p>
+            <h3>{project.data.title}</h3>
+            <p>{project.data.summary}</p>
+            <div class="chip-row" style="margin-top: 0;">
+              {project.data.focusAreas.map((area) => (
+                <span class="chip">{area}</span>
+              ))}
+            </div>
+            <a class="card-link" href={`/projects/${project.id}/`}>Open project placeholder</a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="band-inner">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Shared project template</p>
+          <h2>Every project follows the same technical outline.</h2>
+        </div>
+      </div>
+      <ul class="detail-list">
+        {structureItems.map((item) => <li><strong>{item}</strong>Placeholder-ready section for future safe details.</li>)}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

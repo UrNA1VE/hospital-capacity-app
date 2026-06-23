@@ -1,0 +1,52 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const steps = [
+  {
+    name: "Azure Static Web Apps",
+    detail: "Hosts this public Astro site and links to project documentation, visual outputs, and code notes.",
+  },
+  {
+    name: "Project pages",
+    detail: "Document each synthetic demo with objective, architecture, transformation logic, validations, outputs, and future work.",
+  },
+  {
+    name: "Azure Blob Storage",
+    detail: "Stores synthetic or public-safe sample files, generated extracts, dashboard images, and reproducible demo assets.",
+  },
+  {
+    name: "Azure Function Python ETL",
+    detail: "Runs low-cost serverless ingestion, cleaning, validation, and load steps for selected demos.",
+  },
+  {
+    name: "Azure SQL Database",
+    detail: "Stores staging, curated, validation, and reporting tables built only from safe demo inputs.",
+  },
+  {
+    name: "Dashboard/reporting outputs",
+    detail: "Publishes public-safe screenshots, Plotly visuals, Power BI-style outputs, and report summaries.",
+  },
+];
+---
+
+<BaseLayout
+  title="Azure Architecture | Azure Data Project Platform"
+  description="Planned low-cost Azure serverless architecture for public-safe data project demos."
+>
+  <section class="page">
+    <p class="eyebrow">Planned cloud architecture</p>
+    <h1>Low-cost serverless Azure design.</h1>
+    <p class="lead">
+      The platform is planned around a lightweight path from public site pages to safe data assets,
+      Python ETL, SQL reporting models, and dashboard outputs.
+    </p>
+    <div class="pipeline">
+      {steps.map((step) => (
+        <article class="pipeline-step">
+          <strong>{step.name}</strong>
+          <span>{step.detail}</span>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
