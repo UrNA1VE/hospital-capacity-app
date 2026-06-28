@@ -1,0 +1,481 @@
+facility_filter,facility_name,service_name,demand,funded_capacity,variance,year,growth_index
+All,Central Community Hospital,General Medicine,41,33,-8,2025,1.0
+All,Central Community Hospital,General Surgery,27,24,-3,2025,1.0
+All,Central Community Hospital,Maternal Care,26,16,-10,2025,1.0
+All,Central Community Hospital,Mental Health,18,12,-6,2025,1.0
+All,Central Community Hospital,Child Health,15,14,-1,2025,1.0
+All,North General Hospital,General Medicine,52,42,-10,2025,1.0
+All,North General Hospital,General Surgery,35,30,-5,2025,1.0
+All,North General Hospital,Maternal Care,31,20,-11,2025,1.0
+All,North General Hospital,Mental Health,27,16,-11,2025,1.0
+All,North General Hospital,Child Health,24,18,-6,2025,1.0
+All,South Medical Center,General Medicine,35,27,-8,2025,1.0
+All,South Medical Center,General Surgery,24,20,-4,2025,1.0
+All,South Medical Center,Maternal Care,21,13,-8,2025,1.0
+All,South Medical Center,Mental Health,21,10,-11,2025,1.0
+All,South Medical Center,Child Health,16,12,-4,2025,1.0
+All,Central Community Hospital,General Medicine,43,33,-10,2026,1.0409101599745736
+All,Central Community Hospital,General Surgery,28,24,-4,2026,1.0359366843885935
+All,Central Community Hospital,Maternal Care,27,16,-11,2026,1.0297017066085694
+All,Central Community Hospital,Mental Health,19,12,-7,2026,1.0338035019455252
+All,Central Community Hospital,Child Health,16,14,-2,2026,1.0238074811256006
+All,North General Hospital,General Medicine,54,42,-12,2026,1.0368336643924347
+All,North General Hospital,General Surgery,37,30,-7,2026,1.0331068749231336
+All,North General Hospital,Maternal Care,32,20,-12,2026,1.0258113899897257
+All,North General Hospital,Mental Health,28,16,-12,2026,1.028702492211838
+All,North General Hospital,Child Health,25,18,-7,2026,1.0199614561027837
+All,South Medical Center,General Medicine,37,27,-10,2026,1.035656258634982
+All,South Medical Center,General Surgery,25,20,-5,2026,1.0323748217559583
+All,South Medical Center,Maternal Care,22,13,-9,2026,1.0233162038955657
+All,South Medical Center,Mental Health,22,10,-12,2026,1.0286058016058015
+All,South Medical Center,Child Health,17,12,-5,2026,1.0182088587132232
+All,Central Community Hospital,General Medicine,45,33,-12,2027,1.0835645195465622
+All,Central Community Hospital,General Surgery,29,24,-5,2027,1.0732298856130174
+All,Central Community Hospital,Maternal Care,28,16,-12,2027,1.0602511982570806
+All,Central Community Hospital,Mental Health,20,12,-8,2027,1.0688027480544746
+All,Central Community Hospital,Child Health,16,14,-2,2027,1.0481807824296498
+All,North General Hospital,General Medicine,56,42,-14,2027,1.0750783055531565
+All,North General Hospital,General Surgery,38,30,-8,2027,1.0673756733489117
+All,North General Hospital,Maternal Care,33,20,-13,2027,1.0522777190664905
+All,North General Hospital,Mental Health,29,16,-13,2027,1.0582743163724473
+All,North General Hospital,Child Health,25,18,-7,2027,1.0403453319057814
+All,South Medical Center,General Medicine,38,27,-11,2027,1.0726420834484665
+All,South Medical Center,General Surgery,26,20,-6,2027,1.06585166021593
+All,South Medical Center,Mental Health,23,10,-13,2027,1.0580871017871016
+All,South Medical Center,Maternal Care,22,13,-9,2027,1.0471487567343556
+All,South Medical Center,Child Health,17,12,-5,2027,1.036742644681539
+All,Central Community Hospital,General Medicine,47,33,-14,2028,1.1280222904968749
+All,Central Community Hospital,General Surgery,31,24,-7,2028,1.1119092476236505
+All,Central Community Hospital,Maternal Care,29,16,-13,2028,1.0917467864923747
+All,Central Community Hospital,Mental Health,20,12,-8,2028,1.105029426070039
+All,Central Community Hospital,Child Health,17,14,-3,2028,1.0731201098146879
+All,North General Hospital,General Medicine,58,42,-16,2028,1.1148170135590294
+All,North General Hospital,General Surgery,39,30,-9,2028,1.1028486656007872
+All,North General Hospital,Maternal Care,34,20,-14,2028,1.0794688243064732
+All,North General Hospital,Mental Health,30,16,-14,2028,1.0887317930079612
+All,North General Hospital,Child Health,26,18,-8,2028,1.0611012633832977
+All,South Medical Center,General Medicine,39,27,-12,2028,1.1110331306990884
+All,South Medical Center,General Surgery,27,20,-7,2028,1.1005013240985944
+All,South Medical Center,Maternal Care,23,13,-10,2028,1.0715965810194779
+All,South Medical Center,Mental Health,23,10,-13,2028,1.0885130795130795
+All,South Medical Center,Child Health,17,12,-5,2028,1.0556613320400903
+All,Central Community Hospital,General Medicine,49,33,-16,2029,1.174420934421019
+All,Central Community Hospital,General Surgery,32,24,-8,2029,1.1520782503624938
+All,Central Community Hospital,Maternal Care,30,16,-14,2029,1.1241888344226578
+All,Central Community Hospital,Mental Health,21,12,-9,2029,1.142564007782101
+All,Central Community Hospital,Child Health,17,14,-3,2029,1.098678723404255
+All,North General Hospital,General Medicine,61,42,-19,2029,1.1560857932463944
+All,North General Hospital,General Surgery,40,30,-10,2029,1.1395820440290247
+All,North General Hospital,Maternal Care,35,20,-15,2029,1.107330104212535
+All,North General Hospital,Mental Health,31,16,-15,2029,1.1201263412945657
+All,North General Hospital,Child Health,26,18,-8,2029,1.082284154175589
+All,South Medical Center,General Medicine,41,27,-14,2029,1.1508461315280465
+All,South Medical Center,General Surgery,28,20,-8,2029,1.1363214096557344
+All,South Medical Center,Maternal Care,24,13,-11,2029,1.0965651263986738
+All,South Medical Center,Mental Health,24,10,-14,2029,1.11984245014245
+All,South Medical Center,Child Health,18,12,-6,2029,1.0749017135467185
+All,Central Community Hospital,General Medicine,51,33,-18,2030,1.2227907829219196
+All,Central Community Hospital,General Surgery,33,24,-9,2030,1.1937815208635412
+All,Central Community Hospital,Maternal Care,31,16,-15,2030,1.1576771604938272
+All,Central Community Hospital,Mental Health,22,12,-10,2030,1.1814609435797665
+All,Central Community Hospital,Child Health,17,14,-3,2030,1.1248579958819491
+All,North General Hospital,General Medicine,63,42,-21,2030,1.1989412298125919
+All,North General Hospital,General Surgery,42,30,-12,2030,1.1776071946870004
+All,North General Hospital,Maternal Care,36,20,-16,2030,1.1359313958608543
+All,North General Hospital,Mental Health,32,16,-16,2030,1.1524779508480443
+All,North General Hospital,Child Health,27,18,-9,2030,1.1039377516059958
+All,South Medical Center,General Medicine,42,27,-15,2030,1.1921850787510362
+All,South Medical Center,General Surgery,29,20,-9,2030,1.173421124465268
+All,South Medical Center,Mental Health,25,10,-15,2030,1.1521902874902874
+All,South Medical Center,Maternal Care,24,13,-11,2030,1.1221554703688355
+All,South Medical Center,Child Health,18,12,-6,2030,1.0944422243776268
+All,Central Community Hospital,General Medicine,53,33,-20,2031,1.2732289225553555
+All,Central Community Hospital,General Surgery,34,24,-10,2031,1.23702202352183
+All,Central Community Hospital,Maternal Care,31,16,-15,2031,1.1920368010167033
+All,Central Community Hospital,Mental Health,22,12,-10,2031,1.2216859435797665
+All,Central Community Hospital,Child Health,18,14,-4,2031,1.1516487302676732
+All,North General Hospital,General Medicine,65,42,-23,2031,1.2434792728214874
+All,North General Hospital,General Surgery,43,30,-13,2031,1.216990099618743
+All,North General Hospital,Maternal Care,37,20,-17,2031,1.1652862028474973
+All,North General Hospital,Mental Health,33,16,-17,2031,1.1858157840083074
+All,North General Hospital,Child Health,28,18,-10,2031,1.1260179871520344
+All,South Medical Center,General Medicine,44,27,-17,2031,1.2350643271621997
+All,South Medical Center,General Surgery,30,20,-10,2031,1.2117709920554085
+All,South Medical Center,Maternal Care,25,13,-12,2031,1.1483567136344799
+All,South Medical Center,Mental Health,25,10,-15,2031,1.1855511525511526
+All,South Medical Center,Child Health,18,12,-6,2031,1.1144067248625928
+All,Central Community Hospital,General Medicine,55,33,-22,2032,1.3257837906557897
+All,Central Community Hospital,General Surgery,35,24,-11,2032,1.2819111164813919
+All,Central Community Hospital,Maternal Care,32,16,-16,2032,1.2274444081336238
+All,Central Community Hospital,Mental Health,23,12,-11,2032,1.263367923151751
+All,Central Community Hospital,Child Health,18,14,-4,2032,1.1790650995195608
+All,North General Hospital,General Medicine,68,42,-26,2032,1.2897461006995423
+All,North General Hospital,General Surgery,45,30,-15,2032,1.2577721436477678
+All,North General Hospital,Maternal Care,38,20,-18,2032,1.1954094525172467
+All,North General Hospital,Mental Health,33,16,-17,2032,1.2201815334025616
+All,North General Hospital,Child Health,28,18,-10,2032,1.148480556745182
+All,South Medical Center,General Medicine,45,27,-18,2032,1.2795277839182095
+All,South Medical Center,General Surgery,31,20,-11,2032,1.251427439397026
+All,South Medical Center,Mental Health,26,10,-16,2032,1.2199017094017095
+All,South Medical Center,Maternal Care,25,13,-12,2032,1.1750841276419395
+All,South Medical Center,Child Health,19,12,-7,2032,1.1346947946977044
+All,Central Community Hospital,General Medicine,57,33,-24,2033,1.3806574107426635
+All,Central Community Hospital,General Surgery,36,24,-12,2033,1.328528467858869
+All,Central Community Hospital,Maternal Care,33,16,-17,2033,1.263995642701525
+All,Central Community Hospital,Mental Health,24,12,-12,2033,1.3065499513618677
+All,Central Community Hospital,Child Health,19,14,-5,2033,1.2071511667810568
+All,North General Hospital,General Medicine,70,42,-28,2033,1.3377727523965801
+All,North General Hospital,General Surgery,46,30,-16,2033,1.2999650227524289
+All,North General Hospital,Maternal Care,39,20,-19,2033,1.226273022163511
+All,North General Hospital,Mental Health,34,16,-18,2033,1.25555413637937
+All,North General Hospital,Child Health,29,18,-11,2033,1.171462676659529
+All,South Medical Center,General Medicine,47,27,-20,2033,1.325751782260293
+All,South Medical Center,General Surgery,32,20,-12,2033,1.2925326543084132
+All,South Medical Center,Mental Health,27,10,-17,2033,1.255413701113701
+All,South Medical Center,Maternal Care,26,13,-13,2033,1.2025333402403648
+All,South Medical Center,Child Health,19,12,-7,2033,1.1554169738118332
+All,Central Community Hospital,General Medicine,59,33,-26,2034,1.437870918529505
+All,Central Community Hospital,General Surgery,38,24,-14,2034,1.3769037860480102
+All,Central Community Hospital,Maternal Care,34,16,-18,2034,1.3015314633260715
+All,Central Community Hospital,Mental Health,25,12,-13,2034,1.3512624513618678
+All,Central Community Hospital,Child Health,19,14,-5,2034,1.235904221002059
+All,North General Hospital,General Medicine,73,42,-31,2034,1.3876723464893341
+All,North General Hospital,General Surgery,48,30,-18,2034,1.3436784036403886
+All,North General Hospital,Maternal Care,39,20,-19,2034,1.2580036107441657
+All,North General Hospital,Mental Health,35,16,-19,2034,1.2920470578054692
+All,North General Hospital,Child Health,29,18,-11,2034,1.1948793576017132
+All,South Medical Center,General Medicine,49,27,-22,2034,1.3736396656534955
+All,South Medical Center,General Surgery,33,20,-13,2034,1.3349864127113467
+All,South Medical Center,Mental Health,28,10,-18,2034,1.2919750064750064
+All,South Medical Center,Maternal Care,26,13,-13,2034,1.2305967467882306
+All,South Medical Center,Child Health,19,12,-7,2034,1.1764868412544454
+All,Central Community Hospital,General Medicine,62,33,-29,2035,1.4975317406504927
+All,Central Community Hospital,General Surgery,39,24,-15,2035,1.4271165780570323
+All,Central Community Hospital,Maternal Care,35,16,-19,2035,1.340225508351489
+All,Central Community Hospital,Mental Health,26,12,-14,2035,1.3975778696498056
+All,Central Community Hospital,Child Health,19,14,-5,2035,1.2653817433081676
+All,North General Hospital,General Medicine,75,42,-33,2035,1.4395524570342864
+All,North General Hospital,General Surgery,49,30,-19,2035,1.3889660312384702
+All,North General Hospital,Maternal Care,41,20,-21,2035,1.2905043739909
+All,North General Hospital,Mental Health,36,16,-20,2035,1.3296583419868466
+All,North General Hospital,Child Health,30,18,-12,2035,1.2187749892933621
+All,South Medical Center,General Medicine,50,27,-23,2035,1.4234023072672009
+All,South Medical Center,General Surgery,34,20,-14,2035,1.3789729476471786
+All,South Medical Center,Mental Health,28,10,-18,2035,1.329728749028749
+All,South Medical Center,Maternal Care,27,13,-14,2035,1.259288479071695
+All,South Medical Center,Child Health,20,12,-8,2035,1.1979327190430005
+All,Central Community Hospital,General Medicine,64,33,-31,2036,1.5598117173429389
+All,Central Community Hospital,General Surgery,40,24,-16,2036,1.4792932173352664
+All,Central Community Hospital,Maternal Care,36,16,-20,2036,1.380091049382716
+All,Central Community Hospital,Mental Health,27,12,-15,2036,1.445603112840467
+All,Central Community Hospital,Child Health,20,14,-6,2036,1.2955321894303362
+All,North General Hospital,General Medicine,78,42,-36,2036,1.4934495120476727
+All,North General Hospital,General Surgery,51,30,-21,2036,1.435868232689706
+All,North General Hospital,Maternal Care,42,20,-22,2036,1.3238710406575664
+All,North General Hospital,Mental Health,37,16,-21,2036,1.3684202146071305
+All,North General Hospital,Child Health,30,18,-12,2036,1.2431504496788008
+All,South Medical Center,General Medicine,52,27,-25,2036,1.4750300497374964
+All,South Medical Center,General Surgery,35,20,-15,2036,1.424495864738236
+All,South Medical Center,Mental Health,29,10,-19,2036,1.3686958559958557
+All,South Medical Center,Maternal Care,28,13,-15,2036,1.2887009324492333
+All,South Medical Center,Child Health,20,12,-8,2036,1.2197764306498546
+All,Central Community Hospital,General Medicine,67,33,-34,2037,1.6247468058056997
+All,Central Community Hospital,General Surgery,42,24,-18,2037,1.5334268567746092
+All,Central Community Hospital,Maternal Care,37,16,-21,2037,1.4211254357298477
+All,Central Community Hospital,Mental Health,27,12,-15,2037,1.4953081225680935
+All,Central Community Hospital,Child Health,20,14,-6,2037,1.326357309540151
+All,North General Hospital,General Medicine,81,42,-39,2037,1.5494375075567839
+All,North General Hospital,General Surgery,52,30,-22,2037,1.4844484196285817
+All,North General Hospital,Maternal Care,43,20,-23,2037,1.3581053427271392
+All,North General Hospital,Mental Health,39,16,-23,2037,1.4083738663897543
+All,North General Hospital,Child Health,31,18,-13,2037,1.2680101498929337
+All,South Medical Center,General Medicine,54,27,-27,2037,1.5286193838076818
+All,South Medical Center,General Surgery,36,20,-16,2037,1.471584783051538
+All,South Medical Center,Mental Health,30,10,-20,2037,1.4088521108521108
+All,South Medical Center,Maternal Care,28,13,-15,2037,1.3187395565685869
+All,South Medical Center,Child Health,20,12,-8,2037,1.2420418364047847
+All,Central Community Hospital,General Medicine,70,33,-37,2038,1.6925257972242822
+All,Central Community Hospital,General Surgery,43,24,-19,2038,1.589672402126631
+All,Central Community Hospital,Maternal Care,39,16,-23,2038,1.463429992737836
+All,Central Community Hospital,Mental Health,28,12,-16,2038,1.5468429961089494
+All,Central Community Hospital,Child Health,21,14,-7,2038,1.3580036376115303
+All,North General Hospital,General Medicine,84,42,-42,2038,1.607605881336903
+All,North General Hospital,General Surgery,54,30,-24,2038,1.5347462919690074
+All,North General Hospital,Maternal Care,44,20,-24,2038,1.393208087479818
+All,North General Hospital,Mental Health,40,16,-24,2038,1.4495429560401525
+All,North General Hospital,Child Health,32,18,-14,2038,1.2933982869379017
+All,South Medical Center,General Medicine,56,27,-29,2038,1.5842689693285439
+All,South Medical Center,General Surgery,37,20,-17,2038,1.5203623344876758
+All,South Medical Center,Mental Health,31,10,-21,2038,1.4503516964516963
+All,South Medical Center,Maternal Care,29,13,-16,2038,1.3495989017820142
+All,South Medical Center,Child Health,21,12,-9,2038,1.2647151956029743
+All,Central Community Hospital,General Medicine,73,33,-40,2039,1.763226390507469
+All,Central Community Hospital,General Surgery,45,24,-21,2039,1.6480633961656193
+All,Central Community Hospital,Maternal Care,40,16,-24,2039,1.5070047204066812
+All,Central Community Hospital,Mental Health,29,12,-17,2039,1.6002357490272374
+All,Central Community Hospital,Child Health,21,14,-7,2039,1.3903798901853122
+All,North General Hospital,General Medicine,87,42,-45,2039,1.6680650142499354
+All,North General Hospital,General Surgery,56,30,-26,2039,1.5868810478415938
+All,North General Hospital,Maternal Care,45,20,-25,2039,1.4292784676354031
+All,North General Hospital,Mental Health,41,16,-25,2039,1.4920257528556595
+All,North General Hospital,Child Health,32,18,-14,2039,1.3193226552462527
+All,South Medical Center,General Medicine,58,27,-31,2039,1.6420177949709864
+All,South Medical Center,General Surgery,38,20,-18,2039,1.5708341413729885
+All,South Medical Center,Mental Health,32,10,-22,2039,1.4931358197358195
+All,South Medical Center,Maternal Care,30,13,-17,2039,1.3810909448818898
+All,South Medical Center,Child Health,21,12,-9,2039,1.287815357258325
+All,Central Community Hospital,General Medicine,76,33,-43,2040,1.8369545184871279
+All,Central Community Hospital,General Surgery,47,24,-23,2040,1.708671048815853
+All,Central Community Hospital,Maternal Care,41,16,-25,2040,1.5517748366013073
+All,Central Community Hospital,Mental Health,30,12,-18,2040,1.655518263618677
+All,Central Community Hospital,Child Health,22,14,-8,2040,1.423478792038435
+All,North General Hospital,General Medicine,91,42,-49,2040,1.7309090854132483
+All,North General Hospital,General Surgery,58,30,-28,2040,1.6408837535358503
+All,North General Hospital,Maternal Care,46,20,-26,2040,1.4662299867899604
+All,North General Hospital,Mental Health,42,16,-26,2040,1.5357884908272759
+All,North General Hospital,Child Health,33,18,-15,2040,1.3457313918629552
+All,South Medical Center,General Medicine,60,27,-33,2040,1.70197275490467
+All,South Medical Center,General Surgery,39,20,-19,2040,1.6230606233448768
+All,South Medical Center,Mental Health,33,10,-23,2040,1.5372761201761203
+All,South Medical Center,Maternal Care,30,13,-17,2040,1.4133037090758391
+All,South Medical Center,Child Health,21,12,-9,2040,1.3113133527319754
+Central Community Hospital,Central Community Hospital,General Medicine,41,33,-8,2025,1.0
+Central Community Hospital,Central Community Hospital,General Surgery,27,24,-3,2025,1.0
+Central Community Hospital,Central Community Hospital,Maternal Care,26,16,-10,2025,1.0
+Central Community Hospital,Central Community Hospital,Mental Health,18,12,-6,2025,1.0
+Central Community Hospital,Central Community Hospital,Child Health,15,14,-1,2025,1.0
+Central Community Hospital,Central Community Hospital,General Medicine,43,33,-10,2026,1.0409101599745736
+Central Community Hospital,Central Community Hospital,General Surgery,28,24,-4,2026,1.0359366843885935
+Central Community Hospital,Central Community Hospital,Maternal Care,27,16,-11,2026,1.0297017066085694
+Central Community Hospital,Central Community Hospital,Mental Health,19,12,-7,2026,1.0338035019455252
+Central Community Hospital,Central Community Hospital,Child Health,16,14,-2,2026,1.0238074811256006
+Central Community Hospital,Central Community Hospital,General Medicine,45,33,-12,2027,1.0835645195465622
+Central Community Hospital,Central Community Hospital,General Surgery,29,24,-5,2027,1.0732298856130174
+Central Community Hospital,Central Community Hospital,Maternal Care,28,16,-12,2027,1.0602511982570806
+Central Community Hospital,Central Community Hospital,Mental Health,20,12,-8,2027,1.0688027480544746
+Central Community Hospital,Central Community Hospital,Child Health,16,14,-2,2027,1.0481807824296498
+Central Community Hospital,Central Community Hospital,General Medicine,47,33,-14,2028,1.1280222904968749
+Central Community Hospital,Central Community Hospital,General Surgery,31,24,-7,2028,1.1119092476236505
+Central Community Hospital,Central Community Hospital,Maternal Care,29,16,-13,2028,1.0917467864923747
+Central Community Hospital,Central Community Hospital,Mental Health,20,12,-8,2028,1.105029426070039
+Central Community Hospital,Central Community Hospital,Child Health,17,14,-3,2028,1.0731201098146879
+Central Community Hospital,Central Community Hospital,General Medicine,49,33,-16,2029,1.174420934421019
+Central Community Hospital,Central Community Hospital,General Surgery,32,24,-8,2029,1.1520782503624938
+Central Community Hospital,Central Community Hospital,Maternal Care,30,16,-14,2029,1.1241888344226578
+Central Community Hospital,Central Community Hospital,Mental Health,21,12,-9,2029,1.142564007782101
+Central Community Hospital,Central Community Hospital,Child Health,17,14,-3,2029,1.098678723404255
+Central Community Hospital,Central Community Hospital,General Medicine,51,33,-18,2030,1.2227907829219196
+Central Community Hospital,Central Community Hospital,General Surgery,33,24,-9,2030,1.1937815208635412
+Central Community Hospital,Central Community Hospital,Maternal Care,31,16,-15,2030,1.1576771604938272
+Central Community Hospital,Central Community Hospital,Mental Health,22,12,-10,2030,1.1814609435797665
+Central Community Hospital,Central Community Hospital,Child Health,17,14,-3,2030,1.1248579958819491
+Central Community Hospital,Central Community Hospital,General Medicine,53,33,-20,2031,1.2732289225553555
+Central Community Hospital,Central Community Hospital,General Surgery,34,24,-10,2031,1.23702202352183
+Central Community Hospital,Central Community Hospital,Maternal Care,31,16,-15,2031,1.1920368010167033
+Central Community Hospital,Central Community Hospital,Mental Health,22,12,-10,2031,1.2216859435797665
+Central Community Hospital,Central Community Hospital,Child Health,18,14,-4,2031,1.1516487302676732
+Central Community Hospital,Central Community Hospital,General Medicine,55,33,-22,2032,1.3257837906557897
+Central Community Hospital,Central Community Hospital,General Surgery,35,24,-11,2032,1.2819111164813919
+Central Community Hospital,Central Community Hospital,Maternal Care,32,16,-16,2032,1.2274444081336238
+Central Community Hospital,Central Community Hospital,Mental Health,23,12,-11,2032,1.263367923151751
+Central Community Hospital,Central Community Hospital,Child Health,18,14,-4,2032,1.1790650995195608
+Central Community Hospital,Central Community Hospital,General Medicine,57,33,-24,2033,1.3806574107426635
+Central Community Hospital,Central Community Hospital,General Surgery,36,24,-12,2033,1.328528467858869
+Central Community Hospital,Central Community Hospital,Maternal Care,33,16,-17,2033,1.263995642701525
+Central Community Hospital,Central Community Hospital,Mental Health,24,12,-12,2033,1.3065499513618677
+Central Community Hospital,Central Community Hospital,Child Health,19,14,-5,2033,1.2071511667810568
+Central Community Hospital,Central Community Hospital,General Medicine,59,33,-26,2034,1.437870918529505
+Central Community Hospital,Central Community Hospital,General Surgery,38,24,-14,2034,1.3769037860480102
+Central Community Hospital,Central Community Hospital,Maternal Care,34,16,-18,2034,1.3015314633260715
+Central Community Hospital,Central Community Hospital,Mental Health,25,12,-13,2034,1.3512624513618678
+Central Community Hospital,Central Community Hospital,Child Health,19,14,-5,2034,1.235904221002059
+Central Community Hospital,Central Community Hospital,General Medicine,62,33,-29,2035,1.4975317406504927
+Central Community Hospital,Central Community Hospital,General Surgery,39,24,-15,2035,1.4271165780570323
+Central Community Hospital,Central Community Hospital,Maternal Care,35,16,-19,2035,1.340225508351489
+Central Community Hospital,Central Community Hospital,Mental Health,26,12,-14,2035,1.3975778696498056
+Central Community Hospital,Central Community Hospital,Child Health,19,14,-5,2035,1.2653817433081676
+Central Community Hospital,Central Community Hospital,General Medicine,64,33,-31,2036,1.5598117173429389
+Central Community Hospital,Central Community Hospital,General Surgery,40,24,-16,2036,1.4792932173352664
+Central Community Hospital,Central Community Hospital,Maternal Care,36,16,-20,2036,1.380091049382716
+Central Community Hospital,Central Community Hospital,Mental Health,27,12,-15,2036,1.445603112840467
+Central Community Hospital,Central Community Hospital,Child Health,20,14,-6,2036,1.2955321894303362
+Central Community Hospital,Central Community Hospital,General Medicine,67,33,-34,2037,1.6247468058056997
+Central Community Hospital,Central Community Hospital,General Surgery,42,24,-18,2037,1.5334268567746092
+Central Community Hospital,Central Community Hospital,Maternal Care,37,16,-21,2037,1.4211254357298477
+Central Community Hospital,Central Community Hospital,Mental Health,27,12,-15,2037,1.4953081225680935
+Central Community Hospital,Central Community Hospital,Child Health,20,14,-6,2037,1.326357309540151
+Central Community Hospital,Central Community Hospital,General Medicine,70,33,-37,2038,1.6925257972242822
+Central Community Hospital,Central Community Hospital,General Surgery,43,24,-19,2038,1.589672402126631
+Central Community Hospital,Central Community Hospital,Maternal Care,39,16,-23,2038,1.463429992737836
+Central Community Hospital,Central Community Hospital,Mental Health,28,12,-16,2038,1.5468429961089494
+Central Community Hospital,Central Community Hospital,Child Health,21,14,-7,2038,1.3580036376115303
+Central Community Hospital,Central Community Hospital,General Medicine,73,33,-40,2039,1.763226390507469
+Central Community Hospital,Central Community Hospital,General Surgery,45,24,-21,2039,1.6480633961656193
+Central Community Hospital,Central Community Hospital,Maternal Care,40,16,-24,2039,1.5070047204066812
+Central Community Hospital,Central Community Hospital,Mental Health,29,12,-17,2039,1.6002357490272374
+Central Community Hospital,Central Community Hospital,Child Health,21,14,-7,2039,1.3903798901853122
+Central Community Hospital,Central Community Hospital,General Medicine,76,33,-43,2040,1.8369545184871279
+Central Community Hospital,Central Community Hospital,General Surgery,47,24,-23,2040,1.708671048815853
+Central Community Hospital,Central Community Hospital,Maternal Care,41,16,-25,2040,1.5517748366013073
+Central Community Hospital,Central Community Hospital,Mental Health,30,12,-18,2040,1.655518263618677
+Central Community Hospital,Central Community Hospital,Child Health,22,14,-8,2040,1.423478792038435
+North General Hospital,North General Hospital,General Medicine,52,42,-10,2025,1.0
+North General Hospital,North General Hospital,General Surgery,35,30,-5,2025,1.0
+North General Hospital,North General Hospital,Maternal Care,31,20,-11,2025,1.0
+North General Hospital,North General Hospital,Mental Health,27,16,-11,2025,1.0
+North General Hospital,North General Hospital,Child Health,24,18,-6,2025,1.0
+North General Hospital,North General Hospital,General Medicine,54,42,-12,2026,1.0368336643924347
+North General Hospital,North General Hospital,General Surgery,37,30,-7,2026,1.0331068749231336
+North General Hospital,North General Hospital,Maternal Care,32,20,-12,2026,1.0258113899897257
+North General Hospital,North General Hospital,Mental Health,28,16,-12,2026,1.028702492211838
+North General Hospital,North General Hospital,Child Health,25,18,-7,2026,1.0199614561027837
+North General Hospital,North General Hospital,General Medicine,56,42,-14,2027,1.0750783055531565
+North General Hospital,North General Hospital,General Surgery,38,30,-8,2027,1.0673756733489117
+North General Hospital,North General Hospital,Maternal Care,33,20,-13,2027,1.0522777190664905
+North General Hospital,North General Hospital,Mental Health,29,16,-13,2027,1.0582743163724473
+North General Hospital,North General Hospital,Child Health,25,18,-7,2027,1.0403453319057814
+North General Hospital,North General Hospital,General Medicine,58,42,-16,2028,1.1148170135590294
+North General Hospital,North General Hospital,General Surgery,39,30,-9,2028,1.1028486656007872
+North General Hospital,North General Hospital,Maternal Care,34,20,-14,2028,1.0794688243064732
+North General Hospital,North General Hospital,Mental Health,30,16,-14,2028,1.0887317930079612
+North General Hospital,North General Hospital,Child Health,26,18,-8,2028,1.0611012633832977
+North General Hospital,North General Hospital,General Medicine,61,42,-19,2029,1.1560857932463944
+North General Hospital,North General Hospital,General Surgery,40,30,-10,2029,1.1395820440290247
+North General Hospital,North General Hospital,Maternal Care,35,20,-15,2029,1.107330104212535
+North General Hospital,North General Hospital,Mental Health,31,16,-15,2029,1.1201263412945657
+North General Hospital,North General Hospital,Child Health,26,18,-8,2029,1.082284154175589
+North General Hospital,North General Hospital,General Medicine,63,42,-21,2030,1.1989412298125919
+North General Hospital,North General Hospital,General Surgery,42,30,-12,2030,1.1776071946870004
+North General Hospital,North General Hospital,Maternal Care,36,20,-16,2030,1.1359313958608543
+North General Hospital,North General Hospital,Mental Health,32,16,-16,2030,1.1524779508480443
+North General Hospital,North General Hospital,Child Health,27,18,-9,2030,1.1039377516059958
+North General Hospital,North General Hospital,General Medicine,65,42,-23,2031,1.2434792728214874
+North General Hospital,North General Hospital,General Surgery,43,30,-13,2031,1.216990099618743
+North General Hospital,North General Hospital,Maternal Care,37,20,-17,2031,1.1652862028474973
+North General Hospital,North General Hospital,Mental Health,33,16,-17,2031,1.1858157840083074
+North General Hospital,North General Hospital,Child Health,28,18,-10,2031,1.1260179871520344
+North General Hospital,North General Hospital,General Medicine,68,42,-26,2032,1.2897461006995423
+North General Hospital,North General Hospital,General Surgery,45,30,-15,2032,1.2577721436477678
+North General Hospital,North General Hospital,Maternal Care,38,20,-18,2032,1.1954094525172467
+North General Hospital,North General Hospital,Mental Health,33,16,-17,2032,1.2201815334025616
+North General Hospital,North General Hospital,Child Health,28,18,-10,2032,1.148480556745182
+North General Hospital,North General Hospital,General Medicine,70,42,-28,2033,1.3377727523965801
+North General Hospital,North General Hospital,General Surgery,46,30,-16,2033,1.2999650227524289
+North General Hospital,North General Hospital,Maternal Care,39,20,-19,2033,1.226273022163511
+North General Hospital,North General Hospital,Mental Health,34,16,-18,2033,1.25555413637937
+North General Hospital,North General Hospital,Child Health,29,18,-11,2033,1.171462676659529
+North General Hospital,North General Hospital,General Medicine,73,42,-31,2034,1.3876723464893341
+North General Hospital,North General Hospital,General Surgery,48,30,-18,2034,1.3436784036403886
+North General Hospital,North General Hospital,Maternal Care,39,20,-19,2034,1.2580036107441657
+North General Hospital,North General Hospital,Mental Health,35,16,-19,2034,1.2920470578054692
+North General Hospital,North General Hospital,Child Health,29,18,-11,2034,1.1948793576017132
+North General Hospital,North General Hospital,General Medicine,75,42,-33,2035,1.4395524570342864
+North General Hospital,North General Hospital,General Surgery,49,30,-19,2035,1.3889660312384702
+North General Hospital,North General Hospital,Maternal Care,41,20,-21,2035,1.2905043739909
+North General Hospital,North General Hospital,Mental Health,36,16,-20,2035,1.3296583419868466
+North General Hospital,North General Hospital,Child Health,30,18,-12,2035,1.2187749892933621
+North General Hospital,North General Hospital,General Medicine,78,42,-36,2036,1.4934495120476727
+North General Hospital,North General Hospital,General Surgery,51,30,-21,2036,1.435868232689706
+North General Hospital,North General Hospital,Maternal Care,42,20,-22,2036,1.3238710406575664
+North General Hospital,North General Hospital,Mental Health,37,16,-21,2036,1.3684202146071305
+North General Hospital,North General Hospital,Child Health,30,18,-12,2036,1.2431504496788008
+North General Hospital,North General Hospital,General Medicine,81,42,-39,2037,1.5494375075567839
+North General Hospital,North General Hospital,General Surgery,52,30,-22,2037,1.4844484196285817
+North General Hospital,North General Hospital,Maternal Care,43,20,-23,2037,1.3581053427271392
+North General Hospital,North General Hospital,Mental Health,39,16,-23,2037,1.4083738663897543
+North General Hospital,North General Hospital,Child Health,31,18,-13,2037,1.2680101498929337
+North General Hospital,North General Hospital,General Medicine,84,42,-42,2038,1.607605881336903
+North General Hospital,North General Hospital,General Surgery,54,30,-24,2038,1.5347462919690074
+North General Hospital,North General Hospital,Maternal Care,44,20,-24,2038,1.393208087479818
+North General Hospital,North General Hospital,Mental Health,40,16,-24,2038,1.4495429560401525
+North General Hospital,North General Hospital,Child Health,32,18,-14,2038,1.2933982869379017
+North General Hospital,North General Hospital,General Medicine,87,42,-45,2039,1.6680650142499354
+North General Hospital,North General Hospital,General Surgery,56,30,-26,2039,1.5868810478415938
+North General Hospital,North General Hospital,Maternal Care,45,20,-25,2039,1.4292784676354031
+North General Hospital,North General Hospital,Mental Health,41,16,-25,2039,1.4920257528556595
+North General Hospital,North General Hospital,Child Health,32,18,-14,2039,1.3193226552462527
+North General Hospital,North General Hospital,General Medicine,91,42,-49,2040,1.7309090854132483
+North General Hospital,North General Hospital,General Surgery,58,30,-28,2040,1.6408837535358503
+North General Hospital,North General Hospital,Maternal Care,46,20,-26,2040,1.4662299867899604
+North General Hospital,North General Hospital,Mental Health,42,16,-26,2040,1.5357884908272759
+North General Hospital,North General Hospital,Child Health,33,18,-15,2040,1.3457313918629552
+South Medical Center,South Medical Center,General Medicine,35,27,-8,2025,1.0
+South Medical Center,South Medical Center,General Surgery,24,20,-4,2025,1.0
+South Medical Center,South Medical Center,Maternal Care,21,13,-8,2025,1.0
+South Medical Center,South Medical Center,Mental Health,21,10,-11,2025,1.0
+South Medical Center,South Medical Center,Child Health,16,12,-4,2025,1.0
+South Medical Center,South Medical Center,General Medicine,37,27,-10,2026,1.035656258634982
+South Medical Center,South Medical Center,General Surgery,25,20,-5,2026,1.0323748217559583
+South Medical Center,South Medical Center,Maternal Care,22,13,-9,2026,1.0233162038955657
+South Medical Center,South Medical Center,Mental Health,22,10,-12,2026,1.0286058016058015
+South Medical Center,South Medical Center,Child Health,17,12,-5,2026,1.0182088587132232
+South Medical Center,South Medical Center,General Medicine,38,27,-11,2027,1.0726420834484665
+South Medical Center,South Medical Center,General Surgery,26,20,-6,2027,1.06585166021593
+South Medical Center,South Medical Center,Mental Health,23,10,-13,2027,1.0580871017871016
+South Medical Center,South Medical Center,Maternal Care,22,13,-9,2027,1.0471487567343556
+South Medical Center,South Medical Center,Child Health,17,12,-5,2027,1.036742644681539
+South Medical Center,South Medical Center,General Medicine,39,27,-12,2028,1.1110331306990884
+South Medical Center,South Medical Center,General Surgery,27,20,-7,2028,1.1005013240985944
+South Medical Center,South Medical Center,Maternal Care,23,13,-10,2028,1.0715965810194779
+South Medical Center,South Medical Center,Mental Health,23,10,-13,2028,1.0885130795130795
+South Medical Center,South Medical Center,Child Health,17,12,-5,2028,1.0556613320400903
+South Medical Center,South Medical Center,General Medicine,41,27,-14,2029,1.1508461315280465
+South Medical Center,South Medical Center,General Surgery,28,20,-8,2029,1.1363214096557344
+South Medical Center,South Medical Center,Maternal Care,24,13,-11,2029,1.0965651263986738
+South Medical Center,South Medical Center,Mental Health,24,10,-14,2029,1.11984245014245
+South Medical Center,South Medical Center,Child Health,18,12,-6,2029,1.0749017135467185
+South Medical Center,South Medical Center,General Medicine,42,27,-15,2030,1.1921850787510362
+South Medical Center,South Medical Center,General Surgery,29,20,-9,2030,1.173421124465268
+South Medical Center,South Medical Center,Mental Health,25,10,-15,2030,1.1521902874902874
+South Medical Center,South Medical Center,Maternal Care,24,13,-11,2030,1.1221554703688355
+South Medical Center,South Medical Center,Child Health,18,12,-6,2030,1.0944422243776268
+South Medical Center,South Medical Center,General Medicine,44,27,-17,2031,1.2350643271621997
+South Medical Center,South Medical Center,General Surgery,30,20,-10,2031,1.2117709920554085
+South Medical Center,South Medical Center,Maternal Care,25,13,-12,2031,1.1483567136344799
+South Medical Center,South Medical Center,Mental Health,25,10,-15,2031,1.1855511525511526
+South Medical Center,South Medical Center,Child Health,18,12,-6,2031,1.1144067248625928
+South Medical Center,South Medical Center,General Medicine,45,27,-18,2032,1.2795277839182095
+South Medical Center,South Medical Center,General Surgery,31,20,-11,2032,1.251427439397026
+South Medical Center,South Medical Center,Mental Health,26,10,-16,2032,1.2199017094017095
+South Medical Center,South Medical Center,Maternal Care,25,13,-12,2032,1.1750841276419395
+South Medical Center,South Medical Center,Child Health,19,12,-7,2032,1.1346947946977044
+South Medical Center,South Medical Center,General Medicine,47,27,-20,2033,1.325751782260293
+South Medical Center,South Medical Center,General Surgery,32,20,-12,2033,1.2925326543084132
+South Medical Center,South Medical Center,Mental Health,27,10,-17,2033,1.255413701113701
+South Medical Center,South Medical Center,Maternal Care,26,13,-13,2033,1.2025333402403648
+South Medical Center,South Medical Center,Child Health,19,12,-7,2033,1.1554169738118332
+South Medical Center,South Medical Center,General Medicine,49,27,-22,2034,1.3736396656534955
+South Medical Center,South Medical Center,General Surgery,33,20,-13,2034,1.3349864127113467
+South Medical Center,South Medical Center,Mental Health,28,10,-18,2034,1.2919750064750064
+South Medical Center,South Medical Center,Maternal Care,26,13,-13,2034,1.2305967467882306
+South Medical Center,South Medical Center,Child Health,19,12,-7,2034,1.1764868412544454
+South Medical Center,South Medical Center,General Medicine,50,27,-23,2035,1.4234023072672009
+South Medical Center,South Medical Center,General Surgery,34,20,-14,2035,1.3789729476471786
+South Medical Center,South Medical Center,Mental Health,28,10,-18,2035,1.329728749028749
+South Medical Center,South Medical Center,Maternal Care,27,13,-14,2035,1.259288479071695
+South Medical Center,South Medical Center,Child Health,20,12,-8,2035,1.1979327190430005
+South Medical Center,South Medical Center,General Medicine,52,27,-25,2036,1.4750300497374964
+South Medical Center,South Medical Center,General Surgery,35,20,-15,2036,1.424495864738236
+South Medical Center,South Medical Center,Mental Health,29,10,-19,2036,1.3686958559958557
+South Medical Center,South Medical Center,Maternal Care,28,13,-15,2036,1.2887009324492333
+South Medical Center,South Medical Center,Child Health,20,12,-8,2036,1.2197764306498546
+South Medical Center,South Medical Center,General Medicine,54,27,-27,2037,1.5286193838076818
+South Medical Center,South Medical Center,General Surgery,36,20,-16,2037,1.471584783051538
+South Medical Center,South Medical Center,Mental Health,30,10,-20,2037,1.4088521108521108
+South Medical Center,South Medical Center,Maternal Care,28,13,-15,2037,1.3187395565685869
+South Medical Center,South Medical Center,Child Health,20,12,-8,2037,1.2420418364047847
+South Medical Center,South Medical Center,General Medicine,56,27,-29,2038,1.5842689693285439
+South Medical Center,South Medical Center,General Surgery,37,20,-17,2038,1.5203623344876758
+South Medical Center,South Medical Center,Mental Health,31,10,-21,2038,1.4503516964516963
+South Medical Center,South Medical Center,Maternal Care,29,13,-16,2038,1.3495989017820142
+South Medical Center,South Medical Center,Child Health,21,12,-9,2038,1.2647151956029743
+South Medical Center,South Medical Center,General Medicine,58,27,-31,2039,1.6420177949709864
+South Medical Center,South Medical Center,General Surgery,38,20,-18,2039,1.5708341413729885
+South Medical Center,South Medical Center,Mental Health,32,10,-22,2039,1.4931358197358195
+South Medical Center,South Medical Center,Maternal Care,30,13,-17,2039,1.3810909448818898
+South Medical Center,South Medical Center,Child Health,21,12,-9,2039,1.287815357258325
+South Medical Center,South Medical Center,General Medicine,60,27,-33,2040,1.70197275490467
+South Medical Center,South Medical Center,General Surgery,39,20,-19,2040,1.6230606233448768
+South Medical Center,South Medical Center,Mental Health,33,10,-23,2040,1.5372761201761203
+South Medical Center,South Medical Center,Maternal Care,30,13,-17,2040,1.4133037090758391
+South Medical Center,South Medical Center,Child Health,21,12,-9,2040,1.3113133527319754

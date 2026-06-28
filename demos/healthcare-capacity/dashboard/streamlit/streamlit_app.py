@@ -3,10 +3,6 @@
 import streamlit as st
 
 import bootstrap  # noqa: F401
-from analytics.demographics import demographics_summary
-from analytics.projection import bed_needs_projection
-from analytics.savings import savings_scenarios
-from analytics.utilization import bed_demand_no_adjustment, capacity_summary, current_bed_demand, service_census_summary
 from utils.charts import (
     bed_demand_chart,
     bed_needs_projection_chart,
@@ -14,7 +10,7 @@ from utils.charts import (
     demographics_chart,
     savings_chart,
 )
-from utils.database import load_dashboard_data
+from utils.database import load_dashboard_data, load_prepared_dashboard_data
 from utils.report import executive_summary
 
 
@@ -23,16 +19,85 @@ st.set_page_config(page_title="Executive Report", page_icon="🏥", layout="wide
 
 @st.cache_data
 def get_data():
-    return load_dashboard_data()
+    try:
+        return load_prepared_dashboard_data()
+    except FileNotFoundError:
+        tables, source_label = load_dashboard_data()
+        return _build_fallback_dashboard_tables(tables), f"{source_label} computed at runtime"
+
+
+def _build_fallback_dashboard_tables(raw_tables):
+    from analytics.demographics import demographics_summary
+    from analytics.projection import bed_needs_projection
+    from analytics.savings import savings_scenarios
+    from analytics.utilization import (
+        bed_demand_no_adjustment,
+        capacity_summary,
+        current_bed_demand,
+        service_census_summary,
+    )
+
+    daily = raw_tables["daily"]
+    visits = raw_tables["visits"]
+    services = raw_tables["services"]
+    facilities = raw_tables["facilities"]
+    diagnoses = raw_tables["diagnoses"]
+    population_growth = raw_tables["population_growth"]
+    facility_filters = ["All"] + sorted(daily["facility_name"].unique().tolist())
+    prepared = {"daily": daily, "pressure": raw_tables["pressure"], "quality": raw_tables["quality"]}
+
+    for name in ["capacity", "census", "savings", "demographics", "demand", "current_demand", "projection"]:
+        prepared[name] = []
+
+    for facility_filter in facility_filters:
+        filtered_daily = daily if facility_filter == "All" else daily[daily["facility_name"] == facility_filter]
+        filtered_visits = visits if facility_filter == "All" else visits[
+            visits["facility_id"].isin(filtered_daily["facility_id"].unique())
+        ]
+        capacity = capacity_summary(filtered_daily)
+        census = service_census_summary(filtered_daily)
+        savings = savings_scenarios(filtered_visits, services, facilities, diagnoses)
+        demographics = demographics_summary(filtered_visits, services, facilities, diagnoses)
+        demand = bed_demand_no_adjustment(filtered_daily, demographics, population_growth)
+        current_demand = current_bed_demand(filtered_daily)
+        projection = bed_needs_projection(
+            current_demand,
+            savings,
+            start_year=int(filtered_daily["calendar_date"].dt.year.min()),
+            demographics=demographics,
+            population_growth=population_growth,
+        )
+        for name, frame in {
+            "capacity": capacity,
+            "census": census,
+            "savings": savings,
+            "demographics": demographics,
+            "demand": demand,
+            "current_demand": current_demand,
+            "projection": projection,
+        }.items():
+            result = frame.copy()
+            result.insert(0, "facility_filter", facility_filter)
+            prepared[name].append(result)
+
+    import pandas as pd
+
+    for name, frames in list(prepared.items()):
+        if isinstance(frames, list):
+            prepared[name] = pd.concat(frames, ignore_index=True)
+    prepared["facility_filters"] = pd.DataFrame({"facility_filter": facility_filters})
+    return prepared
+
+
+def by_facility(tables, name, facility_filter):
+    frame = tables[name]
+    if "facility_filter" not in frame.columns:
+        return frame
+    return frame[frame["facility_filter"] == facility_filter].drop(columns=["facility_filter"]).reset_index(drop=True)
 
 
 tables, source_label = get_data()
 daily = tables["daily"]
-visits = tables["visits"]
-services = tables["services"]
-facilities = tables["facilities"]
-diagnoses = tables["diagnoses"]
-population_growth = tables["population_growth"]
 
 st.title("Executive Report")
 st.caption(f"Source: {source_label}")
@@ -45,26 +110,16 @@ st.download_button(
     mime="text/plain",
 )
 
-facility = st.selectbox("Facility", ["All"] + sorted(daily["facility_name"].unique().tolist()))
+facility_options = tables["facility_filters"]["facility_filter"].tolist()
+facility = st.selectbox("Facility", facility_options)
 filtered_daily = daily if facility == "All" else daily[daily["facility_name"] == facility]
-filtered_visits = visits if facility == "All" else visits[
-    visits["facility_id"].isin(filtered_daily["facility_id"].unique())
-]
-
-capacity = capacity_summary(filtered_daily)
-census = service_census_summary(filtered_daily)
-savings = savings_scenarios(filtered_visits, services, facilities, diagnoses)
-demographics = demographics_summary(filtered_visits, services, facilities, diagnoses)
-demand = bed_demand_no_adjustment(filtered_daily, demographics, population_growth)
-current_demand = current_bed_demand(filtered_daily)
-start_year = int(filtered_daily["calendar_date"].dt.year.min())
-projection = bed_needs_projection(
-    current_demand,
-    savings,
-    start_year=start_year,
-    demographics=demographics,
-    population_growth=population_growth,
-)
+capacity = by_facility(tables, "capacity", facility)
+census = by_facility(tables, "census", facility)
+savings = by_facility(tables, "savings", facility)
+demographics = by_facility(tables, "demographics", facility)
+demand = by_facility(tables, "demand", facility)
+current_demand = by_facility(tables, "current_demand", facility)
+projection = by_facility(tables, "projection", facility)
 
 capacity_total = int(capacity["planned_beds"].sum())
 demand_total = int(current_demand["demand"].sum())

@@ -1,0 +1,481 @@
+facility_filter,facility_name,service_name,year,projection,adjusted_projection
+All,North General Hospital,General Medicine,2025,52,52
+All,North General Hospital,General Medicine,2026,54,54
+All,North General Hospital,General Medicine,2027,56,56
+All,North General Hospital,General Medicine,2028,58,57
+All,North General Hospital,General Medicine,2029,60,59
+All,North General Hospital,General Medicine,2030,62,61
+All,North General Hospital,General Medicine,2031,65,64
+All,North General Hospital,General Medicine,2032,67,66
+All,North General Hospital,General Medicine,2033,70,69
+All,North General Hospital,General Medicine,2034,72,71
+All,North General Hospital,General Medicine,2035,75,74
+All,North General Hospital,General Medicine,2036,78,77
+All,North General Hospital,General Medicine,2037,81,80
+All,North General Hospital,General Medicine,2038,84,83
+All,North General Hospital,General Medicine,2039,87,86
+All,North General Hospital,General Medicine,2040,90,89
+All,Central Community Hospital,General Medicine,2025,41,41
+All,Central Community Hospital,General Medicine,2026,43,42
+All,Central Community Hospital,General Medicine,2027,44,44
+All,Central Community Hospital,General Medicine,2028,46,46
+All,Central Community Hospital,General Medicine,2029,48,47
+All,Central Community Hospital,General Medicine,2030,50,49
+All,Central Community Hospital,General Medicine,2031,52,51
+All,Central Community Hospital,General Medicine,2032,54,53
+All,Central Community Hospital,General Medicine,2033,57,56
+All,Central Community Hospital,General Medicine,2034,59,58
+All,Central Community Hospital,General Medicine,2035,61,60
+All,Central Community Hospital,General Medicine,2036,64,63
+All,Central Community Hospital,General Medicine,2037,67,66
+All,Central Community Hospital,General Medicine,2038,69,68
+All,Central Community Hospital,General Medicine,2039,72,71
+All,Central Community Hospital,General Medicine,2040,75,74
+All,North General Hospital,General Surgery,2025,35,35
+All,North General Hospital,General Surgery,2026,36,36
+All,North General Hospital,General Surgery,2027,37,37
+All,North General Hospital,General Surgery,2028,39,38
+All,North General Hospital,General Surgery,2029,40,39
+All,North General Hospital,General Surgery,2030,41,41
+All,North General Hospital,General Surgery,2031,43,42
+All,North General Hospital,General Surgery,2032,44,43
+All,North General Hospital,General Surgery,2033,45,45
+All,North General Hospital,General Surgery,2034,47,46
+All,North General Hospital,General Surgery,2035,49,48
+All,North General Hospital,General Surgery,2036,50,50
+All,North General Hospital,General Surgery,2037,52,51
+All,North General Hospital,General Surgery,2038,54,53
+All,North General Hospital,General Surgery,2039,56,55
+All,North General Hospital,General Surgery,2040,57,57
+All,South Medical Center,General Medicine,2025,35,35
+All,South Medical Center,General Medicine,2026,36,36
+All,South Medical Center,General Medicine,2027,38,37
+All,South Medical Center,General Medicine,2028,39,38
+All,South Medical Center,General Medicine,2029,40,40
+All,South Medical Center,General Medicine,2030,42,41
+All,South Medical Center,General Medicine,2031,43,42
+All,South Medical Center,General Medicine,2032,45,44
+All,South Medical Center,General Medicine,2033,46,46
+All,South Medical Center,General Medicine,2034,48,47
+All,South Medical Center,General Medicine,2035,50,49
+All,South Medical Center,General Medicine,2036,52,51
+All,South Medical Center,General Medicine,2037,54,53
+All,South Medical Center,General Medicine,2038,55,55
+All,South Medical Center,General Medicine,2039,57,57
+All,South Medical Center,General Medicine,2040,60,59
+All,North General Hospital,Maternal Care,2025,31,31
+All,North General Hospital,Maternal Care,2026,32,32
+All,North General Hospital,Maternal Care,2027,33,32
+All,North General Hospital,Maternal Care,2028,33,33
+All,North General Hospital,Maternal Care,2029,34,34
+All,North General Hospital,Maternal Care,2030,35,35
+All,North General Hospital,Maternal Care,2031,36,36
+All,North General Hospital,Maternal Care,2032,37,37
+All,North General Hospital,Maternal Care,2033,38,38
+All,North General Hospital,Maternal Care,2034,39,39
+All,North General Hospital,Maternal Care,2035,40,40
+All,North General Hospital,Maternal Care,2036,41,41
+All,North General Hospital,Maternal Care,2037,42,42
+All,North General Hospital,Maternal Care,2038,43,43
+All,North General Hospital,Maternal Care,2039,44,44
+All,North General Hospital,Maternal Care,2040,45,45
+All,Central Community Hospital,General Surgery,2025,27,27
+All,Central Community Hospital,General Surgery,2026,28,28
+All,Central Community Hospital,General Surgery,2027,29,29
+All,Central Community Hospital,General Surgery,2028,30,30
+All,Central Community Hospital,General Surgery,2029,31,31
+All,Central Community Hospital,General Surgery,2030,32,32
+All,Central Community Hospital,General Surgery,2031,33,33
+All,Central Community Hospital,General Surgery,2032,35,34
+All,Central Community Hospital,General Surgery,2033,36,35
+All,Central Community Hospital,General Surgery,2034,37,37
+All,Central Community Hospital,General Surgery,2035,39,38
+All,Central Community Hospital,General Surgery,2036,40,39
+All,Central Community Hospital,General Surgery,2037,41,41
+All,Central Community Hospital,General Surgery,2038,43,42
+All,Central Community Hospital,General Surgery,2039,44,44
+All,Central Community Hospital,General Surgery,2040,46,46
+All,North General Hospital,Mental Health,2025,27,27
+All,North General Hospital,Mental Health,2026,28,28
+All,North General Hospital,Mental Health,2027,29,28
+All,North General Hospital,Mental Health,2028,29,29
+All,North General Hospital,Mental Health,2029,30,30
+All,North General Hospital,Mental Health,2030,31,31
+All,North General Hospital,Mental Health,2031,32,32
+All,North General Hospital,Mental Health,2032,33,33
+All,North General Hospital,Mental Health,2033,34,33
+All,North General Hospital,Mental Health,2034,35,34
+All,North General Hospital,Mental Health,2035,36,36
+All,North General Hospital,Mental Health,2036,37,37
+All,North General Hospital,Mental Health,2037,38,38
+All,North General Hospital,Mental Health,2038,39,39
+All,North General Hospital,Mental Health,2039,40,40
+All,North General Hospital,Mental Health,2040,41,41
+All,Central Community Hospital,Maternal Care,2025,26,26
+All,Central Community Hospital,Maternal Care,2026,27,27
+All,Central Community Hospital,Maternal Care,2027,28,27
+All,Central Community Hospital,Maternal Care,2028,28,28
+All,Central Community Hospital,Maternal Care,2029,29,29
+All,Central Community Hospital,Maternal Care,2030,30,30
+All,Central Community Hospital,Maternal Care,2031,31,31
+All,Central Community Hospital,Maternal Care,2032,32,32
+All,Central Community Hospital,Maternal Care,2033,33,32
+All,Central Community Hospital,Maternal Care,2034,34,33
+All,Central Community Hospital,Maternal Care,2035,35,34
+All,Central Community Hospital,Maternal Care,2036,36,35
+All,Central Community Hospital,Maternal Care,2037,37,37
+All,Central Community Hospital,Maternal Care,2038,38,38
+All,Central Community Hospital,Maternal Care,2039,39,39
+All,Central Community Hospital,Maternal Care,2040,40,40
+All,North General Hospital,Child Health,2025,24,24
+All,North General Hospital,Child Health,2026,24,24
+All,North General Hospital,Child Health,2027,25,25
+All,North General Hospital,Child Health,2028,25,25
+All,North General Hospital,Child Health,2029,26,26
+All,North General Hospital,Child Health,2030,26,26
+All,North General Hospital,Child Health,2031,27,27
+All,North General Hospital,Child Health,2032,28,27
+All,North General Hospital,Child Health,2033,28,28
+All,North General Hospital,Child Health,2034,29,28
+All,North General Hospital,Child Health,2035,29,29
+All,North General Hospital,Child Health,2036,30,30
+All,North General Hospital,Child Health,2037,30,30
+All,North General Hospital,Child Health,2038,31,31
+All,North General Hospital,Child Health,2039,32,31
+All,North General Hospital,Child Health,2040,32,32
+All,South Medical Center,General Surgery,2025,24,24
+All,South Medical Center,General Surgery,2026,25,25
+All,South Medical Center,General Surgery,2027,26,25
+All,South Medical Center,General Surgery,2028,26,26
+All,South Medical Center,General Surgery,2029,27,27
+All,South Medical Center,General Surgery,2030,28,28
+All,South Medical Center,General Surgery,2031,29,29
+All,South Medical Center,General Surgery,2032,30,30
+All,South Medical Center,General Surgery,2033,31,31
+All,South Medical Center,General Surgery,2034,32,32
+All,South Medical Center,General Surgery,2035,33,33
+All,South Medical Center,General Surgery,2036,34,34
+All,South Medical Center,General Surgery,2037,35,35
+All,South Medical Center,General Surgery,2038,36,36
+All,South Medical Center,General Surgery,2039,38,37
+All,South Medical Center,General Surgery,2040,39,39
+All,South Medical Center,Maternal Care,2025,21,21
+All,South Medical Center,Maternal Care,2026,21,21
+All,South Medical Center,Maternal Care,2027,22,22
+All,South Medical Center,Maternal Care,2028,23,22
+All,South Medical Center,Maternal Care,2029,23,23
+All,South Medical Center,Maternal Care,2030,24,23
+All,South Medical Center,Maternal Care,2031,24,24
+All,South Medical Center,Maternal Care,2032,25,24
+All,South Medical Center,Maternal Care,2033,25,25
+All,South Medical Center,Maternal Care,2034,26,26
+All,South Medical Center,Maternal Care,2035,26,26
+All,South Medical Center,Maternal Care,2036,27,27
+All,South Medical Center,Maternal Care,2037,28,27
+All,South Medical Center,Maternal Care,2038,28,28
+All,South Medical Center,Maternal Care,2039,29,29
+All,South Medical Center,Maternal Care,2040,30,29
+All,South Medical Center,Mental Health,2025,21,21
+All,South Medical Center,Mental Health,2026,22,22
+All,South Medical Center,Mental Health,2027,22,22
+All,South Medical Center,Mental Health,2028,23,23
+All,South Medical Center,Mental Health,2029,24,23
+All,South Medical Center,Mental Health,2030,24,24
+All,South Medical Center,Mental Health,2031,25,25
+All,South Medical Center,Mental Health,2032,26,25
+All,South Medical Center,Mental Health,2033,26,26
+All,South Medical Center,Mental Health,2034,27,27
+All,South Medical Center,Mental Health,2035,28,28
+All,South Medical Center,Mental Health,2036,29,29
+All,South Medical Center,Mental Health,2037,30,29
+All,South Medical Center,Mental Health,2038,30,30
+All,South Medical Center,Mental Health,2039,31,31
+All,South Medical Center,Mental Health,2040,32,32
+All,Central Community Hospital,Mental Health,2025,18,18
+All,Central Community Hospital,Mental Health,2026,19,19
+All,Central Community Hospital,Mental Health,2027,19,19
+All,Central Community Hospital,Mental Health,2028,20,20
+All,Central Community Hospital,Mental Health,2029,21,20
+All,Central Community Hospital,Mental Health,2030,21,21
+All,Central Community Hospital,Mental Health,2031,22,22
+All,Central Community Hospital,Mental Health,2032,23,23
+All,Central Community Hospital,Mental Health,2033,24,23
+All,Central Community Hospital,Mental Health,2034,24,24
+All,Central Community Hospital,Mental Health,2035,25,25
+All,Central Community Hospital,Mental Health,2036,26,26
+All,Central Community Hospital,Mental Health,2037,27,27
+All,Central Community Hospital,Mental Health,2038,28,28
+All,Central Community Hospital,Mental Health,2039,29,29
+All,Central Community Hospital,Mental Health,2040,30,30
+All,South Medical Center,Child Health,2025,16,16
+All,South Medical Center,Child Health,2026,16,16
+All,South Medical Center,Child Health,2027,17,17
+All,South Medical Center,Child Health,2028,17,17
+All,South Medical Center,Child Health,2029,17,17
+All,South Medical Center,Child Health,2030,18,17
+All,South Medical Center,Child Health,2031,18,18
+All,South Medical Center,Child Health,2032,18,18
+All,South Medical Center,Child Health,2033,18,18
+All,South Medical Center,Child Health,2034,19,19
+All,South Medical Center,Child Health,2035,19,19
+All,South Medical Center,Child Health,2036,20,19
+All,South Medical Center,Child Health,2037,20,20
+All,South Medical Center,Child Health,2038,20,20
+All,South Medical Center,Child Health,2039,21,20
+All,South Medical Center,Child Health,2040,21,21
+All,Central Community Hospital,Child Health,2025,15,15
+All,Central Community Hospital,Child Health,2026,15,15
+All,Central Community Hospital,Child Health,2027,16,16
+All,Central Community Hospital,Child Health,2028,16,16
+All,Central Community Hospital,Child Health,2029,16,16
+All,Central Community Hospital,Child Health,2030,17,16
+All,Central Community Hospital,Child Health,2031,17,17
+All,Central Community Hospital,Child Health,2032,18,17
+All,Central Community Hospital,Child Health,2033,18,18
+All,Central Community Hospital,Child Health,2034,19,18
+All,Central Community Hospital,Child Health,2035,19,19
+All,Central Community Hospital,Child Health,2036,19,19
+All,Central Community Hospital,Child Health,2037,20,19
+All,Central Community Hospital,Child Health,2038,20,20
+All,Central Community Hospital,Child Health,2039,21,20
+All,Central Community Hospital,Child Health,2040,21,21
+Central Community Hospital,Central Community Hospital,General Medicine,2025,41,41
+Central Community Hospital,Central Community Hospital,General Medicine,2026,43,43
+Central Community Hospital,Central Community Hospital,General Medicine,2027,44,44
+Central Community Hospital,Central Community Hospital,General Medicine,2028,46,46
+Central Community Hospital,Central Community Hospital,General Medicine,2029,48,48
+Central Community Hospital,Central Community Hospital,General Medicine,2030,50,49
+Central Community Hospital,Central Community Hospital,General Medicine,2031,52,52
+Central Community Hospital,Central Community Hospital,General Medicine,2032,54,54
+Central Community Hospital,Central Community Hospital,General Medicine,2033,57,56
+Central Community Hospital,Central Community Hospital,General Medicine,2034,59,58
+Central Community Hospital,Central Community Hospital,General Medicine,2035,61,61
+Central Community Hospital,Central Community Hospital,General Medicine,2036,64,63
+Central Community Hospital,Central Community Hospital,General Medicine,2037,67,66
+Central Community Hospital,Central Community Hospital,General Medicine,2038,69,69
+Central Community Hospital,Central Community Hospital,General Medicine,2039,72,72
+Central Community Hospital,Central Community Hospital,General Medicine,2040,75,75
+Central Community Hospital,Central Community Hospital,General Surgery,2025,27,27
+Central Community Hospital,Central Community Hospital,General Surgery,2026,28,28
+Central Community Hospital,Central Community Hospital,General Surgery,2027,29,29
+Central Community Hospital,Central Community Hospital,General Surgery,2028,30,30
+Central Community Hospital,Central Community Hospital,General Surgery,2029,31,31
+Central Community Hospital,Central Community Hospital,General Surgery,2030,32,32
+Central Community Hospital,Central Community Hospital,General Surgery,2031,33,33
+Central Community Hospital,Central Community Hospital,General Surgery,2032,35,34
+Central Community Hospital,Central Community Hospital,General Surgery,2033,36,35
+Central Community Hospital,Central Community Hospital,General Surgery,2034,37,37
+Central Community Hospital,Central Community Hospital,General Surgery,2035,39,38
+Central Community Hospital,Central Community Hospital,General Surgery,2036,40,39
+Central Community Hospital,Central Community Hospital,General Surgery,2037,41,41
+Central Community Hospital,Central Community Hospital,General Surgery,2038,43,42
+Central Community Hospital,Central Community Hospital,General Surgery,2039,44,44
+Central Community Hospital,Central Community Hospital,General Surgery,2040,46,46
+Central Community Hospital,Central Community Hospital,Maternal Care,2025,26,26
+Central Community Hospital,Central Community Hospital,Maternal Care,2026,27,27
+Central Community Hospital,Central Community Hospital,Maternal Care,2027,28,27
+Central Community Hospital,Central Community Hospital,Maternal Care,2028,28,28
+Central Community Hospital,Central Community Hospital,Maternal Care,2029,29,29
+Central Community Hospital,Central Community Hospital,Maternal Care,2030,30,30
+Central Community Hospital,Central Community Hospital,Maternal Care,2031,31,31
+Central Community Hospital,Central Community Hospital,Maternal Care,2032,32,32
+Central Community Hospital,Central Community Hospital,Maternal Care,2033,33,33
+Central Community Hospital,Central Community Hospital,Maternal Care,2034,34,34
+Central Community Hospital,Central Community Hospital,Maternal Care,2035,35,35
+Central Community Hospital,Central Community Hospital,Maternal Care,2036,36,36
+Central Community Hospital,Central Community Hospital,Maternal Care,2037,37,37
+Central Community Hospital,Central Community Hospital,Maternal Care,2038,38,38
+Central Community Hospital,Central Community Hospital,Maternal Care,2039,39,39
+Central Community Hospital,Central Community Hospital,Maternal Care,2040,40,40
+Central Community Hospital,Central Community Hospital,Mental Health,2025,18,18
+Central Community Hospital,Central Community Hospital,Mental Health,2026,19,19
+Central Community Hospital,Central Community Hospital,Mental Health,2027,19,19
+Central Community Hospital,Central Community Hospital,Mental Health,2028,20,20
+Central Community Hospital,Central Community Hospital,Mental Health,2029,21,21
+Central Community Hospital,Central Community Hospital,Mental Health,2030,21,21
+Central Community Hospital,Central Community Hospital,Mental Health,2031,22,22
+Central Community Hospital,Central Community Hospital,Mental Health,2032,23,23
+Central Community Hospital,Central Community Hospital,Mental Health,2033,24,24
+Central Community Hospital,Central Community Hospital,Mental Health,2034,24,24
+Central Community Hospital,Central Community Hospital,Mental Health,2035,25,25
+Central Community Hospital,Central Community Hospital,Mental Health,2036,26,26
+Central Community Hospital,Central Community Hospital,Mental Health,2037,27,27
+Central Community Hospital,Central Community Hospital,Mental Health,2038,28,28
+Central Community Hospital,Central Community Hospital,Mental Health,2039,29,29
+Central Community Hospital,Central Community Hospital,Mental Health,2040,30,30
+Central Community Hospital,Central Community Hospital,Child Health,2025,15,15
+Central Community Hospital,Central Community Hospital,Child Health,2026,15,15
+Central Community Hospital,Central Community Hospital,Child Health,2027,16,16
+Central Community Hospital,Central Community Hospital,Child Health,2028,16,16
+Central Community Hospital,Central Community Hospital,Child Health,2029,16,16
+Central Community Hospital,Central Community Hospital,Child Health,2030,17,17
+Central Community Hospital,Central Community Hospital,Child Health,2031,17,17
+Central Community Hospital,Central Community Hospital,Child Health,2032,18,17
+Central Community Hospital,Central Community Hospital,Child Health,2033,18,18
+Central Community Hospital,Central Community Hospital,Child Health,2034,19,18
+Central Community Hospital,Central Community Hospital,Child Health,2035,19,19
+Central Community Hospital,Central Community Hospital,Child Health,2036,19,19
+Central Community Hospital,Central Community Hospital,Child Health,2037,20,20
+Central Community Hospital,Central Community Hospital,Child Health,2038,20,20
+Central Community Hospital,Central Community Hospital,Child Health,2039,21,21
+Central Community Hospital,Central Community Hospital,Child Health,2040,21,21
+North General Hospital,North General Hospital,General Medicine,2025,52,52
+North General Hospital,North General Hospital,General Medicine,2026,54,54
+North General Hospital,North General Hospital,General Medicine,2027,56,56
+North General Hospital,North General Hospital,General Medicine,2028,58,57
+North General Hospital,North General Hospital,General Medicine,2029,60,59
+North General Hospital,North General Hospital,General Medicine,2030,62,62
+North General Hospital,North General Hospital,General Medicine,2031,65,64
+North General Hospital,North General Hospital,General Medicine,2032,67,66
+North General Hospital,North General Hospital,General Medicine,2033,70,69
+North General Hospital,North General Hospital,General Medicine,2034,72,71
+North General Hospital,North General Hospital,General Medicine,2035,75,74
+North General Hospital,North General Hospital,General Medicine,2036,78,77
+North General Hospital,North General Hospital,General Medicine,2037,81,80
+North General Hospital,North General Hospital,General Medicine,2038,84,83
+North General Hospital,North General Hospital,General Medicine,2039,87,86
+North General Hospital,North General Hospital,General Medicine,2040,90,89
+North General Hospital,North General Hospital,General Surgery,2025,35,35
+North General Hospital,North General Hospital,General Surgery,2026,36,36
+North General Hospital,North General Hospital,General Surgery,2027,37,37
+North General Hospital,North General Hospital,General Surgery,2028,39,38
+North General Hospital,North General Hospital,General Surgery,2029,40,40
+North General Hospital,North General Hospital,General Surgery,2030,41,41
+North General Hospital,North General Hospital,General Surgery,2031,43,42
+North General Hospital,North General Hospital,General Surgery,2032,44,44
+North General Hospital,North General Hospital,General Surgery,2033,45,45
+North General Hospital,North General Hospital,General Surgery,2034,47,47
+North General Hospital,North General Hospital,General Surgery,2035,49,48
+North General Hospital,North General Hospital,General Surgery,2036,50,50
+North General Hospital,North General Hospital,General Surgery,2037,52,52
+North General Hospital,North General Hospital,General Surgery,2038,54,53
+North General Hospital,North General Hospital,General Surgery,2039,56,55
+North General Hospital,North General Hospital,General Surgery,2040,57,57
+North General Hospital,North General Hospital,Maternal Care,2025,31,31
+North General Hospital,North General Hospital,Maternal Care,2026,32,32
+North General Hospital,North General Hospital,Maternal Care,2027,33,33
+North General Hospital,North General Hospital,Maternal Care,2028,33,33
+North General Hospital,North General Hospital,Maternal Care,2029,34,34
+North General Hospital,North General Hospital,Maternal Care,2030,35,35
+North General Hospital,North General Hospital,Maternal Care,2031,36,36
+North General Hospital,North General Hospital,Maternal Care,2032,37,37
+North General Hospital,North General Hospital,Maternal Care,2033,38,38
+North General Hospital,North General Hospital,Maternal Care,2034,39,39
+North General Hospital,North General Hospital,Maternal Care,2035,40,40
+North General Hospital,North General Hospital,Maternal Care,2036,41,41
+North General Hospital,North General Hospital,Maternal Care,2037,42,42
+North General Hospital,North General Hospital,Maternal Care,2038,43,43
+North General Hospital,North General Hospital,Maternal Care,2039,44,44
+North General Hospital,North General Hospital,Maternal Care,2040,45,45
+North General Hospital,North General Hospital,Mental Health,2025,27,27
+North General Hospital,North General Hospital,Mental Health,2026,28,28
+North General Hospital,North General Hospital,Mental Health,2027,29,29
+North General Hospital,North General Hospital,Mental Health,2028,29,29
+North General Hospital,North General Hospital,Mental Health,2029,30,30
+North General Hospital,North General Hospital,Mental Health,2030,31,31
+North General Hospital,North General Hospital,Mental Health,2031,32,32
+North General Hospital,North General Hospital,Mental Health,2032,33,33
+North General Hospital,North General Hospital,Mental Health,2033,34,34
+North General Hospital,North General Hospital,Mental Health,2034,35,35
+North General Hospital,North General Hospital,Mental Health,2035,36,36
+North General Hospital,North General Hospital,Mental Health,2036,37,37
+North General Hospital,North General Hospital,Mental Health,2037,38,38
+North General Hospital,North General Hospital,Mental Health,2038,39,39
+North General Hospital,North General Hospital,Mental Health,2039,40,40
+North General Hospital,North General Hospital,Mental Health,2040,41,41
+North General Hospital,North General Hospital,Child Health,2025,24,24
+North General Hospital,North General Hospital,Child Health,2026,24,24
+North General Hospital,North General Hospital,Child Health,2027,25,25
+North General Hospital,North General Hospital,Child Health,2028,25,25
+North General Hospital,North General Hospital,Child Health,2029,26,26
+North General Hospital,North General Hospital,Child Health,2030,26,26
+North General Hospital,North General Hospital,Child Health,2031,27,27
+North General Hospital,North General Hospital,Child Health,2032,28,27
+North General Hospital,North General Hospital,Child Health,2033,28,28
+North General Hospital,North General Hospital,Child Health,2034,29,28
+North General Hospital,North General Hospital,Child Health,2035,29,29
+North General Hospital,North General Hospital,Child Health,2036,30,30
+North General Hospital,North General Hospital,Child Health,2037,30,30
+North General Hospital,North General Hospital,Child Health,2038,31,31
+North General Hospital,North General Hospital,Child Health,2039,32,31
+North General Hospital,North General Hospital,Child Health,2040,32,32
+South Medical Center,South Medical Center,General Medicine,2025,35,35
+South Medical Center,South Medical Center,General Medicine,2026,36,36
+South Medical Center,South Medical Center,General Medicine,2027,38,37
+South Medical Center,South Medical Center,General Medicine,2028,39,38
+South Medical Center,South Medical Center,General Medicine,2029,40,40
+South Medical Center,South Medical Center,General Medicine,2030,42,41
+South Medical Center,South Medical Center,General Medicine,2031,43,43
+South Medical Center,South Medical Center,General Medicine,2032,45,44
+South Medical Center,South Medical Center,General Medicine,2033,46,46
+South Medical Center,South Medical Center,General Medicine,2034,48,47
+South Medical Center,South Medical Center,General Medicine,2035,50,49
+South Medical Center,South Medical Center,General Medicine,2036,52,51
+South Medical Center,South Medical Center,General Medicine,2037,54,53
+South Medical Center,South Medical Center,General Medicine,2038,55,55
+South Medical Center,South Medical Center,General Medicine,2039,57,57
+South Medical Center,South Medical Center,General Medicine,2040,60,59
+South Medical Center,South Medical Center,General Surgery,2025,24,24
+South Medical Center,South Medical Center,General Surgery,2026,25,25
+South Medical Center,South Medical Center,General Surgery,2027,26,25
+South Medical Center,South Medical Center,General Surgery,2028,26,26
+South Medical Center,South Medical Center,General Surgery,2029,27,27
+South Medical Center,South Medical Center,General Surgery,2030,28,28
+South Medical Center,South Medical Center,General Surgery,2031,29,29
+South Medical Center,South Medical Center,General Surgery,2032,30,30
+South Medical Center,South Medical Center,General Surgery,2033,31,31
+South Medical Center,South Medical Center,General Surgery,2034,32,32
+South Medical Center,South Medical Center,General Surgery,2035,33,33
+South Medical Center,South Medical Center,General Surgery,2036,34,34
+South Medical Center,South Medical Center,General Surgery,2037,35,35
+South Medical Center,South Medical Center,General Surgery,2038,36,36
+South Medical Center,South Medical Center,General Surgery,2039,38,37
+South Medical Center,South Medical Center,General Surgery,2040,39,39
+South Medical Center,South Medical Center,Maternal Care,2025,21,21
+South Medical Center,South Medical Center,Maternal Care,2026,21,21
+South Medical Center,South Medical Center,Maternal Care,2027,22,22
+South Medical Center,South Medical Center,Maternal Care,2028,23,22
+South Medical Center,South Medical Center,Maternal Care,2029,23,23
+South Medical Center,South Medical Center,Maternal Care,2030,24,23
+South Medical Center,South Medical Center,Maternal Care,2031,24,24
+South Medical Center,South Medical Center,Maternal Care,2032,25,24
+South Medical Center,South Medical Center,Maternal Care,2033,25,25
+South Medical Center,South Medical Center,Maternal Care,2034,26,26
+South Medical Center,South Medical Center,Maternal Care,2035,26,26
+South Medical Center,South Medical Center,Maternal Care,2036,27,27
+South Medical Center,South Medical Center,Maternal Care,2037,28,27
+South Medical Center,South Medical Center,Maternal Care,2038,28,28
+South Medical Center,South Medical Center,Maternal Care,2039,29,29
+South Medical Center,South Medical Center,Maternal Care,2040,30,29
+South Medical Center,South Medical Center,Mental Health,2025,21,21
+South Medical Center,South Medical Center,Mental Health,2026,22,22
+South Medical Center,South Medical Center,Mental Health,2027,22,22
+South Medical Center,South Medical Center,Mental Health,2028,23,23
+South Medical Center,South Medical Center,Mental Health,2029,24,23
+South Medical Center,South Medical Center,Mental Health,2030,24,24
+South Medical Center,South Medical Center,Mental Health,2031,25,25
+South Medical Center,South Medical Center,Mental Health,2032,26,25
+South Medical Center,South Medical Center,Mental Health,2033,26,26
+South Medical Center,South Medical Center,Mental Health,2034,27,27
+South Medical Center,South Medical Center,Mental Health,2035,28,28
+South Medical Center,South Medical Center,Mental Health,2036,29,29
+South Medical Center,South Medical Center,Mental Health,2037,30,29
+South Medical Center,South Medical Center,Mental Health,2038,30,30
+South Medical Center,South Medical Center,Mental Health,2039,31,31
+South Medical Center,South Medical Center,Mental Health,2040,32,32
+South Medical Center,South Medical Center,Child Health,2025,16,16
+South Medical Center,South Medical Center,Child Health,2026,16,16
+South Medical Center,South Medical Center,Child Health,2027,17,17
+South Medical Center,South Medical Center,Child Health,2028,17,17
+South Medical Center,South Medical Center,Child Health,2029,17,17
+South Medical Center,South Medical Center,Child Health,2030,18,17
+South Medical Center,South Medical Center,Child Health,2031,18,18
+South Medical Center,South Medical Center,Child Health,2032,18,18
+South Medical Center,South Medical Center,Child Health,2033,18,18
+South Medical Center,South Medical Center,Child Health,2034,19,19
+South Medical Center,South Medical Center,Child Health,2035,19,19
+South Medical Center,South Medical Center,Child Health,2036,20,19
+South Medical Center,South Medical Center,Child Health,2037,20,20
+South Medical Center,South Medical Center,Child Health,2038,20,20
+South Medical Center,South Medical Center,Child Health,2039,21,20
+South Medical Center,South Medical Center,Child Health,2040,21,21

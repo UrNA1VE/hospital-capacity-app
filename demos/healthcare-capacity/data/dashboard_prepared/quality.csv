@@ -1,0 +1,5 @@
+check_name,issue_count,severity,status
+visits_missing_required_fields,0,error,pass
+visits_with_invalid_date_range,0,error,pass
+capacity_missing_or_nonpositive,0,warning,pass
+utilization_rows_without_capacity,0,warning,pass

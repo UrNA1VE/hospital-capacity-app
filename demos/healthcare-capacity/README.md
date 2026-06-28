@@ -50,6 +50,12 @@ Generate synthetic CSV files:
 python etl/synthetic_data_generator/generate_fake_data.py
 ```
 
+Prepare dashboard-ready summary tables:
+
+```sh
+python scripts/prepare_dashboard_data.py
+```
+
 Run the Streamlit dashboard draft:
 
 ```sh
