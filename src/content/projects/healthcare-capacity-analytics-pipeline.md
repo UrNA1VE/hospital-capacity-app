@@ -1,6 +1,6 @@
 ---
 title: "Healthcare Capacity Analytics Pipeline"
-summary: "Placeholder for a synthetic capacity analytics pipeline with staged ingestion, validation, curated SQL tables, and dashboard-ready outputs."
+summary: "Beginning Azure-style demo structure for a synthetic hospital capacity analytics pipeline with Python generation, dbt SQL models, validation, and dashboard outputs."
 focusAreas:
   - Python ETL
   - Azure SQL
@@ -11,35 +11,39 @@ azureServices:
   - Azure Functions
   - Azure SQL Database
   - Azure Static Web Apps
-status: "Placeholder"
+status: "Beginning draft"
 ---
 
 ## Objective
-Design a synthetic healthcare capacity analytics workflow that demonstrates ingestion, transformation, validation, and reporting patterns without using patient data, internal SHA data, or private operational numbers.
+Design a synthetic healthcare capacity analytics workflow that demonstrates ingestion, transformation, validation, and reporting patterns without using patient data, internal SHA data, or private operational numbers. The current draft has been imported into `demos/healthcare-capacity/` as the starting Azure-style project structure.
 
 ## Synthetic data design
-Future demo files will use generated facility, unit, date, capacity, occupancy, and staffing-like fields. Values will be synthetic and intentionally separated from real systems, identifiers, and table names.
+The beginning draft includes synthetic CSV samples for facilities, services, capacity, and visits. Values use generated IDs, fake facility names, and generic service labels so the workflow can be developed publicly.
 
 ## Azure services used
-Planned services include Azure Blob Storage for safe sample files, Azure Function Python ETL for scheduled processing, Azure SQL Database for curated tables, and Azure Static Web Apps for public documentation.
+Planned services include Azure Blob Storage for safe sample files, Azure Function Python ETL for scheduled processing, Azure SQL Database for curated tables, and Azure Static Web Apps for public documentation. Placeholder notes now live under `demos/healthcare-capacity/azure/`.
 
 ## Pipeline architecture
-Raw synthetic files will land in Blob Storage, trigger or feed a Python ETL step, load validated records into Azure SQL, and publish dashboard-ready aggregate outputs.
+The current local draft is synthetic CSVs to PostgreSQL raw tables, dbt transformations, and Streamlit dashboard outputs. The planned Azure version is synthetic Blob Storage files to Python Azure Function validation/loading, Azure SQL models, and public dashboard/report outputs.
 
 ## Transformation logic
-Placeholder transformations include date normalization, unit grouping, capacity utilization calculations, rolling summaries, and dimensional lookups using public-safe names.
+Current draft transformations include dbt staging models, hourly calendar expansion, visit-hour expansion, enriched hourly snapshots, hourly census, daily utilization, service capacity pressure, and data quality summaries.
 
 ## Validation checks
-Planned checks include schema conformance, missing-value thresholds, valid date ranges, nonnegative capacity measures, duplicate detection, and aggregate reconciliation.
+Current and planned checks include schema conformance, required fields, valid visit date ranges, nonnegative capacity measures, dbt tests, duplicate detection, and dashboard-facing quality summaries.
 
 ## Output tables / reports
-Future outputs will include curated fact and dimension tables, QA summaries, and reporting views with synthetic labels only.
+Current draft outputs include dbt mart models such as hourly census, daily utilization, service capacity pressure, and data quality summary tables. Azure SQL adaptation is the next step.
 
 ## Dashboard or visual output
-Placeholder visuals will show trend lines, utilization bands, capacity summaries, and exception counts generated from synthetic data.
+The imported dashboard draft is under `demos/healthcare-capacity/dashboard/streamlit/`. Future public visuals should be exported from synthetic data only.
+
+Local interactive dashboard:
+
+<p><a class="button" href="http://localhost:8501" target="_blank" rel="noreferrer">Open Streamlit dashboard</a></p>
 
 ## Code repository / files
-Future code will live under `demos/healthcare-capacity/` with ETL scripts, SQL examples, and sample data generation notes.
+Code now lives under `demos/healthcare-capacity/`, including `etl/`, `sql/`, `dashboard/`, `data/synthetic/`, `tests/`, `config/`, `ci/`, `docs/`, and `azure/`.
 
 ## Future improvements
-Add automated test fixtures, CI validation, deployment notes, dashboard screenshots, and cost-monitoring documentation.
+Convert local PostgreSQL/dbt assumptions toward Azure SQL, shape the Python loader into an Azure Function ETL module, add Blob Storage conventions, export synthetic dashboard screenshots, and add deployment notes.
