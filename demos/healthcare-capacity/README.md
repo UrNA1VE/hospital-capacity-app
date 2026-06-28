@@ -6,13 +6,7 @@ This project is a public-safe technical demo. It currently combines a Python syn
 
 ## Current status
 
-Draft imported from:
-
-```text
-/Users/qiankangwang/Desktop/python/BedNeedsAnalysis/hospital-capacity-analytics
-```
-
-The original draft is preserved as source material under `docs/original-draft-readme.md`, and its sanitized migration plan is under `docs/sanitized-migration-plan.md`.
+This project is under active development. The original draft is preserved as source material under `docs/original-draft-readme.md`, and its sanitized migration plan is under `docs/sanitized-migration-plan.md`.
 
 ## Data safety boundary
 

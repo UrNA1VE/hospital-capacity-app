@@ -16,8 +16,13 @@ const projects = [
       "Data quality checks",
       "Streamlit dashboard",
     ],
-    workHref: `${repoBase}/demos/healthcare-capacity/README.md`,
-    codeHref: `${repoBase}/demos/healthcare-capacity`,
+    links: [
+      {
+        label: "Dashboard",
+        href: `${repoBase}/demos/healthcare-capacity/dashboard/streamlit/streamlit_app.py`,
+        variant: "primary",
+      },
+    ],
   },
   {
     number: "2",
@@ -31,8 +36,18 @@ const projects = [
       "Model diagnostics",
       "R Markdown",
     ],
-    workHref: `${repoBase}/demos/graduate-statistics/README.md`,
-    codeHref: `${repoBase}/demos/graduate-statistics`,
+    links: [
+      {
+        label: "Bayesian Analysis",
+        href: "https://github.com/UrNA1VE/Bayesian-Zero-Inflated-Generalized-Poisson-Model",
+        variant: "primary",
+      },
+      {
+        label: "Statistical Learning",
+        href: "https://github.com/UrNA1VE/Vehicle-Insurance-Prediction-MachineLearning",
+        variant: "secondary",
+      },
+    ],
   },
   {
     number: "3",
@@ -47,8 +62,13 @@ const projects = [
       "EM algorithm",
       "Goodness-of-fit testing",
     ],
-    workHref: `${repoBase}/demos/gcr-computational-analysis/README.md`,
-    codeHref: `${repoBase}/demos/gcr-computational-analysis`,
+    links: [
+      {
+        label: "GCR-Project",
+        href: `${repoBase}/demos/gcr-computational-analysis/README.md`,
+        variant: "primary",
+      },
+    ],
   },
 ];
 ---
@@ -87,8 +107,18 @@ const projects = [
               {project.skills.map((skill) => <span class="chip">{skill}</span>)}
             </div>
             <div class="link-row">
-              <a class="project-link" href={project.workHref} target="_blank" rel="noreferrer">Work</a>
-              <a class="project-link secondary" href={project.codeHref} target="_blank" rel="noreferrer">Code</a>
+              {
+                project.links.map((link) => (
+                  <a
+                    class:list={["project-link", { secondary: link.variant === "secondary" }]}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {link.label}
+                  </a>
+                ))
+              }
             </div>
           </article>
         ))
@@ -99,4 +129,5 @@ const projects = [
       computational implementation contribution.
     </p>
   </section>
+
 </BaseLayout>
