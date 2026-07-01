@@ -5,12 +5,18 @@ dist/
 
 # dependencies
 node_modules/
+.venv/
 
 # logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+logs/
+
+# python
+__pycache__/
+*.pyc
 
 
 # environment variables

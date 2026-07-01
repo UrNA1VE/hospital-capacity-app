@@ -45,6 +45,10 @@ def _hourly_snapshots(
     for _, row in visits.iterrows():
         admission_ts = pd.Timestamp(row["admission_ts"])
         discharge_ts = pd.Timestamp(row["discharge_ts"])
+        if pd.isna(discharge_ts):
+            if end is None:
+                continue
+            discharge_ts = end
         snapshot_start = max(admission_ts, start) if start is not None else admission_ts
         snapshot_end = min(discharge_ts, end) if end is not None else discharge_ts
         first_hour = snapshot_start.ceil("h")
@@ -86,7 +90,7 @@ def read_sample_sources() -> dict[str, pd.DataFrame]:
 
 def _reporting_window(capacity: pd.DataFrame) -> tuple[pd.Timestamp, pd.Timestamp]:
     start = pd.Timestamp(capacity["capacity_date"].min())
-    end = pd.Timestamp(capacity["capacity_date"].max()) + pd.Timedelta(days=1)
+    end = pd.Timestamp(capacity["capacity_date"].max()) + pd.to_timedelta(1, unit="D")
     return start, end
 
 
@@ -95,12 +99,13 @@ def _visits_overlapping_window(
     start: pd.Timestamp,
     end: pd.Timestamp,
 ) -> pd.DataFrame:
+    effective_discharge = visits["discharge_ts"].fillna(end)
     clipped = visits[
-        (visits["discharge_ts"] > start)
+        (effective_discharge > start)
         & (visits["admission_ts"] < end)
     ].copy()
     clipped["admission_ts"] = clipped["admission_ts"].clip(lower=start)
-    clipped["discharge_ts"] = clipped["discharge_ts"].clip(upper=end)
+    clipped["discharge_ts"] = effective_discharge.loc[clipped.index].clip(upper=end)
     return clipped.reset_index(drop=True)
 
 

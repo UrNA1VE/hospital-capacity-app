@@ -89,7 +89,6 @@ CSV files. This makes the portfolio dashboard usable before PostgreSQL is set up
 
    ```bash
    python data_generator/generate_fake_data.py
-   python data_generator/load_to_postgres.py
    ```
 
 4. Configure and run dbt:

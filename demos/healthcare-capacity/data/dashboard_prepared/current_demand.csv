@@ -1,31 +1,31 @@
 facility_filter,facility_name,service_name,demand,funded_capacity,variance
-All,North General Hospital,General Medicine,52,42,-10
-All,Central Community Hospital,General Medicine,41,33,-8
-All,North General Hospital,General Surgery,35,30,-5
-All,South Medical Center,General Medicine,35,27,-8
-All,North General Hospital,Maternal Care,31,20,-11
+All,North General Hospital,General Medicine,46,42,-4
+All,Central Community Hospital,General Medicine,38,33,-5
+All,South Medical Center,General Medicine,36,27,-9
+All,North General Hospital,General Surgery,32,30,-2
+All,North General Hospital,Maternal Care,32,20,-12
+All,North General Hospital,Mental Health,31,16,-15
 All,Central Community Hospital,General Surgery,27,24,-3
-All,North General Hospital,Mental Health,27,16,-11
 All,Central Community Hospital,Maternal Care,26,16,-10
-All,North General Hospital,Child Health,24,18,-6
-All,South Medical Center,General Surgery,24,20,-4
-All,South Medical Center,Maternal Care,21,13,-8
-All,South Medical Center,Mental Health,21,10,-11
-All,Central Community Hospital,Mental Health,18,12,-6
-All,South Medical Center,Child Health,16,12,-4
-All,Central Community Hospital,Child Health,15,14,-1
-Central Community Hospital,Central Community Hospital,General Medicine,41,33,-8
+All,North General Hospital,Child Health,26,18,-8
+All,South Medical Center,Maternal Care,22,13,-9
+All,South Medical Center,General Surgery,20,20,0
+All,Central Community Hospital,Mental Health,19,12,-7
+All,South Medical Center,Child Health,19,12,-7
+All,South Medical Center,Mental Health,17,10,-7
+All,Central Community Hospital,Child Health,16,14,-2
+Central Community Hospital,Central Community Hospital,General Medicine,38,33,-5
 Central Community Hospital,Central Community Hospital,General Surgery,27,24,-3
 Central Community Hospital,Central Community Hospital,Maternal Care,26,16,-10
-Central Community Hospital,Central Community Hospital,Mental Health,18,12,-6
-Central Community Hospital,Central Community Hospital,Child Health,15,14,-1
-North General Hospital,North General Hospital,General Medicine,52,42,-10
-North General Hospital,North General Hospital,General Surgery,35,30,-5
-North General Hospital,North General Hospital,Maternal Care,31,20,-11
-North General Hospital,North General Hospital,Mental Health,27,16,-11
-North General Hospital,North General Hospital,Child Health,24,18,-6
-South Medical Center,South Medical Center,General Medicine,35,27,-8
-South Medical Center,South Medical Center,General Surgery,24,20,-4
-South Medical Center,South Medical Center,Maternal Care,21,13,-8
-South Medical Center,South Medical Center,Mental Health,21,10,-11
-South Medical Center,South Medical Center,Child Health,16,12,-4
+Central Community Hospital,Central Community Hospital,Mental Health,19,12,-7
+Central Community Hospital,Central Community Hospital,Child Health,16,14,-2
+North General Hospital,North General Hospital,General Medicine,46,42,-4
+North General Hospital,North General Hospital,General Surgery,32,30,-2
+North General Hospital,North General Hospital,Maternal Care,32,20,-12
+North General Hospital,North General Hospital,Mental Health,31,16,-15
+North General Hospital,North General Hospital,Child Health,26,18,-8
+South Medical Center,South Medical Center,General Medicine,36,27,-9
+South Medical Center,South Medical Center,Maternal Care,22,13,-9
+South Medical Center,South Medical Center,General Surgery,20,20,0
+South Medical Center,South Medical Center,Child Health,19,12,-7
+South Medical Center,South Medical Center,Mental Health,17,10,-7

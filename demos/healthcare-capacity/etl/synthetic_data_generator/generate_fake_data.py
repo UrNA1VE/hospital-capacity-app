@@ -358,6 +358,7 @@ def generate_visits(config: GeneratorConfig, capacity: pd.DataFrame) -> pd.DataF
         if discharge <= start:
             continue
         length_days = max((discharge - admission).total_seconds() / 86_400, 1 / 24)
+        discharge_value = pd.NaT if discharge > end else discharge.floor("min")
         alclos = 0.0
         if length_days > elos_days and rng.random() < min(0.45, 0.08 + (age >= 70) * 0.14):
             alclos = min(length_days - elos_days, float(rng.gamma(shape=1.6, scale=1.4)))
@@ -371,7 +372,7 @@ def generate_visits(config: GeneratorConfig, capacity: pd.DataFrame) -> pd.DataF
                 "age": age,
                 "gender": gender,
                 "admission_ts": admission.floor("min"),
-                "discharge_ts": discharge.floor("min"),
+                "discharge_ts": discharge_value,
                 "admission_type": str(rng.choice(["Emergency", "Urgent", "Elective"], p=[0.55, 0.25, 0.20])),
                 "alclos": round(alclos, 2),
                 "elos": round(elos_days, 2),
@@ -421,19 +422,24 @@ def generate_unit_changes(config: GeneratorConfig, visits: pd.DataFrame, units: 
         admission_type = str(visit["admission_type"])
         admission_ts = pd.Timestamp(visit["admission_ts"])
         discharge_ts = pd.Timestamp(visit["discharge_ts"])
+        if pd.isna(discharge_ts):
+            discharge_ts = pd.Timestamp(config.start_date) + timedelta(days=config.days)
         stay_hours = max((discharge_ts - admission_ts).total_seconds() / 3600, 1)
         if stay_hours < 18:
-            event_count = 1
+            event_count = int(rng.choice([1, 2], p=[0.88, 0.12]))
         elif stay_hours < 72:
-            event_count = int(rng.choice([1, 2], p=[0.82, 0.18]))
+            event_count = int(rng.choice([1, 2, 3], p=[0.55, 0.35, 0.10]))
         else:
-            event_count = int(rng.choice([1, 2, 3], p=[0.70, 0.24, 0.06]))
+            event_count = int(rng.choice([1, 2, 3, 4], p=[0.35, 0.40, 0.20, 0.05]))
 
         event_times = [admission_ts]
         if event_count > 1:
-            latest_transfer_hour = max(int(stay_hours) - 4, 8)
-            transfer_hours = sorted(rng.choice(np.arange(6, latest_transfer_hour + 1), size=event_count - 1, replace=False))
-            event_times += [admission_ts + timedelta(hours=int(hour)) for hour in transfer_hours]
+            latest_transfer_hour = int(stay_hours) - 1
+            if latest_transfer_hour >= 6:
+                available_hours = np.arange(6, latest_transfer_hour + 1)
+                transfer_count = min(event_count - 1, len(available_hours))
+                transfer_hours = sorted(rng.choice(available_hours, size=transfer_count, replace=False))
+                event_times += [admission_ts + timedelta(hours=int(hour)) for hour in transfer_hours]
 
         for sequence, event_ts in enumerate(event_times, start=1):
             is_first_location = sequence == 1
@@ -461,11 +467,165 @@ def generate_unit_changes(config: GeneratorConfig, visits: pd.DataFrame, units: 
     return pd.DataFrame(rows)
 
 
+def build_patients_table(visits: pd.DataFrame, facilities: pd.DataFrame) -> pd.DataFrame:
+    first_visits = visits.sort_values("admission_ts").drop_duplicates("patient_id", keep="first")
+    patients = first_visits[["patient_id", "age", "gender", "facility_id"]].merge(
+        facilities[["facility_id", "region"]],
+        on="facility_id",
+        how="left",
+    )
+    return patients[["patient_id", "age", "gender", "region"]].reset_index(drop=True)
+
+
+def build_admission_chart(visits: pd.DataFrame, unit_changes: pd.DataFrame) -> pd.DataFrame:
+    first_units = (
+        unit_changes.sort_values(["visit_id", "event_ts", "unit_change_id"])
+        .drop_duplicates("visit_id", keep="first")
+        [["visit_id", "unit_id"]]
+    )
+    admission_chart = (
+        visits[
+            [
+                "visit_id",
+                "patient_id",
+                "facility_id",
+                "service_id",
+                "diagnosis_code",
+                "admission_ts",
+                "admission_type",
+            ]
+        ]
+        .merge(first_units, on="visit_id", how="left")
+        .rename(
+            columns={
+                "service_id": "admitted_service_id",
+                "diagnosis_code": "admitted_diagnosis_code",
+                "unit_id": "admitted_unit_id",
+            }
+        )
+    )
+    admission_chart["visit_id"] = admission_chart["visit_id"].str.replace("VIS-", "ENC-", regex=False)
+    return admission_chart[
+        [
+            "visit_id",
+            "patient_id",
+            "facility_id",
+            "admitted_unit_id",
+            "admitted_service_id",
+            "admitted_diagnosis_code",
+            "admission_ts",
+            "admission_type",
+        ]
+    ].sort_values("admission_ts").reset_index(drop=True)
+
+
+def build_patient_events(
+    config: GeneratorConfig,
+    visits: pd.DataFrame,
+    unit_changes: pd.DataFrame,
+    diagnoses: pd.DataFrame,
+) -> pd.DataFrame:
+    rng = np.random.default_rng(config.seed + 4)
+    events: list[dict[str, object]] = []
+    diagnoses_by_service = {service_id: frame for service_id, frame in diagnoses.groupby("service_id")}
+    service_ids = [item["service_id"] for item in SERVICES]
+
+    for _, visit in visits.sort_values("admission_ts").iterrows():
+        visit_id = str(visit["visit_id"]).replace("VIS-", "ENC-")
+        patient_id = str(visit["patient_id"])
+        facility_id = str(visit["facility_id"])
+        service_id = str(visit["service_id"])
+        admission_ts = pd.Timestamp(visit["admission_ts"])
+        discharge_ts = pd.Timestamp(visit["discharge_ts"])
+        if pd.isna(discharge_ts):
+            discharge_ts = pd.NaT
+
+        visit_units = unit_changes[unit_changes["visit_id"] == visit["visit_id"]].sort_values("event_ts")
+        for _, unit_change in visit_units.iloc[1:].iterrows():
+            events.append(
+                {
+                    "event_id": f"EVT-{len(events) + 1:08d}",
+                    "visit_id": visit_id,
+                    "patient_id": patient_id,
+                    "event_ts": pd.Timestamp(unit_change["event_ts"]).floor("min"),
+                    "type": "location",
+                    "value": unit_change["unit_id"],
+                    "facility_id": facility_id,
+                }
+            )
+
+        effective_end = discharge_ts if pd.notna(discharge_ts) else pd.Timestamp(config.start_date) + timedelta(days=config.days)
+        update_window_hours = int((effective_end - admission_ts).total_seconds() / 3600) - 1
+        final_service_id = service_id
+        if update_window_hours >= 10 and rng.random() < 0.22:
+            service_change_hour = int(rng.integers(4, min(update_window_hours - 2, 36) + 1))
+            service_candidates = [candidate for candidate in service_ids if candidate != service_id]
+            final_service_id = str(rng.choice(service_candidates))
+            events.append(
+                {
+                    "event_id": f"EVT-{len(events) + 1:08d}",
+                    "visit_id": visit_id,
+                    "patient_id": patient_id,
+                    "event_ts": admission_ts + timedelta(hours=service_change_hour),
+                    "type": "service",
+                    "value": final_service_id,
+                    "facility_id": facility_id,
+                }
+            )
+            candidates = diagnoses_by_service[final_service_id]
+            updated_diagnosis = str(candidates.iloc[int(rng.integers(0, len(candidates)))]["diagnosis_code"])
+            events.append(
+                {
+                    "event_id": f"EVT-{len(events) + 1:08d}",
+                    "visit_id": visit_id,
+                    "patient_id": patient_id,
+                    "event_ts": admission_ts + timedelta(hours=service_change_hour + 1),
+                    "type": "diagnosis",
+                    "value": updated_diagnosis,
+                    "facility_id": facility_id,
+                }
+            )
+        elif update_window_hours >= 6 and rng.random() < 0.28:
+            candidates = diagnoses_by_service[final_service_id]
+            updated_diagnosis = str(candidates.iloc[int(rng.integers(0, len(candidates)))]["diagnosis_code"])
+            events.append(
+                {
+                    "event_id": f"EVT-{len(events) + 1:08d}",
+                    "visit_id": visit_id,
+                    "patient_id": patient_id,
+                    "event_ts": admission_ts + timedelta(hours=int(rng.integers(6, min(update_window_hours, 48) + 1))),
+                    "type": "diagnosis",
+                    "value": updated_diagnosis,
+                    "facility_id": facility_id,
+                }
+            )
+
+        if pd.notna(discharge_ts):
+            events.append(
+                {
+                    "event_id": f"EVT-{len(events) + 1:08d}",
+                    "visit_id": visit_id,
+                    "patient_id": patient_id,
+                    "event_ts": discharge_ts,
+                    "type": "discharge",
+                    "value": "discharged",
+                    "facility_id": facility_id,
+                }
+            )
+
+    event_frame = pd.DataFrame(events).sort_values(["visit_id", "event_ts", "event_id"]).reset_index(drop=True)
+    event_frame["event_id"] = [f"EVT-{index:08d}" for index in range(1, len(event_frame) + 1)]
+    return event_frame
+
+
 def generate_all(config: GeneratorConfig) -> dict[str, pd.DataFrame]:
     facilities, services, units, diagnoses, population_growth = build_reference_tables(config)
     capacity = generate_capacity(config)
     visits = generate_visits(config, capacity)
     unit_changes = generate_unit_changes(config, visits, units)
+    patients = build_patients_table(visits, facilities)
+    admission_chart = build_admission_chart(visits, unit_changes)
+    patient_events = build_patient_events(config, visits, unit_changes, diagnoses)
     return {
         "facilities": facilities,
         "services": services,
@@ -473,8 +633,9 @@ def generate_all(config: GeneratorConfig) -> dict[str, pd.DataFrame]:
         "diagnoses": diagnoses,
         "population_growth": population_growth,
         "capacity": capacity,
-        "visits": visits,
-        "unit_changes": unit_changes,
+        "patients": patients,
+        "admission_chart": admission_chart,
+        "patient_events": patient_events,
     }
 
 
