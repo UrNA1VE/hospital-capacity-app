@@ -1,0 +1,31 @@
+facility_filter,facility_name,service_name,planned_beds,average_census,peak_census
+All,Central Community Hospital,General Medicine,33,26.9,39
+All,Central Community Hospital,General Surgery,24,21.0,30
+All,Central Community Hospital,Maternal Care,16,20.3,29
+All,Central Community Hospital,Child Health,14,11.3,19
+All,Central Community Hospital,Mental Health,12,14.4,21
+All,North General Hospital,General Medicine,42,34.2,48
+All,North General Hospital,General Surgery,30,27.1,35
+All,North General Hospital,Maternal Care,20,23.3,35
+All,North General Hospital,Child Health,18,18.1,28
+All,North General Hospital,Mental Health,16,20.6,31
+All,South Medical Center,General Medicine,27,24.0,36
+All,South Medical Center,General Surgery,20,15.1,23
+All,South Medical Center,Maternal Care,13,16.8,25
+All,South Medical Center,Child Health,12,12.0,21
+All,South Medical Center,Mental Health,10,11.8,18
+Central Community Hospital,Central Community Hospital,General Medicine,33,26.9,39
+Central Community Hospital,Central Community Hospital,General Surgery,24,21.0,30
+Central Community Hospital,Central Community Hospital,Maternal Care,16,20.3,29
+Central Community Hospital,Central Community Hospital,Child Health,14,11.3,19
+Central Community Hospital,Central Community Hospital,Mental Health,12,14.4,21
+North General Hospital,North General Hospital,General Medicine,42,34.2,48
+North General Hospital,North General Hospital,General Surgery,30,27.1,35
+North General Hospital,North General Hospital,Maternal Care,20,23.3,35
+North General Hospital,North General Hospital,Child Health,18,18.1,28
+North General Hospital,North General Hospital,Mental Health,16,20.6,31
+South Medical Center,South Medical Center,General Medicine,27,24.0,36
+South Medical Center,South Medical Center,General Surgery,20,15.1,23
+South Medical Center,South Medical Center,Maternal Care,13,16.8,25
+South Medical Center,South Medical Center,Child Health,12,12.0,21
+South Medical Center,South Medical Center,Mental Health,10,11.8,18
