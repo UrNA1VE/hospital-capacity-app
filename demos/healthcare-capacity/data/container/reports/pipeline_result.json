@@ -1,9 +1,0 @@
-{
-  "seed": 42,
-  "raw_dir": "/Users/qiankangwang/Desktop/personal-portfolio/demos/healthcare-capacity/data/container/raw",
-  "report_dir": "/Users/qiankangwang/Desktop/personal-portfolio/demos/healthcare-capacity/data/container/reports",
-  "etl_prepared_dir": "/Users/qiankangwang/Desktop/personal-portfolio/demos/healthcare-capacity/data/etl_prepared",
-  "prepared_dir": "/Users/qiankangwang/Desktop/personal-portfolio/demos/healthcare-capacity/data/dashboard_prepared",
-  "validation_status": "pass",
-  "validation_issue_count": 0
-}

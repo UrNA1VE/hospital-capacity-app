@@ -1,8 +1,8 @@
-# Azure Data Project Platform
+# Personal Portfolio
 
-This repository contains an Astro public website for showcasing deployed technical data projects. The site is designed as an Azure-hosted technical project platform, not a resume-style portfolio.
+This repository contains the Astro public website for Qiankang Wang's personal project portfolio.
 
-The platform focuses on SQL, Python/R, Azure data pipelines, dashboards, data quality validation, analytics engineering, and reproducible methods.
+Project implementations live in their own repositories. This site links out to those apps, reports, and codebases instead of carrying their implementation files inside the website repo.
 
 ## Data Safety
 
@@ -24,29 +24,19 @@ Do not add:
 - Astro
 - TypeScript-flavored Astro content collections
 - Static HTML/CSS output
-- Planned Azure Static Web Apps hosting
-- Planned Azure Blob Storage sample assets
-- Planned Azure Function Python ETL demos
-- Planned Azure SQL Database reporting models
+- Azure Static Web Apps hosting
 
 ## Project Structure
 
 ```text
 /
-├── demos/
-│   ├── data-quality/
-│   ├── graduate-statistics/
-│   ├── healthcare-capacity/
-│   ├── recruitment-analytics/
-│   └── sql-optimization/
 ├── public/
-│   └── images/
+│   └── favicon.svg
 ├── src/
 │   ├── content/
 │   │   └── projects/
 │   ├── layouts/
 │   └── pages/
-│       └── projects/
 └── package.json
 ```
 
@@ -90,7 +80,7 @@ Use these settings when configuring Azure Static Web Apps:
 
 ## Planned Project Areas
 
-- Healthcare Capacity Analytics Pipeline
+- Hospital Capacity Analytics App
 - Recruitment Process Analytics Dashboard
 - SQL Reporting Optimization Demo
 - Data Quality Validation Framework
@@ -106,5 +96,5 @@ Each project page follows this technical structure:
 - Validation checks
 - Output tables / reports
 - Dashboard or visual output
-- Code repository / files
+- Code repository / app link
 - Future improvements

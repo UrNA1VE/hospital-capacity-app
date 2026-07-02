@@ -18,6 +18,9 @@ logs/
 __pycache__/
 *.pyc
 
+# standalone app repos kept outside the portfolio site
+demos/healthcare-capacity/
+
 
 # environment variables
 .env
