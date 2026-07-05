@@ -1,10 +1,8 @@
-# Hospital Capacity App
+# Healthcare Capacity Analytics Pipeline
 
-Standalone synthetic hospital capacity analytics app.
+Synthetic hospital capacity analytics demo.
 
-This repository contains the app implementation only. The Astro portfolio website lives separately in [`UrNA1VE/personal-portfolio`](https://github.com/UrNA1VE/personal-portfolio) and links to this project.
-
-This project is a public-safe technical demo. It combines a Python synthetic data generator, container-local raw data, validation reports, DuckDB/dbt-style transformations, dashboard-prepared outputs, and a Streamlit dashboard. The containerized version does not use persistent cloud storage; data edits are intended for demo sessions only.
+This project is a public-safe technical demo. It combines a Python synthetic data generator, container-local raw data, validation reports, derived encounter tables, dashboard-prepared outputs, and a Streamlit dashboard. The local version does not use persistent cloud storage; data edits are intended for demo sessions only.
 
 The raw generated layer is event-level. It stores patient demographics in `patients.csv` and hospital activity in `patient_events.csv`; visit-level tables are derived during ETL rather than stored as raw source files.
 
@@ -18,17 +16,13 @@ All demo data must remain synthetic or explicitly public-safe.
 
 Do not add real SHA data, patient data, internal screenshots, internal table names, private operational numbers, credentials, local network paths, or confidential documents.
 
-## Azure-style layout
+## Project layout
 
 ```text
-/
-├── azure/
-│   ├── container-apps/        Container deployment notes
-│   ├── functions/python-etl/  Future serverless ETL notes
-│   ├── sql-database/          Planned Azure SQL schema/model notes
-│   └── static-web-apps/       Historical Static Web Apps notes
+hospital-capacity-app/
+├── ci/                        Draft CI workflow reference
 ├── config/                    Safe environment/profile examples only
-├── dashboard/streamlit/       Current dashboard app
+├── dashboard/streamlit/       Current dashboard draft
 ├── data/synthetic/            Synthetic CSV samples
 ├── data/container/            Container-local raw, backup, and report data
 ├── data/etl_prepared/         Derived visit-level ETL output
@@ -38,7 +32,6 @@ Do not add real SHA data, patient data, internal screenshots, internal table nam
 ├── etl/pipeline/              Local ETL pipeline runners
 ├── etl/synthetic_data_generator/
 ├── notebooks/
-├── sql/dbt_hospital_capacity/
 └── tests/python/
 ```
 
@@ -74,10 +67,10 @@ population_growth.csv
 
 `admission_chart.csv` stores one admission/start-state row per visit, including admitted unit, service, diagnosis, facility, admission time, and admission type. `patient_events.csv` stores updates after admission with `type` values of `location`, `service`, `diagnosis`, and `discharge`. Open inpatient encounters simply do not have a discharge event. The ETL derives analytical `visits` from admission chart rows plus the latest service, diagnosis, location, and discharge events.
 
-Run the local container/DuckDB pipeline:
+Initialize the local demo dataset and rebuild the DuckDB/dashboard-prepared outputs:
 
 ```sh
-python etl/pipeline/run_container_pipeline.py
+python etl/pipeline/initialize_demo_dataset.py
 ```
 
 Each run clears the previous container-local raw/report files and overwrites `data/dashboard_prepared/` with the latest aggregated outputs to limit local storage use.
@@ -92,7 +85,7 @@ data/etl_prepared/
 Run the Streamlit dashboard draft:
 
 ```sh
-streamlit run dashboard/streamlit/streamlit_app.py
+streamlit run dashboard/streamlit/Home.py
 ```
 
 Run the same dashboard in a local container:
@@ -121,43 +114,103 @@ Run Python tests:
 pytest tests/python
 ```
 
-## Current dbt workflow
+## Pipeline workflow
 
-The dbt project is stored at:
+The local demo has two run modes:
 
-```text
-sql/dbt_hospital_capacity/
-```
-
-The draft currently targets PostgreSQL for local development. Azure SQL adaptation is planned in `azure/sql-database/README.md`.
-
-## Planned Azure workflow
+- `initialize_demo_dataset.py` performs a full demo refresh. It regenerates synthetic raw files, validates the source data, rebuilds derived encounter tables, and rewrites dashboard-ready outputs.
+- `incremental_run.py` simulates the next day of activity. It appends new raw rows to selected source tables, validates the incremental batch, then rebuilds the derived/dashboard tables from the full raw history.
 
 ```text
-Generate fake data or upload template-based CSVs
-  -> container-local raw data
-  -> data validation report
-  -> DuckDB/dbt-style transformations
-  -> dashboard_prepared aggregated outputs
-  -> Streamlit dashboard visuals
+Synthetic generator config
+  seed, start date, duration, ID counters
+        |
+        v
+Raw source layer
+  data/container/raw/
+  - patients.csv
+  - admission_chart.csv
+  - patient_events.csv
+  - capacity.csv
+  - facilities.csv
+  - services.csv
+  - units.csv
+  - diagnoses.csv
+  - population_growth.csv
+        |
+        v
+Data checks
+  data/container/reports/data_check_report.csv
+  - required columns
+  - unique visit IDs
+  - admission/discharge date logic
+  - capacity values
+  - facility/service/diagnosis references
+  - active open inpatient records
+        |
+        v
+Encounter ETL
+  data/etl_prepared/
+  - visits.csv
+
+  Derived in memory during ETL:
+  - unit_changes
+        |
+        v
+Dashboard marts
+  data/dashboard_prepared/
+  - daily.csv
+  - census.csv
+  - pressure.csv
+  - capacity.csv
+  - demand.csv
+  - current_demand.csv
+  - projection.csv
+  - savings.csv
+  - demographics.csv
+  - quality.csv
+  - facility_filters.csv
+        |
+        v
+Streamlit app
+  dashboard/streamlit/home.py
+  dashboard/streamlit/pages/
 ```
 
-For Azure deployment, the intended low-cost target is Azure Container Apps on the Consumption plan:
+### Incremental model
+
+The incremental model treats the raw event layer as the source of truth:
 
 ```text
-Container image
-  -> Azure Container Apps
-  -> External ingress on port 8501
-  -> min replicas = 0
-  -> max replicas = 1
+Current raw history
+        |
+        v
+Find latest simulated date and next IDs
+        |
+        v
+Generate one new simulated day
+        |
+        v
+Append only to raw source files
+  - patients.csv
+  - admission_chart.csv
+  - patient_events.csv
+  - capacity.csv
+        |
+        v
+Validate duplicate keys and overlap with existing raw rows
+        |
+        v
+Rebuild derived encounter/dashboard outputs
 ```
 
-This keeps the app session-oriented and avoids persistent storage costs. Set an Azure monthly budget alert, such as `$5`, in Cost Management; Azure budgets send alerts but do not hard-stop resources automatically.
+`visits.csv` is not maintained as an incremental source table. It is rebuilt from `admission_chart.csv` and `patient_events.csv` so the dashboard always reflects the complete event history, including late discharge events for existing active visits.
 
-## Next implementation steps
+### Data check layer
 
-1. Add template-based CSV upload next to the current fake-data generator.
-2. Deploy the Streamlit dashboard as an Azure Container Apps service.
-3. Tune cold-start behavior and container image size.
-4. Add clearer data contract documentation for accepted user uploads.
-5. Add dashboard screenshots generated only from synthetic data.
+The data check layer exists in two places:
+
+- `data/container/reports/data_check_report.csv` is written during the local pipeline run.
+- `data/dashboard_prepared/quality.csv` is the dashboard-facing copy used by the Data Quality page.
+
+The Streamlit home page shows a compact pipeline status summary. The full check details live in the **Data Quality** page and in the CSV reports above.

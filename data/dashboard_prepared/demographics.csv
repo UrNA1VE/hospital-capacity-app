@@ -1,241 +1,241 @@
 facility_filter,facility_name,region,service_name,gender,age_group,patient_days,visits
-All,Central Community Hospital,Central,Child Health,Female,0-17,126.7,69
-All,Central Community Hospital,Central,Child Health,Male,0-17,98.5,61
-All,Central Community Hospital,Central,Child Health,Female,18-44,18.3,6
-All,Central Community Hospital,Central,Child Health,Male,18-44,28.6,6
-All,Central Community Hospital,Central,Child Health,Female,45-69,25.5,6
-All,Central Community Hospital,Central,Child Health,Male,45-69,0.5,1
-All,Central Community Hospital,Central,Child Health,Female,70+,26.2,6
-All,Central Community Hospital,Central,Child Health,Male,70+,13.9,3
+All,Central Community Hospital,Central,Child Health,Female,0-17,136.3,74
+All,Central Community Hospital,Central,Child Health,Male,0-17,110.6,70
+All,Central Community Hospital,Central,Child Health,Female,18-44,20.3,7
+All,Central Community Hospital,Central,Child Health,Male,18-44,29.4,6
+All,Central Community Hospital,Central,Child Health,Female,45-69,27.9,7
+All,Central Community Hospital,Central,Child Health,Male,45-69,2.2,3
+All,Central Community Hospital,Central,Child Health,Female,70+,27.2,7
+All,Central Community Hospital,Central,Child Health,Male,70+,15.6,4
 All,Central Community Hospital,Central,General Medicine,Female,0-17,6.5,4
 All,Central Community Hospital,Central,General Medicine,Male,0-17,12.4,6
 All,Central Community Hospital,Central,General Medicine,Female,18-44,67.4,17
-All,Central Community Hospital,Central,General Medicine,Male,18-44,59.2,16
-All,Central Community Hospital,Central,General Medicine,Female,45-69,147.4,34
-All,Central Community Hospital,Central,General Medicine,Male,45-69,122.1,32
-All,Central Community Hospital,Central,General Medicine,Female,70+,221.0,49
-All,Central Community Hospital,Central,General Medicine,Male,70+,171.7,43
+All,Central Community Hospital,Central,General Medicine,Male,18-44,75.9,21
+All,Central Community Hospital,Central,General Medicine,Female,45-69,167.5,42
+All,Central Community Hospital,Central,General Medicine,Male,45-69,127.9,32
+All,Central Community Hospital,Central,General Medicine,Female,70+,244.9,57
+All,Central Community Hospital,Central,General Medicine,Male,70+,203.0,58
 All,Central Community Hospital,Central,General Surgery,Female,0-17,16.6,8
-All,Central Community Hospital,Central,General Surgery,Male,0-17,32.3,12
-All,Central Community Hospital,Central,General Surgery,Female,18-44,88.3,28
-All,Central Community Hospital,Central,General Surgery,Male,18-44,72.9,21
-All,Central Community Hospital,Central,General Surgery,Female,45-69,104.4,34
-All,Central Community Hospital,Central,General Surgery,Male,45-69,126.8,36
-All,Central Community Hospital,Central,General Surgery,Female,70+,91.2,32
-All,Central Community Hospital,Central,General Surgery,Male,70+,97.3,29
+All,Central Community Hospital,Central,General Surgery,Male,0-17,34.2,13
+All,Central Community Hospital,Central,General Surgery,Female,18-44,93.1,29
+All,Central Community Hospital,Central,General Surgery,Male,18-44,84.0,26
+All,Central Community Hospital,Central,General Surgery,Female,45-69,117.1,41
+All,Central Community Hospital,Central,General Surgery,Male,45-69,139.5,44
+All,Central Community Hospital,Central,General Surgery,Female,70+,96.9,37
+All,Central Community Hospital,Central,General Surgery,Male,70+,99.9,31
 All,Central Community Hospital,Central,Maternal Care,Female,0-17,9.6,5
-All,Central Community Hospital,Central,Maternal Care,Male,0-17,12.3,7
-All,Central Community Hospital,Central,Maternal Care,Female,18-44,435.8,196
-All,Central Community Hospital,Central,Maternal Care,Male,18-44,23.3,7
-All,Central Community Hospital,Central,Maternal Care,Female,45-69,55.8,20
-All,Central Community Hospital,Central,Maternal Care,Male,45-69,45.3,7
-All,Central Community Hospital,Central,Maternal Care,Female,70+,19.9,6
-All,Central Community Hospital,Central,Maternal Care,Male,70+,7.2,2
-All,Central Community Hospital,Central,Mental Health,Female,0-17,24.7,6
-All,Central Community Hospital,Central,Mental Health,Male,0-17,25.1,3
-All,Central Community Hospital,Central,Mental Health,Female,18-44,89.7,20
-All,Central Community Hospital,Central,Mental Health,Male,18-44,65.5,10
-All,Central Community Hospital,Central,Mental Health,Female,45-69,63.7,15
-All,Central Community Hospital,Central,Mental Health,Male,45-69,68.9,14
-All,Central Community Hospital,Central,Mental Health,Female,70+,49.1,8
-All,Central Community Hospital,Central,Mental Health,Male,70+,46.3,13
-All,North General Hospital,North,Child Health,Female,0-17,166.2,94
-All,North General Hospital,North,Child Health,Male,0-17,185.2,97
-All,North General Hospital,North,Child Health,Female,18-44,60.4,17
-All,North General Hospital,North,Child Health,Male,18-44,10.9,6
-All,North General Hospital,North,Child Health,Female,45-69,35.0,10
+All,Central Community Hospital,Central,Maternal Care,Male,0-17,13.8,7
+All,Central Community Hospital,Central,Maternal Care,Female,18-44,475.4,217
+All,Central Community Hospital,Central,Maternal Care,Male,18-44,24.3,7
+All,Central Community Hospital,Central,Maternal Care,Female,45-69,63.0,22
+All,Central Community Hospital,Central,Maternal Care,Male,45-69,45.4,7
+All,Central Community Hospital,Central,Maternal Care,Female,70+,22.0,7
+All,Central Community Hospital,Central,Maternal Care,Male,70+,10.0,4
+All,Central Community Hospital,Central,Mental Health,Female,0-17,29.7,6
+All,Central Community Hospital,Central,Mental Health,Male,0-17,26.0,3
+All,Central Community Hospital,Central,Mental Health,Female,18-44,104.1,25
+All,Central Community Hospital,Central,Mental Health,Male,18-44,65.9,10
+All,Central Community Hospital,Central,Mental Health,Female,45-69,79.4,20
+All,Central Community Hospital,Central,Mental Health,Male,45-69,79.5,19
+All,Central Community Hospital,Central,Mental Health,Female,70+,58.8,16
+All,Central Community Hospital,Central,Mental Health,Male,70+,49.7,13
+All,North General Hospital,North,Child Health,Female,0-17,171.9,97
+All,North General Hospital,North,Child Health,Male,0-17,226.9,137
+All,North General Hospital,North,Child Health,Female,18-44,68.2,21
+All,North General Hospital,North,Child Health,Male,18-44,12.0,7
+All,North General Hospital,North,Child Health,Female,45-69,39.8,13
 All,North General Hospital,North,Child Health,Male,45-69,20.8,4
-All,North General Hospital,North,Child Health,Female,70+,31.0,6
-All,North General Hospital,North,Child Health,Male,70+,34.2,8
+All,North General Hospital,North,Child Health,Female,70+,33.9,6
+All,North General Hospital,North,Child Health,Male,70+,35.0,8
 All,North General Hospital,North,General Medicine,Female,0-17,12.5,4
 All,North General Hospital,North,General Medicine,Male,0-17,21.2,7
-All,North General Hospital,North,General Medicine,Female,18-44,95.2,25
-All,North General Hospital,North,General Medicine,Male,18-44,41.1,15
-All,North General Hospital,North,General Medicine,Female,45-69,177.0,43
-All,North General Hospital,North,General Medicine,Male,45-69,223.1,52
-All,North General Hospital,North,General Medicine,Female,70+,230.2,61
-All,North General Hospital,North,General Medicine,Male,70+,225.9,50
-All,North General Hospital,North,General Surgery,Female,0-17,41.3,13
-All,North General Hospital,North,General Surgery,Male,0-17,16.8,7
-All,North General Hospital,North,General Surgery,Female,18-44,150.2,45
-All,North General Hospital,North,General Surgery,Male,18-44,58.2,19
-All,North General Hospital,North,General Surgery,Female,45-69,147.1,44
-All,North General Hospital,North,General Surgery,Male,45-69,160.3,49
-All,North General Hospital,North,General Surgery,Female,70+,132.2,41
-All,North General Hospital,North,General Surgery,Male,70+,106.2,34
+All,North General Hospital,North,General Medicine,Female,18-44,123.3,34
+All,North General Hospital,North,General Medicine,Male,18-44,53.3,19
+All,North General Hospital,North,General Medicine,Female,45-69,196.8,49
+All,North General Hospital,North,General Medicine,Male,45-69,247.0,61
+All,North General Hospital,North,General Medicine,Female,70+,251.2,69
+All,North General Hospital,North,General Medicine,Male,70+,252.1,60
+All,North General Hospital,North,General Surgery,Female,0-17,42.2,13
+All,North General Hospital,North,General Surgery,Male,0-17,25.2,12
+All,North General Hospital,North,General Surgery,Female,18-44,164.8,53
+All,North General Hospital,North,General Surgery,Male,18-44,68.1,24
+All,North General Hospital,North,General Surgery,Female,45-69,164.3,50
+All,North General Hospital,North,General Surgery,Male,45-69,175.0,54
+All,North General Hospital,North,General Surgery,Female,70+,139.4,42
+All,North General Hospital,North,General Surgery,Male,70+,127.7,47
 All,North General Hospital,North,Maternal Care,Female,0-17,20.6,8
-All,North General Hospital,North,Maternal Care,Male,0-17,8.4,6
-All,North General Hospital,North,Maternal Care,Female,18-44,463.6,219
+All,North General Hospital,North,Maternal Care,Male,0-17,10.3,6
+All,North General Hospital,North,Maternal Care,Female,18-44,531.6,258
 All,North General Hospital,North,Maternal Care,Male,18-44,19.5,7
-All,North General Hospital,North,Maternal Care,Female,45-69,93.2,45
-All,North General Hospital,North,Maternal Care,Male,45-69,40.9,7
+All,North General Hospital,North,Maternal Care,Female,45-69,100.1,50
+All,North General Hospital,North,Maternal Care,Male,45-69,43.6,8
 All,North General Hospital,North,Maternal Care,Female,70+,19.2,4
-All,North General Hospital,North,Maternal Care,Male,70+,32.1,5
+All,North General Hospital,North,Maternal Care,Male,70+,41.2,12
 All,North General Hospital,North,Mental Health,Female,0-17,30.4,8
-All,North General Hospital,North,Mental Health,Male,0-17,25.7,8
-All,North General Hospital,North,Mental Health,Female,18-44,131.8,33
-All,North General Hospital,North,Mental Health,Male,18-44,89.8,16
-All,North General Hospital,North,Mental Health,Female,45-69,134.3,28
-All,North General Hospital,North,Mental Health,Male,45-69,109.8,21
-All,North General Hospital,North,Mental Health,Female,70+,36.5,8
-All,North General Hospital,North,Mental Health,Male,70+,59.0,16
-All,South Medical Center,South,Child Health,Female,0-17,136.8,61
-All,South Medical Center,South,Child Health,Male,0-17,85.2,50
-All,South Medical Center,South,Child Health,Female,18-44,54.8,20
+All,North General Hospital,North,Mental Health,Male,0-17,30.7,8
+All,North General Hospital,North,Mental Health,Female,18-44,150.0,36
+All,North General Hospital,North,Mental Health,Male,18-44,94.0,16
+All,North General Hospital,North,Mental Health,Female,45-69,166.1,33
+All,North General Hospital,North,Mental Health,Male,45-69,113.1,21
+All,North General Hospital,North,Mental Health,Female,70+,50.9,14
+All,North General Hospital,North,Mental Health,Male,70+,65.0,16
+All,South Medical Center,South,Child Health,Female,0-17,141.6,64
+All,South Medical Center,South,Child Health,Male,0-17,93.8,54
+All,South Medical Center,South,Child Health,Female,18-44,61.0,26
 All,South Medical Center,South,Child Health,Male,18-44,19.1,6
-All,South Medical Center,South,Child Health,Female,45-69,17.6,6
+All,South Medical Center,South,Child Health,Female,45-69,20.8,8
 All,South Medical Center,South,Child Health,Male,45-69,21.4,5
 All,South Medical Center,South,Child Health,Female,70+,9.5,2
 All,South Medical Center,South,Child Health,Male,70+,14.1,2
 All,South Medical Center,South,General Medicine,Female,0-17,20.1,6
-All,South Medical Center,South,General Medicine,Male,0-17,18.2,7
-All,South Medical Center,South,General Medicine,Female,18-44,85.7,23
-All,South Medical Center,South,General Medicine,Male,18-44,26.2,8
-All,South Medical Center,South,General Medicine,Female,45-69,75.6,25
-All,South Medical Center,South,General Medicine,Male,45-69,115.1,29
-All,South Medical Center,South,General Medicine,Female,70+,182.7,46
-All,South Medical Center,South,General Medicine,Male,70+,196.5,43
-All,South Medical Center,South,General Surgery,Female,0-17,2.7,2
-All,South Medical Center,South,General Surgery,Male,0-17,2.9,3
-All,South Medical Center,South,General Surgery,Female,18-44,76.4,30
-All,South Medical Center,South,General Surgery,Male,18-44,58.1,17
-All,South Medical Center,South,General Surgery,Female,45-69,92.9,32
-All,South Medical Center,South,General Surgery,Male,45-69,87.5,33
-All,South Medical Center,South,General Surgery,Female,70+,62.4,23
-All,South Medical Center,South,General Surgery,Male,70+,71.6,24
-All,South Medical Center,South,Maternal Care,Female,0-17,8.5,6
+All,South Medical Center,South,General Medicine,Male,0-17,21.1,7
+All,South Medical Center,South,General Medicine,Female,18-44,94.2,25
+All,South Medical Center,South,General Medicine,Male,18-44,35.5,13
+All,South Medical Center,South,General Medicine,Female,45-69,97.8,34
+All,South Medical Center,South,General Medicine,Male,45-69,130.1,34
+All,South Medical Center,South,General Medicine,Female,70+,202.0,51
+All,South Medical Center,South,General Medicine,Male,70+,211.3,43
+All,South Medical Center,South,General Surgery,Female,0-17,5.2,2
+All,South Medical Center,South,General Surgery,Male,0-17,4.1,4
+All,South Medical Center,South,General Surgery,Female,18-44,78.5,30
+All,South Medical Center,South,General Surgery,Male,18-44,62.9,21
+All,South Medical Center,South,General Surgery,Female,45-69,105.2,35
+All,South Medical Center,South,General Surgery,Male,45-69,91.3,33
+All,South Medical Center,South,General Surgery,Female,70+,71.9,31
+All,South Medical Center,South,General Surgery,Male,70+,81.6,28
+All,South Medical Center,South,Maternal Care,Female,0-17,10.0,8
 All,South Medical Center,South,Maternal Care,Male,0-17,2.4,2
-All,South Medical Center,South,Maternal Care,Female,18-44,355.1,151
-All,South Medical Center,South,Maternal Care,Male,18-44,19.3,4
-All,South Medical Center,South,Maternal Care,Female,45-69,34.4,10
+All,South Medical Center,South,Maternal Care,Female,18-44,384.1,162
+All,South Medical Center,South,Maternal Care,Male,18-44,20.5,5
+All,South Medical Center,South,Maternal Care,Female,45-69,36.1,11
 All,South Medical Center,South,Maternal Care,Male,45-69,9.1,3
-All,South Medical Center,South,Maternal Care,Female,70+,40.2,6
-All,South Medical Center,South,Maternal Care,Male,70+,35.5,7
+All,South Medical Center,South,Maternal Care,Female,70+,45.3,8
+All,South Medical Center,South,Maternal Care,Male,70+,37.2,8
 All,South Medical Center,South,Mental Health,Female,0-17,3.6,3
-All,South Medical Center,South,Mental Health,Male,0-17,4.3,2
-All,South Medical Center,South,Mental Health,Female,18-44,134.5,27
-All,South Medical Center,South,Mental Health,Male,18-44,50.0,11
-All,South Medical Center,South,Mental Health,Female,45-69,37.5,8
-All,South Medical Center,South,Mental Health,Male,45-69,43.6,7
+All,South Medical Center,South,Mental Health,Male,0-17,13.3,7
+All,South Medical Center,South,Mental Health,Female,18-44,143.9,28
+All,South Medical Center,South,Mental Health,Male,18-44,60.0,11
+All,South Medical Center,South,Mental Health,Female,45-69,39.2,8
+All,South Medical Center,South,Mental Health,Male,45-69,46.1,7
 All,South Medical Center,South,Mental Health,Female,70+,50.8,12
-All,South Medical Center,South,Mental Health,Male,70+,30.3,5
-Central Community Hospital,Central Community Hospital,Central,Child Health,Female,0-17,126.7,69
-Central Community Hospital,Central Community Hospital,Central,Child Health,Male,0-17,98.5,61
-Central Community Hospital,Central Community Hospital,Central,Child Health,Female,18-44,18.3,6
-Central Community Hospital,Central Community Hospital,Central,Child Health,Male,18-44,28.6,6
-Central Community Hospital,Central Community Hospital,Central,Child Health,Female,45-69,25.5,6
-Central Community Hospital,Central Community Hospital,Central,Child Health,Male,45-69,0.5,1
-Central Community Hospital,Central Community Hospital,Central,Child Health,Female,70+,26.2,6
-Central Community Hospital,Central Community Hospital,Central,Child Health,Male,70+,13.9,3
+All,South Medical Center,South,Mental Health,Male,70+,34.7,5
+Central Community Hospital,Central Community Hospital,Central,Child Health,Female,0-17,136.3,74
+Central Community Hospital,Central Community Hospital,Central,Child Health,Male,0-17,110.6,70
+Central Community Hospital,Central Community Hospital,Central,Child Health,Female,18-44,20.3,7
+Central Community Hospital,Central Community Hospital,Central,Child Health,Male,18-44,29.4,6
+Central Community Hospital,Central Community Hospital,Central,Child Health,Female,45-69,27.9,7
+Central Community Hospital,Central Community Hospital,Central,Child Health,Male,45-69,2.2,3
+Central Community Hospital,Central Community Hospital,Central,Child Health,Female,70+,27.2,7
+Central Community Hospital,Central Community Hospital,Central,Child Health,Male,70+,15.6,4
 Central Community Hospital,Central Community Hospital,Central,General Medicine,Female,0-17,6.5,4
 Central Community Hospital,Central Community Hospital,Central,General Medicine,Male,0-17,12.4,6
 Central Community Hospital,Central Community Hospital,Central,General Medicine,Female,18-44,67.4,17
-Central Community Hospital,Central Community Hospital,Central,General Medicine,Male,18-44,59.2,16
-Central Community Hospital,Central Community Hospital,Central,General Medicine,Female,45-69,147.4,34
-Central Community Hospital,Central Community Hospital,Central,General Medicine,Male,45-69,122.1,32
-Central Community Hospital,Central Community Hospital,Central,General Medicine,Female,70+,221.0,49
-Central Community Hospital,Central Community Hospital,Central,General Medicine,Male,70+,171.7,43
+Central Community Hospital,Central Community Hospital,Central,General Medicine,Male,18-44,75.9,21
+Central Community Hospital,Central Community Hospital,Central,General Medicine,Female,45-69,167.5,42
+Central Community Hospital,Central Community Hospital,Central,General Medicine,Male,45-69,127.9,32
+Central Community Hospital,Central Community Hospital,Central,General Medicine,Female,70+,244.9,57
+Central Community Hospital,Central Community Hospital,Central,General Medicine,Male,70+,203.0,58
 Central Community Hospital,Central Community Hospital,Central,General Surgery,Female,0-17,16.6,8
-Central Community Hospital,Central Community Hospital,Central,General Surgery,Male,0-17,32.3,12
-Central Community Hospital,Central Community Hospital,Central,General Surgery,Female,18-44,88.3,28
-Central Community Hospital,Central Community Hospital,Central,General Surgery,Male,18-44,72.9,21
-Central Community Hospital,Central Community Hospital,Central,General Surgery,Female,45-69,104.4,34
-Central Community Hospital,Central Community Hospital,Central,General Surgery,Male,45-69,126.8,36
-Central Community Hospital,Central Community Hospital,Central,General Surgery,Female,70+,91.2,32
-Central Community Hospital,Central Community Hospital,Central,General Surgery,Male,70+,97.3,29
+Central Community Hospital,Central Community Hospital,Central,General Surgery,Male,0-17,34.2,13
+Central Community Hospital,Central Community Hospital,Central,General Surgery,Female,18-44,93.1,29
+Central Community Hospital,Central Community Hospital,Central,General Surgery,Male,18-44,84.0,26
+Central Community Hospital,Central Community Hospital,Central,General Surgery,Female,45-69,117.1,41
+Central Community Hospital,Central Community Hospital,Central,General Surgery,Male,45-69,139.5,44
+Central Community Hospital,Central Community Hospital,Central,General Surgery,Female,70+,96.9,37
+Central Community Hospital,Central Community Hospital,Central,General Surgery,Male,70+,99.9,31
 Central Community Hospital,Central Community Hospital,Central,Maternal Care,Female,0-17,9.6,5
-Central Community Hospital,Central Community Hospital,Central,Maternal Care,Male,0-17,12.3,7
-Central Community Hospital,Central Community Hospital,Central,Maternal Care,Female,18-44,435.8,196
-Central Community Hospital,Central Community Hospital,Central,Maternal Care,Male,18-44,23.3,7
-Central Community Hospital,Central Community Hospital,Central,Maternal Care,Female,45-69,55.8,20
-Central Community Hospital,Central Community Hospital,Central,Maternal Care,Male,45-69,45.3,7
-Central Community Hospital,Central Community Hospital,Central,Maternal Care,Female,70+,19.9,6
-Central Community Hospital,Central Community Hospital,Central,Maternal Care,Male,70+,7.2,2
-Central Community Hospital,Central Community Hospital,Central,Mental Health,Female,0-17,24.7,6
-Central Community Hospital,Central Community Hospital,Central,Mental Health,Male,0-17,25.1,3
-Central Community Hospital,Central Community Hospital,Central,Mental Health,Female,18-44,89.7,20
-Central Community Hospital,Central Community Hospital,Central,Mental Health,Male,18-44,65.5,10
-Central Community Hospital,Central Community Hospital,Central,Mental Health,Female,45-69,63.7,15
-Central Community Hospital,Central Community Hospital,Central,Mental Health,Male,45-69,68.9,14
-Central Community Hospital,Central Community Hospital,Central,Mental Health,Female,70+,49.1,8
-Central Community Hospital,Central Community Hospital,Central,Mental Health,Male,70+,46.3,13
-North General Hospital,North General Hospital,North,Child Health,Female,0-17,166.2,94
-North General Hospital,North General Hospital,North,Child Health,Male,0-17,185.2,97
-North General Hospital,North General Hospital,North,Child Health,Female,18-44,60.4,17
-North General Hospital,North General Hospital,North,Child Health,Male,18-44,10.9,6
-North General Hospital,North General Hospital,North,Child Health,Female,45-69,35.0,10
+Central Community Hospital,Central Community Hospital,Central,Maternal Care,Male,0-17,13.8,7
+Central Community Hospital,Central Community Hospital,Central,Maternal Care,Female,18-44,475.4,217
+Central Community Hospital,Central Community Hospital,Central,Maternal Care,Male,18-44,24.3,7
+Central Community Hospital,Central Community Hospital,Central,Maternal Care,Female,45-69,63.0,22
+Central Community Hospital,Central Community Hospital,Central,Maternal Care,Male,45-69,45.4,7
+Central Community Hospital,Central Community Hospital,Central,Maternal Care,Female,70+,22.0,7
+Central Community Hospital,Central Community Hospital,Central,Maternal Care,Male,70+,10.0,4
+Central Community Hospital,Central Community Hospital,Central,Mental Health,Female,0-17,29.7,6
+Central Community Hospital,Central Community Hospital,Central,Mental Health,Male,0-17,26.0,3
+Central Community Hospital,Central Community Hospital,Central,Mental Health,Female,18-44,104.1,25
+Central Community Hospital,Central Community Hospital,Central,Mental Health,Male,18-44,65.9,10
+Central Community Hospital,Central Community Hospital,Central,Mental Health,Female,45-69,79.4,20
+Central Community Hospital,Central Community Hospital,Central,Mental Health,Male,45-69,79.5,19
+Central Community Hospital,Central Community Hospital,Central,Mental Health,Female,70+,58.8,16
+Central Community Hospital,Central Community Hospital,Central,Mental Health,Male,70+,49.7,13
+North General Hospital,North General Hospital,North,Child Health,Female,0-17,171.9,97
+North General Hospital,North General Hospital,North,Child Health,Male,0-17,226.9,137
+North General Hospital,North General Hospital,North,Child Health,Female,18-44,68.2,21
+North General Hospital,North General Hospital,North,Child Health,Male,18-44,12.0,7
+North General Hospital,North General Hospital,North,Child Health,Female,45-69,39.8,13
 North General Hospital,North General Hospital,North,Child Health,Male,45-69,20.8,4
-North General Hospital,North General Hospital,North,Child Health,Female,70+,31.0,6
-North General Hospital,North General Hospital,North,Child Health,Male,70+,34.2,8
+North General Hospital,North General Hospital,North,Child Health,Female,70+,33.9,6
+North General Hospital,North General Hospital,North,Child Health,Male,70+,35.0,8
 North General Hospital,North General Hospital,North,General Medicine,Female,0-17,12.5,4
 North General Hospital,North General Hospital,North,General Medicine,Male,0-17,21.2,7
-North General Hospital,North General Hospital,North,General Medicine,Female,18-44,95.2,25
-North General Hospital,North General Hospital,North,General Medicine,Male,18-44,41.1,15
-North General Hospital,North General Hospital,North,General Medicine,Female,45-69,177.0,43
-North General Hospital,North General Hospital,North,General Medicine,Male,45-69,223.1,52
-North General Hospital,North General Hospital,North,General Medicine,Female,70+,230.2,61
-North General Hospital,North General Hospital,North,General Medicine,Male,70+,225.9,50
-North General Hospital,North General Hospital,North,General Surgery,Female,0-17,41.3,13
-North General Hospital,North General Hospital,North,General Surgery,Male,0-17,16.8,7
-North General Hospital,North General Hospital,North,General Surgery,Female,18-44,150.2,45
-North General Hospital,North General Hospital,North,General Surgery,Male,18-44,58.2,19
-North General Hospital,North General Hospital,North,General Surgery,Female,45-69,147.1,44
-North General Hospital,North General Hospital,North,General Surgery,Male,45-69,160.3,49
-North General Hospital,North General Hospital,North,General Surgery,Female,70+,132.2,41
-North General Hospital,North General Hospital,North,General Surgery,Male,70+,106.2,34
+North General Hospital,North General Hospital,North,General Medicine,Female,18-44,123.3,34
+North General Hospital,North General Hospital,North,General Medicine,Male,18-44,53.3,19
+North General Hospital,North General Hospital,North,General Medicine,Female,45-69,196.8,49
+North General Hospital,North General Hospital,North,General Medicine,Male,45-69,247.0,61
+North General Hospital,North General Hospital,North,General Medicine,Female,70+,251.2,69
+North General Hospital,North General Hospital,North,General Medicine,Male,70+,252.1,60
+North General Hospital,North General Hospital,North,General Surgery,Female,0-17,42.2,13
+North General Hospital,North General Hospital,North,General Surgery,Male,0-17,25.2,12
+North General Hospital,North General Hospital,North,General Surgery,Female,18-44,164.8,53
+North General Hospital,North General Hospital,North,General Surgery,Male,18-44,68.1,24
+North General Hospital,North General Hospital,North,General Surgery,Female,45-69,164.3,50
+North General Hospital,North General Hospital,North,General Surgery,Male,45-69,175.0,54
+North General Hospital,North General Hospital,North,General Surgery,Female,70+,139.4,42
+North General Hospital,North General Hospital,North,General Surgery,Male,70+,127.7,47
 North General Hospital,North General Hospital,North,Maternal Care,Female,0-17,20.6,8
-North General Hospital,North General Hospital,North,Maternal Care,Male,0-17,8.4,6
-North General Hospital,North General Hospital,North,Maternal Care,Female,18-44,463.6,219
+North General Hospital,North General Hospital,North,Maternal Care,Male,0-17,10.3,6
+North General Hospital,North General Hospital,North,Maternal Care,Female,18-44,531.6,258
 North General Hospital,North General Hospital,North,Maternal Care,Male,18-44,19.5,7
-North General Hospital,North General Hospital,North,Maternal Care,Female,45-69,93.2,45
-North General Hospital,North General Hospital,North,Maternal Care,Male,45-69,40.9,7
+North General Hospital,North General Hospital,North,Maternal Care,Female,45-69,100.1,50
+North General Hospital,North General Hospital,North,Maternal Care,Male,45-69,43.6,8
 North General Hospital,North General Hospital,North,Maternal Care,Female,70+,19.2,4
-North General Hospital,North General Hospital,North,Maternal Care,Male,70+,32.1,5
+North General Hospital,North General Hospital,North,Maternal Care,Male,70+,41.2,12
 North General Hospital,North General Hospital,North,Mental Health,Female,0-17,30.4,8
-North General Hospital,North General Hospital,North,Mental Health,Male,0-17,25.7,8
-North General Hospital,North General Hospital,North,Mental Health,Female,18-44,131.8,33
-North General Hospital,North General Hospital,North,Mental Health,Male,18-44,89.8,16
-North General Hospital,North General Hospital,North,Mental Health,Female,45-69,134.3,28
-North General Hospital,North General Hospital,North,Mental Health,Male,45-69,109.8,21
-North General Hospital,North General Hospital,North,Mental Health,Female,70+,36.5,8
-North General Hospital,North General Hospital,North,Mental Health,Male,70+,59.0,16
-South Medical Center,South Medical Center,South,Child Health,Female,0-17,136.8,61
-South Medical Center,South Medical Center,South,Child Health,Male,0-17,85.2,50
-South Medical Center,South Medical Center,South,Child Health,Female,18-44,54.8,20
+North General Hospital,North General Hospital,North,Mental Health,Male,0-17,30.7,8
+North General Hospital,North General Hospital,North,Mental Health,Female,18-44,150.0,36
+North General Hospital,North General Hospital,North,Mental Health,Male,18-44,94.0,16
+North General Hospital,North General Hospital,North,Mental Health,Female,45-69,166.1,33
+North General Hospital,North General Hospital,North,Mental Health,Male,45-69,113.1,21
+North General Hospital,North General Hospital,North,Mental Health,Female,70+,50.9,14
+North General Hospital,North General Hospital,North,Mental Health,Male,70+,65.0,16
+South Medical Center,South Medical Center,South,Child Health,Female,0-17,141.6,64
+South Medical Center,South Medical Center,South,Child Health,Male,0-17,93.8,54
+South Medical Center,South Medical Center,South,Child Health,Female,18-44,61.0,26
 South Medical Center,South Medical Center,South,Child Health,Male,18-44,19.1,6
-South Medical Center,South Medical Center,South,Child Health,Female,45-69,17.6,6
+South Medical Center,South Medical Center,South,Child Health,Female,45-69,20.8,8
 South Medical Center,South Medical Center,South,Child Health,Male,45-69,21.4,5
 South Medical Center,South Medical Center,South,Child Health,Female,70+,9.5,2
 South Medical Center,South Medical Center,South,Child Health,Male,70+,14.1,2
 South Medical Center,South Medical Center,South,General Medicine,Female,0-17,20.1,6
-South Medical Center,South Medical Center,South,General Medicine,Male,0-17,18.2,7
-South Medical Center,South Medical Center,South,General Medicine,Female,18-44,85.7,23
-South Medical Center,South Medical Center,South,General Medicine,Male,18-44,26.2,8
-South Medical Center,South Medical Center,South,General Medicine,Female,45-69,75.6,25
-South Medical Center,South Medical Center,South,General Medicine,Male,45-69,115.1,29
-South Medical Center,South Medical Center,South,General Medicine,Female,70+,182.7,46
-South Medical Center,South Medical Center,South,General Medicine,Male,70+,196.5,43
-South Medical Center,South Medical Center,South,General Surgery,Female,0-17,2.7,2
-South Medical Center,South Medical Center,South,General Surgery,Male,0-17,2.9,3
-South Medical Center,South Medical Center,South,General Surgery,Female,18-44,76.4,30
-South Medical Center,South Medical Center,South,General Surgery,Male,18-44,58.1,17
-South Medical Center,South Medical Center,South,General Surgery,Female,45-69,92.9,32
-South Medical Center,South Medical Center,South,General Surgery,Male,45-69,87.5,33
-South Medical Center,South Medical Center,South,General Surgery,Female,70+,62.4,23
-South Medical Center,South Medical Center,South,General Surgery,Male,70+,71.6,24
-South Medical Center,South Medical Center,South,Maternal Care,Female,0-17,8.5,6
+South Medical Center,South Medical Center,South,General Medicine,Male,0-17,21.1,7
+South Medical Center,South Medical Center,South,General Medicine,Female,18-44,94.2,25
+South Medical Center,South Medical Center,South,General Medicine,Male,18-44,35.5,13
+South Medical Center,South Medical Center,South,General Medicine,Female,45-69,97.8,34
+South Medical Center,South Medical Center,South,General Medicine,Male,45-69,130.1,34
+South Medical Center,South Medical Center,South,General Medicine,Female,70+,202.0,51
+South Medical Center,South Medical Center,South,General Medicine,Male,70+,211.3,43
+South Medical Center,South Medical Center,South,General Surgery,Female,0-17,5.2,2
+South Medical Center,South Medical Center,South,General Surgery,Male,0-17,4.1,4
+South Medical Center,South Medical Center,South,General Surgery,Female,18-44,78.5,30
+South Medical Center,South Medical Center,South,General Surgery,Male,18-44,62.9,21
+South Medical Center,South Medical Center,South,General Surgery,Female,45-69,105.2,35
+South Medical Center,South Medical Center,South,General Surgery,Male,45-69,91.3,33
+South Medical Center,South Medical Center,South,General Surgery,Female,70+,71.9,31
+South Medical Center,South Medical Center,South,General Surgery,Male,70+,81.6,28
+South Medical Center,South Medical Center,South,Maternal Care,Female,0-17,10.0,8
 South Medical Center,South Medical Center,South,Maternal Care,Male,0-17,2.4,2
-South Medical Center,South Medical Center,South,Maternal Care,Female,18-44,355.1,151
-South Medical Center,South Medical Center,South,Maternal Care,Male,18-44,19.3,4
-South Medical Center,South Medical Center,South,Maternal Care,Female,45-69,34.4,10
+South Medical Center,South Medical Center,South,Maternal Care,Female,18-44,384.1,162
+South Medical Center,South Medical Center,South,Maternal Care,Male,18-44,20.5,5
+South Medical Center,South Medical Center,South,Maternal Care,Female,45-69,36.1,11
 South Medical Center,South Medical Center,South,Maternal Care,Male,45-69,9.1,3
-South Medical Center,South Medical Center,South,Maternal Care,Female,70+,40.2,6
-South Medical Center,South Medical Center,South,Maternal Care,Male,70+,35.5,7
+South Medical Center,South Medical Center,South,Maternal Care,Female,70+,45.3,8
+South Medical Center,South Medical Center,South,Maternal Care,Male,70+,37.2,8
 South Medical Center,South Medical Center,South,Mental Health,Female,0-17,3.6,3
-South Medical Center,South Medical Center,South,Mental Health,Male,0-17,4.3,2
-South Medical Center,South Medical Center,South,Mental Health,Female,18-44,134.5,27
-South Medical Center,South Medical Center,South,Mental Health,Male,18-44,50.0,11
-South Medical Center,South Medical Center,South,Mental Health,Female,45-69,37.5,8
-South Medical Center,South Medical Center,South,Mental Health,Male,45-69,43.6,7
+South Medical Center,South Medical Center,South,Mental Health,Male,0-17,13.3,7
+South Medical Center,South Medical Center,South,Mental Health,Female,18-44,143.9,28
+South Medical Center,South Medical Center,South,Mental Health,Male,18-44,60.0,11
+South Medical Center,South Medical Center,South,Mental Health,Female,45-69,39.2,8
+South Medical Center,South Medical Center,South,Mental Health,Male,45-69,46.1,7
 South Medical Center,South Medical Center,South,Mental Health,Female,70+,50.8,12
-South Medical Center,South Medical Center,South,Mental Health,Male,70+,30.3,5
+South Medical Center,South Medical Center,South,Mental Health,Male,70+,34.7,5

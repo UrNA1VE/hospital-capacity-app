@@ -120,26 +120,24 @@ def read_prepared_dashboard_sources() -> dict[str, pd.DataFrame]:
     visits = pd.read_csv(ETL_PREPARED_DIR / "visits.csv", parse_dates=["admission_ts", "discharge_ts"])
     admission_chart = pd.read_csv(RAW_DATA_DIR / "admission_chart.csv", parse_dates=["admission_ts"])
     patient_events = pd.read_csv(RAW_DATA_DIR / "patient_events.csv", parse_dates=["event_ts"])
-    unit_changes = (
-        pd.concat(
-            [
-                admission_chart[
-                    ["visit_id", "admission_ts", "facility_id", "admitted_unit_id"]
-                ].rename(
-                    columns={
-                        "admission_ts": "event_ts",
-                        "admitted_unit_id": "unit_id",
-                    }
-                ).assign(unit_change_id=lambda frame: "ADM-" + frame["visit_id"].astype(str)),
-                patient_events[patient_events["type"] == "location"]
-                .rename(columns={"event_id": "unit_change_id", "value": "unit_id"})
-                [["unit_change_id", "visit_id", "event_ts", "facility_id", "unit_id"]],
-            ],
-            ignore_index=True,
-        )
-        .sort_values(["visit_id", "event_ts", "unit_change_id"])
-        .reset_index(drop=True)
+    unit_changes = pd.concat(
+        [
+            admission_chart[
+                ["visit_id", "admission_ts", "facility_id", "admitted_unit_id"]
+            ].rename(
+                columns={
+                    "admission_ts": "event_ts",
+                    "admitted_unit_id": "unit_id",
+                }
+            ).assign(unit_change_id=lambda frame: "ADM-" + frame["visit_id"].astype(str)),
+            patient_events[patient_events["type"] == "location"]
+            .rename(columns={"event_id": "unit_change_id", "value": "unit_id"})
+            [["unit_change_id", "visit_id", "event_ts", "facility_id", "unit_id"]],
+        ],
+        ignore_index=True,
     )
+    unit_changes["event_ts"] = pd.to_datetime(unit_changes["event_ts"], errors="coerce")
+    unit_changes = unit_changes.sort_values(["visit_id", "event_ts", "unit_change_id"]).reset_index(drop=True)
 
     return {
         "daily": pd.read_csv(DASHBOARD_PREPARED_DIR / "daily.csv", parse_dates=["calendar_date"]),
@@ -178,12 +176,14 @@ def _visits_overlapping_window(
     start: pd.Timestamp,
     end: pd.Timestamp,
 ) -> pd.DataFrame:
-    effective_discharge = visits["discharge_ts"].fillna(end)
+    admission_ts = pd.to_datetime(visits["admission_ts"], errors="coerce")
+    discharge_ts = pd.to_datetime(visits["discharge_ts"], errors="coerce")
+    effective_discharge = discharge_ts.where(discharge_ts.notna(), end)
     clipped = visits[
         (effective_discharge > start)
-        & (visits["admission_ts"] < end)
+        & (admission_ts < end)
     ].copy()
-    clipped["admission_ts"] = clipped["admission_ts"].clip(lower=start)
+    clipped["admission_ts"] = admission_ts.loc[clipped.index].clip(lower=start)
     clipped["discharge_ts"] = effective_discharge.loc[clipped.index].clip(upper=end)
     return clipped.reset_index(drop=True)
 
@@ -194,6 +194,8 @@ def _unit_changes_overlapping_window(
     visits: pd.DataFrame,
 ) -> pd.DataFrame:
     rows: list[dict[str, object]] = []
+    unit_changes = unit_changes.copy()
+    unit_changes["event_ts"] = pd.to_datetime(unit_changes["event_ts"], errors="coerce")
     raw_visit_lookup = raw_visits.set_index("visit_id")
 
     for _, visit in visits.iterrows():

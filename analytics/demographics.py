@@ -32,8 +32,12 @@ def visits_with_reference_data(
             on="diagnosis_code",
             how="left",
         )
+    admission_ts = pd.to_datetime(enriched["admission_ts"], errors="coerce")
+    discharge_ts = pd.to_datetime(enriched["discharge_ts"], errors="coerce")
+    enriched["admission_ts"] = admission_ts
+    enriched["discharge_ts"] = discharge_ts
     enriched["length_of_stay_days"] = (
-        enriched["discharge_ts"] - enriched["admission_ts"]
+        discharge_ts - admission_ts
     ).dt.total_seconds() / 86_400
     enriched["age_group"] = enriched["age"].map(age_group)
     return enriched

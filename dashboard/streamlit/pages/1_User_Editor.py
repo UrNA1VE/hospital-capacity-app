@@ -7,7 +7,7 @@ import streamlit as st
 
 import bootstrap  # noqa: F401
 from etl.event_editor.editor import add_admission, add_event, add_patient, remove_event, retrieve_back_up, update_event
-from etl.pipeline.run_container_pipeline import RAW_DATA_DIR, run_etl_from_existing_raw
+from etl.pipeline.initialize_demo_dataset import RAW_DATA_DIR, run_etl_from_existing_raw
 
 
 st.set_page_config(page_title="User Editor", page_icon="✏️", layout="wide")

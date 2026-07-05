@@ -1,4 +1,4 @@
-"""Container-local data -> DuckDB/dbt-style pipeline for the dashboard demo.
+"""Initialize the container-local demo dataset for the dashboard.
 
 This is a lightweight runtime workflow for the containerized Streamlit app:
 
@@ -37,7 +37,7 @@ from dashboard.streamlit.utils.database import (  # noqa: E402
 )
 from etl.synthetic_data_generator.generate_fake_data import (  # noqa: E402
     GeneratorConfig,
-    generate_all,
+    initial_fake_data,
     write_csvs,
 )
 
@@ -58,7 +58,7 @@ REQUIRED_COLUMNS = {
     "diagnoses": {"diagnosis_code", "diagnosis_name", "service_id", "elos_days", "trim_days"},
     "population_growth": {"region", "age_group", "gender", "year", "growth_index"},
     "capacity": {"capacity_date", "facility_id", "service_id", "staffed_beds"},
-    "patients": {"patient_id", "age", "gender", "region"},
+    "patients": {"patient_id", "registration_date", "age", "gender", "region"},
     "admission_chart": {
         "visit_id",
         "patient_id",
@@ -124,6 +124,7 @@ def _last_event(events: pd.DataFrame, event_type: str) -> pd.DataFrame:
     )
 
 
+
 def build_encounter_tables_from_events(sources: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
     events = sources["patient_events"].copy()
     admission_chart = sources["admission_chart"].copy()
@@ -174,8 +175,16 @@ def build_encounter_tables_from_events(sources: dict[str, pd.DataFrame]) -> dict
     visits["service_id"] = visits["event_service_id"].fillna(visits["admitted_service_id"])
     visits["diagnosis_code"] = visits["event_diagnosis_code"].fillna(visits["admitted_diagnosis_code"])
     visits = visits.merge(diagnoses[["diagnosis_code", "elos_days", "trim_days"]], on="diagnosis_code", how="left")
+    admission_ts = pd.to_datetime(visits["admission_ts"], errors="coerce")
+    discharge_ts = pd.to_datetime(visits["discharge_ts"], errors="coerce")
+    effective_discharge_ts = discharge_ts.where(
+        discharge_ts.notna(),
+        admission_ts + pd.Timedelta(days=1),
+    )
+    visits["admission_ts"] = admission_ts
+    visits["discharge_ts"] = discharge_ts
     visits["length_days"] = (
-        visits["discharge_ts"].fillna(visits["admission_ts"] + pd.to_timedelta(1, unit="D")) - visits["admission_ts"]
+        effective_discharge_ts - admission_ts
     ).dt.total_seconds() / 86_400
     visits["alclos"] = (visits["length_days"] - visits["elos_days"]).clip(lower=0).fillna(0).round(2)
     visits["elos"] = visits["elos_days"].round(2)
@@ -226,6 +235,7 @@ def build_encounter_tables_from_events(sources: dict[str, pd.DataFrame]) -> dict
         .sort_values(["visit_id", "event_ts", "unit_change_id"])
         .reset_index(drop=True)
     )
+    unit_changes["event_ts"] = pd.to_datetime(unit_changes["event_ts"], errors="coerce")
     unit_changes = unit_changes[unit_changes["unit_id"].isin(units["unit_id"])]
     return {"visits": visits, "unit_changes": unit_changes.reset_index(drop=True)}
 
@@ -538,7 +548,7 @@ def run_fake_data_pipeline(seed: int, days: int = 30, start_date: str = "2025-01
     report_dir.mkdir(parents=True, exist_ok=True)
 
     config = GeneratorConfig(start_date=start_date, days=days, seed=seed)
-    raw_tables = generate_all(config)
+    raw_tables = initial_fake_data(config)
     write_csvs(raw_tables, raw_dir)
 
     etl_result = run_etl_from_existing_raw()
@@ -558,8 +568,6 @@ def run_fake_data_pipeline(seed: int, days: int = 30, start_date: str = "2025-01
         encoding="utf-8",
     )
     return result
-
-
 
 if __name__ == "__main__":
     result = run_fake_data_pipeline(seed=42)

@@ -17,11 +17,15 @@ from etl.synthetic_data_generator.generate_fake_data import write_csvs
 
 
 def _next_id(frame: pd.DataFrame, column: str, prefix: str, width: int) -> str:
+    nex = next_number(frame, column, prefix)
+    return f"{prefix}{nex:0{width}d}"
+
+def next_number(frame: pd.DataFrame, column: str, prefix: str) -> int:
     if frame.empty:
-        next_number = 1
+        nex = 1
     else:
-        next_number = int(pd.to_numeric(frame[column].str.removeprefix(prefix)).max()) + 1
-    return f"{prefix}{next_number:0{width}d}"
+        nex = int(pd.to_numeric(frame[column].str.removeprefix(prefix)).max()) + 1
+    return nex
 
 
 def add_patient(age: int, gender: str, region: str) -> str:
@@ -31,6 +35,7 @@ def add_patient(age: int, gender: str, region: str) -> str:
     new_patient = pd.DataFrame([
         {
             "patient_id": patient_id,
+            "registration_date": pd.Timestamp.now().date().isoformat(),
             "age": age,
             "gender": gender,
             "region": region,

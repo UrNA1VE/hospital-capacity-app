@@ -85,18 +85,17 @@ projection = bed_needs_projection(
     population_growth=population_growth,
 )
 
-cols = st.columns(4)
-cols[0].metric("Current demand", int(current_demand["demand"].sum()))
-cols[1].metric("Current funded beds", int(current_demand["funded_capacity"].sum()))
-cols[2].metric("Demand reduction", f"{savings['demand_reduction'].sum():.1f}" if not savings.empty else "0.0")
-cols[3].metric("2040 adjusted beds", int(projection.loc[projection["year"] == 2040, "adjusted_projection"].sum()))
+cols = st.columns(3)
+cols[0].metric("Current funded beds", int(current_demand["funded_capacity"].sum()))
+cols[1].metric("Demand reduction", f"{savings['demand_reduction'].sum():.1f}" if not savings.empty else "0.0")
+cols[2].metric("2040 adjusted beds", int(projection.loc[projection["year"] == 2040, "adjusted_projection"].sum()))
 
-tab_current, tab_savings, tab_projection, tab_tables = st.tabs(
-    ["Current Demand", "Saving Chances", "Projection", "Tables"]
+tab_savings, tab_projection, tab_tables = st.tabs(
+    ["Saving Chances", "Projection", "Tables"]
 )
 
-with tab_current:
-    st.altair_chart(bed_demand_chart(current_demand), use_container_width=True)
+# with tab_current:
+#     st.altair_chart(bed_demand_chart(current_demand), use_container_width=True)
 
 with tab_savings:
     st.altair_chart(savings_chart(savings), use_container_width=True)

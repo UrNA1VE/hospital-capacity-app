@@ -10,7 +10,7 @@ admission_chart_required_columns,error,0,pass,pass
 patient_events_required_columns,error,0,pass,pass
 visit_id_unique,error,0,Duplicate visit IDs.,pass
 visit_date_range_valid,error,0,Discharge must be after admission when discharge_ts is populated.,pass
-open_inpatient_records,warning,256,Visits without discharge_ts are treated as active during the reporting window.,warning
+open_inpatient_records,warning,195,Visits without discharge_ts are treated as active during the reporting window.,warning
 capacity_positive,error,0,staffed_beds must be positive.,pass
 visits_facility_reference,error,0,Every visit facility_id must exist in facilities.,pass
 visits_service_reference,error,0,Every visit service_id must exist in services.,pass

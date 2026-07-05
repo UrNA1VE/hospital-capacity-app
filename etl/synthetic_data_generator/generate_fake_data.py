@@ -9,10 +9,16 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+# from etl.pipeline.incremental_run import load_simulation_state
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "data" / "synthetic" / "sample_data"
+CONTAINER_DATA_ROOT = PROJECT_ROOT / "data" / "container"
+RAW_DATA_DIR = CONTAINER_DATA_ROOT / "raw"
+BACKUP_DATA_DIR = CONTAINER_DATA_ROOT / "backup"
+REPORT_DATA_DIR = CONTAINER_DATA_ROOT / "reports"
+ETL_PREPARED_DIR = PROJECT_ROOT / "data" / "etl_prepared"
 
 
 @dataclass(frozen=True)
@@ -21,6 +27,9 @@ class GeneratorConfig:
     days: int = 30
     seed: int = 42
     lookback_days: int = 30
+    patient_id:int = 1
+    event_id:int = 1
+    visit_id:int = 1
 
 
 FACILITIES = [
@@ -323,8 +332,10 @@ def generate_visits(config: GeneratorConfig, capacity: pd.DataFrame) -> pd.DataF
     diagnoses = build_diagnoses_table()
     start = pd.Timestamp(config.start_date)
     end = start + timedelta(days=config.days)
+
     generation_start = start - timedelta(days=config.lookback_days)
     generation_days = config.days + config.lookback_days
+
     total_beds = capacity.groupby("capacity_date")["staffed_beds"].sum().mean()
     visit_count = int(total_beds * generation_days * 0.82 / 2.9)
     service_ids = [item["service_id"] for item in SERVICES]
@@ -332,9 +343,9 @@ def generate_visits(config: GeneratorConfig, capacity: pd.DataFrame) -> pd.DataF
     facility_weights = np.array([0.42, 0.33, 0.25])
     rows: list[dict[str, object]] = []
     patient_pools: dict[tuple[str, str], list[str]] = {}
-    next_patient_number = 1
+    next_patient_number = config.patient_id
 
-    for visit_number in range(1, visit_count + 1):
+    for visit_number in range(config.visit_id, visit_count + config.visit_id):
         admission = generation_start + timedelta(minutes=int(rng.integers(0, generation_days * 24 * 60)))
         service_id = str(rng.choice(service_ids, p=SERVICE_WEIGHTS))
         facility_id = str(rng.choice(facility_ids, p=facility_weights))
@@ -364,7 +375,7 @@ def generate_visits(config: GeneratorConfig, capacity: pd.DataFrame) -> pd.DataF
             alclos = min(length_days - elos_days, float(rng.gamma(shape=1.6, scale=1.4)))
         rows.append(
             {
-                "visit_id": f"VIS-{len(rows) + 1:06d}",
+                "visit_id": f"VIS-{visit_number + 1:06d}",
                 "patient_id": patient_id,
                 "facility_id": facility_id,
                 "service_id": service_id,
@@ -380,6 +391,7 @@ def generate_visits(config: GeneratorConfig, capacity: pd.DataFrame) -> pd.DataF
                 "trim_days": round(trim_days, 2),
             }
         )
+        visit_number += 1
 
     return pd.DataFrame(rows)
 
@@ -414,6 +426,7 @@ def choose_unit(
 def generate_unit_changes(config: GeneratorConfig, visits: pd.DataFrame, units: pd.DataFrame) -> pd.DataFrame:
     rng = np.random.default_rng(config.seed + 3)
     rows: list[dict[str, object]] = []
+    start_time = pd.Timestamp(config.start_date)
 
     for _, visit in visits.iterrows():
         visit_id = str(visit["visit_id"])
@@ -440,6 +453,10 @@ def generate_unit_changes(config: GeneratorConfig, visits: pd.DataFrame, units: 
                 transfer_count = min(event_count - 1, len(available_hours))
                 transfer_hours = sorted(rng.choice(available_hours, size=transfer_count, replace=False))
                 event_times += [admission_ts + timedelta(hours=int(hour)) for hour in transfer_hours]
+        if config.lookback_days == 0:
+            event_times = [x for x in event_times if x >= pd.Timestamp(config.start_date) and x < pd.Timestamp(config.start_date) + pd.Timedelta(days=config.days)]
+
+        if not event_times: continue
 
         for sequence, event_ts in enumerate(event_times, start=1):
             is_first_location = sequence == 1
@@ -469,12 +486,16 @@ def generate_unit_changes(config: GeneratorConfig, visits: pd.DataFrame, units: 
 
 def build_patients_table(visits: pd.DataFrame, facilities: pd.DataFrame) -> pd.DataFrame:
     first_visits = visits.sort_values("admission_ts").drop_duplicates("patient_id", keep="first")
-    patients = first_visits[["patient_id", "age", "gender", "facility_id"]].merge(
+    patients = first_visits[["patient_id", "age", "gender", "facility_id", "admission_ts"]].merge(
         facilities[["facility_id", "region"]],
         on="facility_id",
         how="left",
     )
-    return patients[["patient_id", "age", "gender", "region"]].reset_index(drop=True)
+    patients["registration_date"] = pd.to_datetime(
+        patients["admission_ts"],
+        errors="coerce",
+    ).dt.date
+    return patients[["patient_id", "registration_date", "age", "gender", "region"]].reset_index(drop=True)
 
 
 def build_admission_chart(visits: pd.DataFrame, unit_changes: pd.DataFrame) -> pd.DataFrame:
@@ -529,6 +550,7 @@ def build_patient_events(
     events: list[dict[str, object]] = []
     diagnoses_by_service = {service_id: frame for service_id, frame in diagnoses.groupby("service_id")}
     service_ids = [item["service_id"] for item in SERVICES]
+    event_id = config.event_id
 
     for _, visit in visits.sort_values("admission_ts").iterrows():
         visit_id = str(visit["visit_id"]).replace("VIS-", "ENC-")
@@ -544,7 +566,7 @@ def build_patient_events(
         for _, unit_change in visit_units.iloc[1:].iterrows():
             events.append(
                 {
-                    "event_id": f"EVT-{len(events) + 1:08d}",
+                    "event_id": f"EVT-{event_id:08d}",
                     "visit_id": visit_id,
                     "patient_id": patient_id,
                     "event_ts": pd.Timestamp(unit_change["event_ts"]).floor("min"),
@@ -553,6 +575,7 @@ def build_patient_events(
                     "facility_id": facility_id,
                 }
             )
+            event_id += 1
 
         effective_end = discharge_ts if pd.notna(discharge_ts) else pd.Timestamp(config.start_date) + timedelta(days=config.days)
         update_window_hours = int((effective_end - admission_ts).total_seconds() / 3600) - 1
@@ -563,7 +586,7 @@ def build_patient_events(
             final_service_id = str(rng.choice(service_candidates))
             events.append(
                 {
-                    "event_id": f"EVT-{len(events) + 1:08d}",
+                    "event_id": f"EVT-{event_id:08d}",
                     "visit_id": visit_id,
                     "patient_id": patient_id,
                     "event_ts": admission_ts + timedelta(hours=service_change_hour),
@@ -572,11 +595,12 @@ def build_patient_events(
                     "facility_id": facility_id,
                 }
             )
+            event_id += 1
             candidates = diagnoses_by_service[final_service_id]
             updated_diagnosis = str(candidates.iloc[int(rng.integers(0, len(candidates)))]["diagnosis_code"])
             events.append(
                 {
-                    "event_id": f"EVT-{len(events) + 1:08d}",
+                    "event_id": f"EVT-{event_id:08d}",
                     "visit_id": visit_id,
                     "patient_id": patient_id,
                     "event_ts": admission_ts + timedelta(hours=service_change_hour + 1),
@@ -585,12 +609,13 @@ def build_patient_events(
                     "facility_id": facility_id,
                 }
             )
+            event_id += 1
         elif update_window_hours >= 6 and rng.random() < 0.28:
             candidates = diagnoses_by_service[final_service_id]
             updated_diagnosis = str(candidates.iloc[int(rng.integers(0, len(candidates)))]["diagnosis_code"])
             events.append(
                 {
-                    "event_id": f"EVT-{len(events) + 1:08d}",
+                    "event_id": f"EVT-{event_id:08d}",
                     "visit_id": visit_id,
                     "patient_id": patient_id,
                     "event_ts": admission_ts + timedelta(hours=int(rng.integers(6, min(update_window_hours, 48) + 1))),
@@ -599,11 +624,12 @@ def build_patient_events(
                     "facility_id": facility_id,
                 }
             )
+            event_id += 1
 
         if pd.notna(discharge_ts):
             events.append(
                 {
-                    "event_id": f"EVT-{len(events) + 1:08d}",
+                    "event_id": f"EVT-{event_id:08d}",
                     "visit_id": visit_id,
                     "patient_id": patient_id,
                     "event_ts": discharge_ts,
@@ -612,13 +638,15 @@ def build_patient_events(
                     "facility_id": facility_id,
                 }
             )
+            event_id += 1
 
     event_frame = pd.DataFrame(events).sort_values(["visit_id", "event_ts", "event_id"]).reset_index(drop=True)
-    event_frame["event_id"] = [f"EVT-{index:08d}" for index in range(1, len(event_frame) + 1)]
+    # event_frame["event_id"] = [f"EVT-{index:08d}" for index in range(1, len(event_frame) + 1)]
     return event_frame
 
 
-def generate_all(config: GeneratorConfig) -> dict[str, pd.DataFrame]:
+
+def initial_fake_data(config: GeneratorConfig) -> dict[str, pd.DataFrame]:
     facilities, services, units, diagnoses, population_growth = build_reference_tables(config)
     capacity = generate_capacity(config)
     visits = generate_visits(config, capacity)
@@ -645,6 +673,68 @@ def write_csvs(tables: dict[str, pd.DataFrame], output_dir: Path) -> None:
         frame.to_csv(output_dir / f"{name}.csv", index=False)
 
 
+generate_all = initial_fake_data
+
+
+
+def generate_next_run_active_visits(
+    config: GeneratorConfig,
+    length: int = 1,
+    unit: str = "day",
+    target_discharges: int | None = None,
+) -> pd.DataFrame:
+    if unit not in {"hour", "day"}:
+        raise ValueError("unit must be either 'hour' or 'day'")
+
+    rng = np.random.default_rng(config.seed + 4)
+    active_patients = pd.read_csv(
+        ETL_PREPARED_DIR / "visits.csv",
+        parse_dates=["admission_ts", "discharge_ts"],
+    )
+    active_patients = active_patients.loc[active_patients["discharge_ts"].isna()].copy()
+
+    if active_patients.empty:
+        return active_patients
+
+    run_start = pd.Timestamp(config.start_date)
+    window = pd.to_timedelta(length, unit="D" if unit == "day" else "h")
+    run_end = run_start + window
+    elapsed_days = ((run_start - active_patients["admission_ts"]).dt.total_seconds() / 86_400).clip(lower=0)
+    elos_days = active_patients["elos"].astype(float).clip(lower=0.25)
+
+    if target_discharges is None:
+        expected_remaining_days = (elos_days * 1.15 - elapsed_days).clip(lower=0.15, upper=14)
+        discharge_probability = (1 / expected_remaining_days).clip(lower=0.08, upper=0.45)
+        discharging = rng.random(len(active_patients)) < discharge_probability.to_numpy()
+        active_patients = active_patients.loc[discharging].copy()
+    else:
+        discharge_count = int(round(target_discharges * rng.uniform(0.9, 1.05)))
+        discharge_count = min(max(discharge_count, 0), len(active_patients))
+        if discharge_count == 0:
+            return active_patients.iloc[0:0].copy()
+
+        overdue_weight = (elapsed_days / elos_days).clip(lower=0.05, upper=8).to_numpy(dtype=float)
+        weights = overdue_weight / overdue_weight.sum()
+        discharge_positions = rng.choice(
+            len(active_patients),
+            size=discharge_count,
+            replace=False,
+            p=weights,
+        )
+        active_patients = active_patients.iloc[sorted(discharge_positions)].copy()
+
+    if active_patients.empty:
+        return active_patients
+
+    window_hours = max(window / pd.Timedelta(hours=1), 1)
+    discharge_offsets = pd.to_timedelta(rng.uniform(0, window_hours, size=len(active_patients)), unit="h")
+    active_patients = active_patients.assign(
+        discharge_ts=(run_start + discharge_offsets).floor("min")
+    )
+    return active_patients.loc[active_patients["discharge_ts"] < run_end].reset_index(drop=True)
+
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
@@ -663,9 +753,10 @@ def main() -> None:
         seed=args.seed,
         lookback_days=args.lookback_days,
     )
-    tables = generate_all(config)
+    tables = initial_fake_data(config)
     write_csvs(tables, args.output_dir)
     print(f"Wrote synthetic data to {args.output_dir}")
+
 
 
 if __name__ == "__main__":

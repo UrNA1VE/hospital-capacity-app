@@ -92,6 +92,8 @@ def default_saving_rate_table() -> pd.DataFrame:
 
 def add_readmission_flags(visits: pd.DataFrame) -> pd.DataFrame:
     ordered = visits.sort_values(["patient_id", "diagnosis_code", "admission_ts"]).copy()
+    ordered["admission_ts"] = pd.to_datetime(ordered["admission_ts"], errors="coerce")
+    ordered["discharge_ts"] = pd.to_datetime(ordered["discharge_ts"], errors="coerce")
     ordered["previous_discharge_ts"] = ordered.groupby(["patient_id", "diagnosis_code"])["discharge_ts"].shift()
     days_since_previous = (
         ordered["admission_ts"] - ordered["previous_discharge_ts"]
