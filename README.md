@@ -173,7 +173,7 @@ Dashboard marts
         |
         v
 Streamlit app
-  dashboard/streamlit/home.py
+  dashboard/streamlit/Home.py
   dashboard/streamlit/pages/
 ```
 
