@@ -121,61 +121,18 @@ The local demo has two run modes:
 - `initialize_demo_dataset.py` performs a full demo refresh. It regenerates synthetic raw files, validates the source data, rebuilds derived encounter tables, and rewrites dashboard-ready outputs.
 - `incremental_run.py` simulates the next day of activity. It appends new raw rows to selected source tables, validates the incremental batch, then rebuilds the derived/dashboard tables from the full raw history.
 
-```text
-Synthetic generator config
-  seed, start date, duration, ID counters
-        |
-        v
-Raw source layer
-  data/container/raw/
-  - patients.csv
-  - admission_chart.csv
-  - patient_events.csv
-  - capacity.csv
-  - facilities.csv
-  - services.csv
-  - units.csv
-  - diagnoses.csv
-  - population_growth.csv
-        |
-        v
-Data checks
-  data/container/reports/data_check_report.csv
-  - required columns
-  - unique visit IDs
-  - admission/discharge date logic
-  - capacity values
-  - facility/service/diagnosis references
-  - active open inpatient records
-        |
-        v
-Encounter ETL
-  data/etl_prepared/
-  - visits.csv
-
-  Derived in memory during ETL:
-  - unit_changes
-        |
-        v
-Dashboard marts
-  data/dashboard_prepared/
-  - daily.csv
-  - census.csv
-  - pressure.csv
-  - capacity.csv
-  - demand.csv
-  - current_demand.csv
-  - projection.csv
-  - savings.csv
-  - demographics.csv
-  - quality.csv
-  - facility_filters.csv
-        |
-        v
-Streamlit app
-  dashboard/streamlit/Home.py
-  dashboard/streamlit/pages/
+```mermaid
+flowchart LR
+    A["Initial / Incremental Run"] --> B["Raw CSV Layer<br/>patients, admissions, events, capacity"]
+    B --> C["Validation Layer<br/>schema, keys, ranges, references"]
+    B --> D["Encounter ETL<br/>derive visits + unit_changes"]
+    C --> E["Quality Report"]
+    D --> F["Dashboard Marts<br/>daily, census, pressure, demand, savings"]
+    E --> F
+    F --> G["Streamlit App<br/>pipeline status + dashboards"]
 ```
+
+See [ETL Architecture / Data Flow](docs/etl-architecture-data-flow.md) for the detailed flow.
 
 ### Incremental model
 
