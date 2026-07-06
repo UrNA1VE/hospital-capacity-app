@@ -20,6 +20,7 @@ ETL_PREPARED_DIR = PROJECT_ROOT / "data" / "etl_prepared"
 DASHBOARD_PREPARED_DIR = PROJECT_ROOT / "data" / "dashboard_prepared"
 
 from etl.event_editor.editor import next_number
+from etl.pipeline.job_logger import EtlJob
 from etl.pipeline.initialize_demo_dataset import run_etl_from_existing_raw
 from etl.synthetic_data_generator.generate_fake_data import (
     GeneratorConfig,
@@ -131,14 +132,14 @@ def log_incremental(tables: dict[str, pd.DataFrame]) -> str:
         "status": status,
         "simulated_start_date": simulated_dates.min().date().isoformat() if simulated_dates.notna().any() else "",
         "simulated_end_date": simulated_dates.max().date().isoformat() if simulated_dates.notna().any() else "",
-        "capacity_rows": int(len(capacity)),
-        "patient_rows": int(len(tables.get("patients", pd.DataFrame()))),
-        "admission_rows": int(len(admissions)),
-        "event_rows": int(len(events)),
-        "first_admission_ts": admission_times.min().isoformat() if admission_times.notna().any() else "",
-        "last_admission_ts": admission_times.max().isoformat() if admission_times.notna().any() else "",
-        "first_event_ts": event_times.min().isoformat() if event_times.notna().any() else "",
-        "last_event_ts": event_times.max().isoformat() if event_times.notna().any() else "",
+        # "capacity_rows": int(len(capacity)),
+        # "patient_rows": int(len(tables.get("patients", pd.DataFrame()))),
+        # "admission_rows": int(len(admissions)),
+        # "event_rows": int(len(events)),
+        # "first_admission_ts": admission_times.min().isoformat() if admission_times.notna().any() else "",
+        # "last_admission_ts": admission_times.max().isoformat() if admission_times.notna().any() else "",
+        # "first_event_ts": event_times.min().isoformat() if event_times.notna().any() else "",
+        # "last_event_ts": event_times.max().isoformat() if event_times.notna().any() else "",
     }
 
     log_path = REPORT_DATA_DIR / "incremental_runs.csv"
@@ -211,17 +212,25 @@ def ensure_patient_registration_date(patients: pd.DataFrame) -> pd.DataFrame:
 
 
 def etl_incremental(seed: int, length: int = 1) -> str:
-    delta_tables = generate_next_run_raw(seed, length)
-    updated_tables = {}
+    with EtlJob("incremental_run", params={"seed": seed, "length": length}) as job:
+        delta_tables = generate_next_run_raw(seed, length)
+        updated_tables = {}
 
-    for name, delta_table in delta_tables.items():
-        current = pd.read_csv(RAW_DATA_DIR / f"{name}.csv")
-        if name == "patients":
-            current = ensure_patient_registration_date(current)
-        check_incremental(name, current, delta_table)
-        updated_tables[name] = pd.concat([current, delta_table], ignore_index=True)
+        for name, delta_table in delta_tables.items():
+            current = pd.read_csv(RAW_DATA_DIR / f"{name}.csv")
+            if name == "patients":
+                current = ensure_patient_registration_date(current)
+            check_incremental(name, current, delta_table)
+            updated_tables[name] = pd.concat([current, delta_table], ignore_index=True)
 
-    write_csvs(updated_tables, RAW_DATA_DIR)
-    run_etl_from_existing_raw()
-    log = log_incremental(delta_tables)
-    return log
+        write_csvs(updated_tables, RAW_DATA_DIR)
+        run_etl_from_existing_raw(log_job=False)
+        log = log_incremental(delta_tables)
+        job.set_metrics(
+            rows_added=sum(len(frame) for frame in delta_tables.values()),
+            capacity_rows_added=len(delta_tables.get("capacity", pd.DataFrame())),
+            patient_rows_added=len(delta_tables.get("patients", pd.DataFrame())),
+            admission_rows_added=len(delta_tables.get("admission_chart", pd.DataFrame())),
+            event_rows_added=len(delta_tables.get("patient_events", pd.DataFrame())),
+        )
+        return log

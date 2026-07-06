@@ -1,42 +1,182 @@
-"""Database access with a local synthetic-data fallback."""
+"""Dashboard data access and CSV profiling utilities."""
 
 from __future__ import annotations
 
-import os
+import json
 from pathlib import Path
 
 import pandas as pd
+import streamlit as st
+
+from etl.pipeline.job_logger import RUN_HISTORY_PATH
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 SAMPLE_DATA_DIR = PROJECT_ROOT / "data" / "synthetic" / "sample_data"
 RAW_DATA_DIR = PROJECT_ROOT / "data" / "container" / "raw"
+REPORT_DATA_DIR = PROJECT_ROOT / "data" / "container" / "reports"
 ETL_PREPARED_DIR = PROJECT_ROOT / "data" / "etl_prepared"
 DASHBOARD_PREPARED_DIR = PROJECT_ROOT / "data" / "dashboard_prepared"
+PREPARED_DATA_DIR = DASHBOARD_PREPARED_DIR
+EVENT_SOURCE_FILES = {"patients.csv", "admission_chart.csv", "patient_events.csv"}
+REFERENCE_SOURCE_FILES = {
+    "capacity.csv",
+    "diagnoses.csv",
+    "facilities.csv",
+    "population_growth.csv",
+    "services.csv",
+    "units.csv",
+}
+AGGREGATED_SOURCE_FILES = {
+    "capacity.csv",
+    "census.csv",
+    "current_demand.csv",
+    "daily.csv",
+    "demand.csv",
+    "demographics.csv",
+    "pressure.csv",
+    "projection.csv",
+    "quality.csv",
+    "savings.csv",
+}
+RAW_PIPELINE_FILES = {
+    "patients.csv": ("patient_id", ("registration_date",)),
+    "admission_chart.csv": ("visit_id", ("admission_ts",)),
+    "patient_events.csv": ("event_id", ("event_ts",)),
+    "capacity.csv": ("capacity_date", ("capacity_date",)),
+}
+ETL_PIPELINE_FILES = {
+    "visits.csv": ("visit_id", ("admission_ts", "discharge_ts")),
+}
+DASHBOARD_PIPELINE_FILES = {
+    "daily.csv": ("calendar_date", ("calendar_date",)),
+    "census.csv": ("hour_ts", ("hour_ts",)),
+    "pressure.csv": ("calendar_date", ("calendar_date",)),
+    "quality.csv": ("check_name", ()),
+}
 
 
-def get_engine():
-    from dotenv import load_dotenv
-    from sqlalchemy import create_engine
-
-    load_dotenv(PROJECT_ROOT / ".env")
-    url = os.getenv("DATABASE_URL")
-    return create_engine(url, pool_pre_ping=True) if url else None
+@st.cache_data
+def read_csv_preview(path: str, modified_ns: int) -> pd.DataFrame:
+    return pd.read_csv(path).head(100)
 
 
-def query_table(table_name: str) -> pd.DataFrame:
-    allowed = {
-        "fct_hourly_census",
-        "fct_daily_utilization",
-        "fct_service_capacity_pressure",
-        "fct_data_quality_summary",
+def format_date(value: object) -> str:
+    timestamp = pd.to_datetime(value, errors="coerce")
+    return timestamp.date().isoformat() if pd.notna(timestamp) else "n/a"
+
+
+@st.cache_data
+def read_csv_profile(path: str, freshness_columns: tuple[str, ...], modified_ns: int) -> dict[str, object]:
+    frame = pd.read_csv(path)
+    latest_values = []
+    for column in freshness_columns:
+        if column in frame.columns:
+            values = pd.to_datetime(frame[column], errors="coerce")
+            if values.notna().any():
+                latest_values.append(values.max())
+
+    latest = max(latest_values) if latest_values else pd.NaT
+    return {
+        "rows": len(frame),
+        "columns": len(frame.columns),
+        "latest": format_date(latest),
     }
-    if table_name not in allowed:
-        raise ValueError(f"Unsupported analytics table: {table_name}")
-    engine = get_engine()
-    if engine is None:
-        raise RuntimeError("DATABASE_URL is not configured.")
-    return pd.read_sql_table(table_name, engine, schema="analytics_marts")
+
+
+def list_csvs(folder: Path) -> list[Path]:
+    return sorted(folder.glob("*.csv")) if folder.exists() else []
+
+
+def profile_csvs(folder: Path, file_config: dict[str, tuple[str, tuple[str, ...]]]) -> pd.DataFrame:
+    rows = []
+    for file_name, (_, freshness_columns) in file_config.items():
+        path = folder / file_name
+        if not path.exists():
+            rows.append(
+                {
+                    "table": file_name.removesuffix(".csv"),
+                    "rows": "missing",
+                    "columns": "missing",
+                    "freshness": "missing",
+                }
+            )
+            continue
+        profile = read_csv_profile(str(path), freshness_columns, path.stat().st_mtime_ns)
+        rows.append(
+            {
+                "table": file_name.removesuffix(".csv"),
+                "rows": profile["rows"],
+                "columns": profile["columns"],
+                "freshness": profile["latest"],
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def dashboard_mart_end_date() -> str:
+    daily_path = PREPARED_DATA_DIR / "daily.csv"
+    if daily_path.exists():
+        daily_profile = read_csv_profile(str(daily_path), ("calendar_date",), daily_path.stat().st_mtime_ns)
+        if daily_profile["latest"] != "n/a":
+            return str(daily_profile["latest"])
+
+    raw_capacity_path = RAW_DATA_DIR / "capacity.csv"
+    if raw_capacity_path.exists():
+        capacity_profile = read_csv_profile(
+            str(raw_capacity_path),
+            ("capacity_date",),
+            raw_capacity_path.stat().st_mtime_ns,
+        )
+        return str(capacity_profile["latest"])
+
+    return "n/a"
+
+
+def profile_dashboard_marts() -> pd.DataFrame:
+    end_date = dashboard_mart_end_date()
+    profile = profile_csvs(PREPARED_DATA_DIR, {name: (key, ()) for name, (key, _) in DASHBOARD_PIPELINE_FILES.items()})
+    profile["freshness"] = end_date
+    return profile
+
+
+def load_quality_summary() -> tuple[pd.DataFrame, str]:
+    quality_path = PREPARED_DATA_DIR / "quality.csv"
+    report_path = REPORT_DATA_DIR / "data_check_report.csv"
+    if quality_path.exists():
+        return pd.read_csv(quality_path), str(quality_path.relative_to(PROJECT_ROOT))
+    if report_path.exists():
+        return pd.read_csv(report_path), str(report_path.relative_to(PROJECT_ROOT))
+    return pd.DataFrame(columns=["check_name", "severity", "issue_count", "details", "status"]), "not generated"
+
+
+def load_incremental_summary() -> dict[str, object] | None:
+    path = REPORT_DATA_DIR / "latest_incremental_run.json"
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text())
+    except json.JSONDecodeError:
+        return {"status": "unreadable", "path": str(path.relative_to(PROJECT_ROOT))}
+
+
+def load_run_history() -> pd.DataFrame:
+    if not RUN_HISTORY_PATH.exists():
+        return pd.DataFrame(
+            columns=[
+                "job_id",
+                "job_type",
+                "status",
+                "started_at",
+                "finished_at",
+                "duration_seconds",
+                "params_json",
+                "metrics_json",
+                "message",
+            ]
+        )
+    history = pd.read_csv(RUN_HISTORY_PATH)
+    return history.sort_values("started_at", ascending=False)
 
 
 def _hourly_snapshots(
@@ -337,26 +477,4 @@ def load_dashboard_data() -> tuple[dict[str, pd.DataFrame], str]:
     try:
         return read_prepared_dashboard_sources(), "prepared container-local pipeline data"
     except Exception:
-        pass
-
-    try:
-        sources = read_sample_sources()
-        reporting_start, reporting_end = _reporting_window(sources["capacity"])
-        raw_visits = sources["visits"]
-        visits = _visits_overlapping_window(raw_visits, reporting_start, reporting_end)
-        sources["raw_visits"] = raw_visits
-        sources["visits"] = visits
-        sources["unit_changes"] = _unit_changes_overlapping_window(sources["unit_changes"], raw_visits, visits)
-        tables = {
-            "hourly": query_table("fct_hourly_census"),
-            "daily": query_table("fct_daily_utilization"),
-            "pressure": query_table("fct_service_capacity_pressure"),
-            "quality": query_table("fct_data_quality_summary"),
-            **sources,
-        }
-        return tables, "PostgreSQL + dbt marts"
-    except Exception:
         return build_sample_marts(), "built-in synthetic CSV data"
-
-# if __name__ == "__main__":
-#     build_sample_marts()

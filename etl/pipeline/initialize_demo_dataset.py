@@ -2,7 +2,7 @@
 
 This is a lightweight runtime workflow for the containerized Streamlit app:
 
-container raw data -> validation report -> DuckDB/dbt-style transforms -> dashboard_prepared.
+container raw data -> validation report -> DuckDB-backed transforms -> dashboard_prepared.
 """
 
 from __future__ import annotations
@@ -35,6 +35,8 @@ from dashboard.streamlit.utils.database import (  # noqa: E402
     _unit_changes_overlapping_window,
     _visits_overlapping_window,
 )
+from etl.pipeline.job_logger import EtlJob  # noqa: E402
+from etl.pipeline.job_logger import LOG_DATA_DIR  # noqa: E402
 from etl.synthetic_data_generator.generate_fake_data import (  # noqa: E402
     GeneratorConfig,
     initial_fake_data,
@@ -474,6 +476,20 @@ def clear_container_run_data() -> None:
         folder.mkdir(parents=True, exist_ok=True)
 
 
+def reset_demo_runtime() -> None:
+    for folder in (
+        RAW_DATA_DIR,
+        BACKUP_DATA_DIR,
+        REPORT_DATA_DIR,
+        LOG_DATA_DIR,
+        ETL_PREPARED_DIR,
+        DASHBOARD_PREPARED_DIR,
+    ):
+        if folder.exists():
+            shutil.rmtree(folder)
+        folder.mkdir(parents=True, exist_ok=True)
+
+
 def clear_dashboard_prepared() -> None:
     if DASHBOARD_PREPARED_DIR.exists():
         shutil.rmtree(DASHBOARD_PREPARED_DIR)
@@ -504,70 +520,93 @@ def refresh_raw_backup() -> None:
         shutil.copy2(RAW_DATA_DIR / file_name, BACKUP_DATA_DIR / file_name)
 
 
-def run_etl_from_existing_raw() -> dict[str, object]:
-    raw_dir = RAW_DATA_DIR
-    report_dir = REPORT_DATA_DIR
-    clear_etl_prepared()
-    clear_dashboard_prepared()
-    report_dir.mkdir(parents=True, exist_ok=True)
+def run_etl_from_existing_raw(
+    job_type: str = "etl_refresh",
+    params: dict[str, object] | None = None,
+    log_job: bool = True,
+) -> dict[str, object]:
+    with EtlJob(job_type, params=params, enabled=log_job) as job:
+        raw_dir = RAW_DATA_DIR
+        report_dir = REPORT_DATA_DIR
+        clear_etl_prepared()
+        clear_dashboard_prepared()
+        report_dir.mkdir(parents=True, exist_ok=True)
 
-    sources = read_raw_sources(raw_dir)
-    validation_report = validate_sources(sources)
-    validation_report.to_csv(report_dir / "data_check_report.csv", index=False)
+        sources = read_raw_sources(raw_dir)
+        validation_report = validate_sources(sources)
+        validation_report.to_csv(report_dir / "data_check_report.csv", index=False)
 
-    issue_count = int(
-        validation_report.loc[
-            validation_report["severity"] == "error",
-            "issue_count",
-        ].sum()
-    )
-    status = "pass" if issue_count == 0 else "fail"
+        issue_count = int(
+            validation_report.loc[
+                validation_report["severity"] == "error",
+                "issue_count",
+            ].sum()
+        )
+        status = "pass" if issue_count == 0 else "fail"
 
-    write_etl_prepared_tables(sources)
+        write_etl_prepared_tables(sources)
 
-    marts = build_marts_from_sources(sources)
-    dashboard_tables = build_dashboard_tables(marts)
-    write_tables_with_duckdb(dashboard_tables, DASHBOARD_PREPARED_DIR)
-    refresh_raw_backup()
+        marts = build_marts_from_sources(sources)
+        dashboard_tables = build_dashboard_tables(marts)
+        write_tables_with_duckdb(dashboard_tables, DASHBOARD_PREPARED_DIR)
+        refresh_raw_backup()
 
-    return {
-        "issue_count": issue_count,
-        "status": status,
-        "raw_dir": raw_dir,
-        "report_dir": report_dir,
-        "etl_prepared_dir": ETL_PREPARED_DIR,
-        "prepared_dir": DASHBOARD_PREPARED_DIR,
-    }
+        job.set_metrics(
+            validation_status=status,
+            validation_issue_count=issue_count,
+            raw_table_count=len(sources),
+            dashboard_table_count=len(dashboard_tables),
+        )
+
+        return {
+            "issue_count": issue_count,
+            "status": status,
+            "raw_dir": raw_dir,
+            "report_dir": report_dir,
+            "etl_prepared_dir": ETL_PREPARED_DIR,
+            "prepared_dir": DASHBOARD_PREPARED_DIR,
+        }
 
 def run_fake_data_pipeline(seed: int, days: int = 30, start_date: str = "2025-01-01") -> PipelineResult:
-    clear_container_run_data()
+    with EtlJob(
+        "initial_dataset",
+        params={"seed": seed, "days": days, "start_date": start_date},
+    ) as job:
+        clear_container_run_data()
 
-    raw_dir = RAW_DATA_DIR
-    report_dir = REPORT_DATA_DIR
-    raw_dir.mkdir(parents=True, exist_ok=True)
-    report_dir.mkdir(parents=True, exist_ok=True)
+        raw_dir = RAW_DATA_DIR
+        report_dir = REPORT_DATA_DIR
+        raw_dir.mkdir(parents=True, exist_ok=True)
+        report_dir.mkdir(parents=True, exist_ok=True)
 
-    config = GeneratorConfig(start_date=start_date, days=days, seed=seed)
-    raw_tables = initial_fake_data(config)
-    write_csvs(raw_tables, raw_dir)
+        config = GeneratorConfig(start_date=start_date, days=days, seed=seed)
+        raw_tables = initial_fake_data(config)
+        write_csvs(raw_tables, raw_dir)
 
-    etl_result = run_etl_from_existing_raw()
+        etl_result = run_etl_from_existing_raw(log_job=False)
 
-    result = PipelineResult(
-        seed=seed,
-        raw_dir=str(etl_result["raw_dir"]),
-        report_dir=str(etl_result["report_dir"]),
-        etl_prepared_dir=str(etl_result["etl_prepared_dir"]),
-        prepared_dir=str(etl_result["prepared_dir"]),
-        validation_status=str(etl_result["status"]),
-        validation_issue_count=int(etl_result["issue_count"]),
-    )
+        result = PipelineResult(
+            seed=seed,
+            raw_dir=str(etl_result["raw_dir"]),
+            report_dir=str(etl_result["report_dir"]),
+            etl_prepared_dir=str(etl_result["etl_prepared_dir"]),
+            prepared_dir=str(etl_result["prepared_dir"]),
+            validation_status=str(etl_result["status"]),
+            validation_issue_count=int(etl_result["issue_count"]),
+        )
 
-    (report_dir / "pipeline_result.json").write_text(
-        json.dumps(asdict(result), indent=2),
-        encoding="utf-8",
-    )
-    return result
+        job.set_metrics(
+            validation_status=result.validation_status,
+            validation_issue_count=result.validation_issue_count,
+            raw_rows=sum(len(frame) for frame in raw_tables.values()),
+            raw_tables=len(raw_tables),
+        )
+
+        (report_dir / "pipeline_result.json").write_text(
+            json.dumps(asdict(result), indent=2),
+            encoding="utf-8",
+        )
+        return result
 
 if __name__ == "__main__":
     result = run_fake_data_pipeline(seed=42)

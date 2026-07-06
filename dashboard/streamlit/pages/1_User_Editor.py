@@ -257,7 +257,10 @@ with submit_col:
 
     if st.button("Submit Updates", type="primary", use_container_width=True):
         with st.spinner("Rebuilding ETL and dashboard tables..."):
-            result = run_etl_from_existing_raw()
+            result = run_etl_from_existing_raw(
+                job_type="user_editor_update",
+                params={"changes": st.session_state["change_log"]},
+            )
         clear_editor_state()
         st.success(f"Tables rebuilt: {result['status']}")
 

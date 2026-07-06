@@ -23,6 +23,7 @@ hospital-capacity-app/
 ├── ci/                        Draft CI workflow reference
 ├── config/                    Safe environment/profile examples only
 ├── dashboard/streamlit/       Current dashboard draft
+├── dashboard/streamlit/utils/ Shared dashboard data, report, and chart helpers
 ├── data/synthetic/            Synthetic CSV samples
 ├── data/container/            Container-local raw, backup, and report data
 ├── data/etl_prepared/         Derived visit-level ETL output
@@ -114,6 +115,25 @@ Run Python tests:
 pytest tests/python
 ```
 
+## Demo controls
+
+The Streamlit home page includes three main runtime actions:
+
+- **Initial First Month Data** regenerates the initial synthetic raw layer, validates it, rebuilds ETL/dashboard outputs, and starts a new `initial_dataset` job log entry.
+- **Incremental Run(add next-day data)** appends the next simulated day of raw data, validates duplicate/overlap rules, rebuilds downstream tables, and records an `incremental_run` job.
+- **Reset Demo Runtime** clears local runtime artifacts after confirmation. It removes generated raw data, backups, reports, run logs, ETL-prepared tables, and dashboard-prepared tables. It does not remove `data/synthetic/sample_data`.
+
+The reset target folders are:
+
+```text
+data/container/raw/
+data/container/backup/
+data/container/reports/
+data/container/logs/
+data/etl_prepared/
+data/dashboard_prepared/
+```
+
 ## Pipeline workflow
 
 The local demo has two run modes:
@@ -171,3 +191,36 @@ The data check layer exists in two places:
 - `data/dashboard_prepared/quality.csv` is the dashboard-facing copy used by the Data Quality page.
 
 The Streamlit home page shows a compact pipeline status summary. The full check details live in the **Data Quality** page and in the CSV reports above.
+
+### Run history
+
+ETL actions are wrapped by a lightweight `EtlJob` context manager in `etl/pipeline/job_logger.py`.
+
+Each job writes one audit row to:
+
+```text
+data/container/logs/run_history.csv
+```
+
+The run history captures:
+
+```text
+job_id
+job_type
+status
+started_at
+finished_at
+duration_seconds
+params_json
+metrics_json
+message
+```
+
+The Streamlit **Pipeline Status** panel includes a **Run History** tab that shows recent jobs and lets users inspect parameters and metrics for a selected `job_id`.
+
+Current job types include:
+
+- `initial_dataset`
+- `incremental_run`
+- `user_editor_update`
+- `etl_refresh`
