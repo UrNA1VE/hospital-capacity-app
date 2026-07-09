@@ -1,4 +1,4 @@
-# Healthcare Capacity Analytics Pipeline
+# Hospital Capacity Analytics App
 
 Synthetic hospital capacity analytics demo.
 

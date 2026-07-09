@@ -21,10 +21,10 @@ from utils.database import (
 from utils.report import data_viewer, render_pipeline_status
 
 
-st.set_page_config(page_title="Healthcare Capacity Pipeline", page_icon="🏥", layout="wide")
+st.set_page_config(page_title="Hospital Capacity Analytics App", page_icon="🏥", layout="wide")
 
 
-st.title("Healthcare Capacity Analytics Pipeline")
+st.title("Hospital Capacity Analytics App")
 st.caption("Generate synthetic event-level source data, validate it, and build dashboard-ready aggregated tables.")
 
 with st.expander("Data Generator", expanded=True):
@@ -63,7 +63,7 @@ with st.expander("Data Generator", expanded=True):
             reset_demo_runtime()
             read_csv_preview.clear()
             read_csv_profile.clear()
-        st.success("Demo runtime cleared. Generate initial data to start a new session.")
+            st.success("Demo runtime cleared. Generate initial data to start a new session.")
 
 render_pipeline_status()
 
