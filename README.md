@@ -6,10 +6,6 @@ This project is a public-safe technical demo. It combines a Python synthetic dat
 
 The raw generated layer is event-level. It stores patient demographics in `patients.csv` and hospital activity in `patient_events.csv`; visit-level tables are derived during ETL rather than stored as raw source files.
 
-## Current status
-
-This project is under active development. The original draft is preserved as source material under `docs/original-draft-readme.md`, and its sanitized migration plan is under `docs/sanitized-migration-plan.md`.
-
 ## Data safety boundary
 
 All demo data must remain synthetic or explicitly public-safe.
@@ -20,19 +16,16 @@ Do not add real SHA data, patient data, internal screenshots, internal table nam
 
 ```text
 hospital-capacity-app/
-├── ci/                        Draft CI workflow reference
-├── config/                    Safe environment/profile examples only
 ├── dashboard/streamlit/       Current dashboard draft
 ├── dashboard/streamlit/utils/ Shared dashboard data, report, and chart helpers
 ├── data/synthetic/            Synthetic CSV samples
 ├── data/container/            Container-local raw, backup, and report data
 ├── data/etl_prepared/         Derived visit-level ETL output
 ├── data/dashboard_prepared/   Aggregated dashboard output destination
-├── docs/                      Draft documentation and migration notes
+├── docs/                      ETL architecture notes
 ├── etl/event_editor/          Raw event editor helpers
 ├── etl/pipeline/              Local ETL pipeline runners
 ├── etl/synthetic_data_generator/
-├── notebooks/
 └── tests/python/
 ```
 
@@ -121,7 +114,7 @@ The Streamlit home page includes three main runtime actions:
 
 - **Initial First Month Data** regenerates the initial synthetic raw layer, validates it, rebuilds ETL/dashboard outputs, and starts a new `initial_dataset` job log entry.
 - **Incremental Run(add next-day data)** appends the next simulated day of raw data, validates duplicate/overlap rules, rebuilds downstream tables, and records an `incremental_run` job.
-- **Reset Demo Runtime** clears local runtime artifacts after confirmation. It removes generated raw data, backups, reports, run logs, ETL-prepared tables, and dashboard-prepared tables. It does not remove `data/synthetic/sample_data`.
+- **Reset Demo** clears local runtime artifacts. It removes generated raw data, backups, reports, run logs, ETL-prepared tables, and dashboard-prepared tables. It does not remove `data/synthetic/sample_data`.
 
 The reset target folders are:
 
@@ -211,16 +204,22 @@ status
 started_at
 finished_at
 duration_seconds
-params_json
-metrics_json
 message
+changes
 ```
 
-The Streamlit **Pipeline Status** panel includes a **Run History** tab that shows recent jobs and lets users inspect parameters and metrics for a selected `job_id`.
+The Streamlit **Pipeline Status** panel includes a **Run History** tab that shows recent jobs and lets users inspect the human-readable message and machine-readable change payload for a selected `job_id`.
 
 Current job types include:
 
 - `initial_dataset`
 - `incremental_run`
 - `user_editor_update`
+- `undo_user_edit`
 - `etl_refresh`
+
+### User edit undo
+
+The **User Editor** records submitted edits as `user_editor_update` jobs. Each edit job writes human-readable messages to the `message` column and undo-ready structured actions to the `changes` column.
+
+The editor supports undoing the latest submitted edit job only. This keeps the demo state deterministic when edits depend on each other. After an undo, the app rebuilds the derived ETL/dashboard outputs and removes that job from `edit_history.csv` so the same job cannot be undone twice.

@@ -6,7 +6,7 @@ import streamlit as st
 
 import bootstrap  # noqa: F401
 from etl.pipeline.incremental_run import IncrementalDataError, etl_incremental
-from etl.pipeline.initialize_demo_dataset import reset_demo_runtime, run_fake_data_pipeline
+from etl.pipeline.initialize_demo_dataset import reset_demo_runtime, run_fake_data_pipeline, RUN_HISTORY_PATH, EDIT_HISTORY_PATH
 from utils.database import (
     AGGREGATED_SOURCE_FILES,
     EVENT_SOURCE_FILES,
@@ -20,10 +20,11 @@ from utils.database import (
 )
 from utils.report import data_viewer, render_pipeline_status
 
+for path in [RUN_HISTORY_PATH, EDIT_HISTORY_PATH]:
+    if path.exists():
+        path.unlink()
 
 st.set_page_config(page_title="Hospital Capacity Analytics App", page_icon="🏥", layout="wide")
-
-
 st.title("Hospital Capacity Analytics App")
 st.caption("Generate synthetic event-level source data, validate it, and build dashboard-ready aggregated tables.")
 

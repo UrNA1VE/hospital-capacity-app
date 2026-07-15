@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys
 import shutil
 from pathlib import Path
-
+import json
 import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -13,6 +13,9 @@ sys.path.insert(0, str(PROJECT_ROOT))
 RAW_DATA_DIR = PROJECT_ROOT / "data" / "container" / "raw"
 BACKUP_DATA_DIR = PROJECT_ROOT / "data" / "container" / "backup"
 EDITABLE_RAW_FILES = ["patients.csv", "admission_chart.csv", "patient_events.csv"]
+CONTAINER_DATA_ROOT = PROJECT_ROOT / "data" / "container"
+LOG_DATA_DIR = CONTAINER_DATA_ROOT / "logs"
+EDIT_HISTORY_PATH = LOG_DATA_DIR / "edit_history.csv"
 from etl.synthetic_data_generator.generate_fake_data import write_csvs
 
 
@@ -143,5 +146,86 @@ def retrieve_back_up() -> None:
         shutil.copy2(source, RAW_DATA_DIR / file_name)
 
 
-# if __name__ == "__main__":
-#     add_patient(20, "male", "X")
+def undo_new_patient(patient_id: str) -> None:
+    patients = pd.read_csv(RAW_DATA_DIR / "patients.csv")
+    patients = patients.loc[patients["patient_id"] != patient_id].reset_index(drop=True)
+    patients.to_csv(RAW_DATA_DIR / "patients.csv", index=False)
+
+
+def undo_new_admission(visit_id: str, patient_id: str | None = None, inserted_patient: bool = False) -> None:
+    patient_events = pd.read_csv(RAW_DATA_DIR / "patient_events.csv")
+    patient_events = patient_events.loc[patient_events["visit_id"] != visit_id].reset_index(drop=True)
+    patient_events.to_csv(RAW_DATA_DIR / "patient_events.csv", index=False)
+
+    admission_chart = pd.read_csv(RAW_DATA_DIR / "admission_chart.csv")
+    admission_chart = admission_chart.loc[admission_chart["visit_id"] != visit_id].reset_index(drop=True)
+    admission_chart.to_csv(RAW_DATA_DIR / "admission_chart.csv", index=False)
+
+    if inserted_patient and patient_id:
+        undo_new_patient(patient_id)
+
+
+def undo_new_event(event_id: str) -> None:
+    patient_events = pd.read_csv(RAW_DATA_DIR / "patient_events.csv")
+    patient_events = patient_events.loc[patient_events["event_id"] != event_id].reset_index(drop=True)
+    patient_events.to_csv(RAW_DATA_DIR / "patient_events.csv", index=False)
+
+
+def undo_update_event(event_id: str, previous_value: str) -> None:
+    patient_events = pd.read_csv(RAW_DATA_DIR / "patient_events.csv")
+    if not patient_events["event_id"].eq(event_id).any():
+        raise ValueError(f"event_id not found in patient_events.csv: {event_id}")
+    patient_events.loc[patient_events["event_id"] == event_id, "value"] = previous_value
+    patient_events.to_csv(RAW_DATA_DIR / "patient_events.csv", index=False)
+
+
+def undo_delete_event(change: dict[str, object]) -> None:
+    event_row = change.get("event_row")
+    if not isinstance(event_row, dict):
+        raise ValueError("DELETE_EVENT change is missing event_row")
+
+    patient_events = pd.read_csv(RAW_DATA_DIR / "patient_events.csv")
+    event_id = str(event_row["event_id"])
+    if patient_events["event_id"].eq(event_id).any():
+        return
+
+    restored_event = pd.DataFrame([event_row])
+    patient_events = pd.concat([patient_events, restored_event], ignore_index=True)
+    patient_events = patient_events.sort_values(["visit_id", "event_ts", "event_id"]).reset_index(drop=True)
+    patient_events.to_csv(RAW_DATA_DIR / "patient_events.csv", index=False)
+
+
+def undo_job(job_id: str) -> None:
+    history = pd.read_csv(EDIT_HISTORY_PATH)
+    job = history.loc[history["job_id"] == job_id]
+    if job.empty:
+        raise ValueError(f"job_id not found in edit_history.csv: {job_id}")
+
+    row = job.iloc[0]
+    if "changes" not in row or pd.isna(row["changes"]):
+        raise ValueError(f"job_id has no undo changes: {job_id}")
+    changes = json.loads(row["changes"])
+
+    for change in reversed(changes):
+        change = dict(change)
+        if change["action"] == "INSERT_ADMISSION":
+            undo_new_admission(
+                visit_id=change["visit_id"],
+                patient_id=change.get("patient_id"),
+                inserted_patient=bool(change.get("inserted_patient", False)),
+            )
+        elif change["action"] == "UPDATE_EVENT":
+            undo_update_event(event_id=change["event_id"], previous_value=change["previous_value"])
+        elif change["action"] == "DELETE_EVENT":
+            undo_delete_event(change=change)
+        elif change["action"] == "INSERT_EVENT":
+            undo_new_event(event_id=change["event_id"])
+
+
+def remove_edit_history_job(job_id: str) -> None:
+    if not EDIT_HISTORY_PATH.exists():
+        return
+
+    history = pd.read_csv(EDIT_HISTORY_PATH)
+    history = history.loc[history["job_id"] != job_id].reset_index(drop=True)
+    history.to_csv(EDIT_HISTORY_PATH, index=False)

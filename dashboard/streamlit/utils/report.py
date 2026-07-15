@@ -27,13 +27,32 @@ from utils.database import (
 )
 
 
-def render_job_json(raw_json: object) -> None:
+def parse_json_value(raw_json: object) -> object:
+    if pd.isna(raw_json) or raw_json == "":
+        return None
     try:
-        parsed = json.loads(str(raw_json)) if pd.notna(raw_json) else {}
+        return json.loads(str(raw_json))
     except json.JSONDecodeError:
-        st.code(str(raw_json), language="text")
-        return
-    st.json(parsed, expanded=False)
+        return str(raw_json)
+
+
+def render_job_messages(raw_message: object) -> None:
+    messages = parse_json_value(raw_message)
+    if messages is None:
+        st.caption("None")
+    elif isinstance(messages, list):
+        for message in messages:
+            st.caption(f"- {message}")
+    else:
+        st.caption(str(messages))
+
+
+def render_job_changes(raw_changes: object) -> None:
+    changes = parse_json_value(raw_changes)
+    if changes is None:
+        st.caption("None")
+    else:
+        st.json(changes, expanded=False)
 
 
 def render_pipeline_status() -> None:
@@ -114,11 +133,11 @@ def render_pipeline_status() -> None:
             selected_job = history.loc[history["job_id"].eq(selected_job_id)].iloc[0]
             detail_col, metric_col = st.columns(2)
             with detail_col:
-                st.caption("Parameters")
-                render_job_json(selected_job.get("params_json", "{}"))
+                st.caption("Message")
+                render_job_messages(selected_job.get("message", ""))
             with metric_col:
-                st.caption("Metrics")
-                render_job_json(selected_job.get("metrics_json", "{}"))
+                st.caption("Changes")
+                render_job_changes(selected_job.get("changes", ""))
 
 
 def data_viewer(label: str, folder: Path, allowed_files: set[str] | None = None) -> None:

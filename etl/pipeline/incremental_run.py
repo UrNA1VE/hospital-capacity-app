@@ -226,11 +226,4 @@ def etl_incremental(seed: int, length: int = 1) -> str:
         write_csvs(updated_tables, RAW_DATA_DIR)
         run_etl_from_existing_raw(log_job=False)
         log = log_incremental(delta_tables)
-        job.set_metrics(
-            rows_added=sum(len(frame) for frame in delta_tables.values()),
-            capacity_rows_added=len(delta_tables.get("capacity", pd.DataFrame())),
-            patient_rows_added=len(delta_tables.get("patients", pd.DataFrame())),
-            admission_rows_added=len(delta_tables.get("admission_chart", pd.DataFrame())),
-            event_rows_added=len(delta_tables.get("patient_events", pd.DataFrame())),
-        )
         return log

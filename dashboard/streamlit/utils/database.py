@@ -170,9 +170,8 @@ def load_run_history() -> pd.DataFrame:
                 "started_at",
                 "finished_at",
                 "duration_seconds",
-                "params_json",
-                "metrics_json",
                 "message",
+                "changes",
             ]
         )
     history = pd.read_csv(RUN_HISTORY_PATH)

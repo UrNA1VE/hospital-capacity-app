@@ -63,4 +63,5 @@ jobs:
           az containerapp update \
             --name ${{ secrets.AZURE_CONTAINER_APP_NAME }} \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            --image ghcr.io/urna1ve/hospital-capacity-app:${{ github.sha }}
+            --image ghcr.io/urna1ve/hospital-capacity-app:${{ github.sha }} \
+            --min-replicas 1

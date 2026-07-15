@@ -1,12 +1,23 @@
 """User editor for raw healthcare-capacity event data."""
 
+import json
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
 import bootstrap  # noqa: F401
-from etl.event_editor.editor import add_admission, add_event, add_patient, remove_event, retrieve_back_up, update_event
+from etl.event_editor.editor import (
+    EDIT_HISTORY_PATH,
+    add_admission,
+    add_event,
+    add_patient,
+    remove_edit_history_job,
+    remove_event,
+    retrieve_back_up,
+    undo_job,
+    update_event,
+)
 from etl.pipeline.initialize_demo_dataset import RAW_DATA_DIR, run_etl_from_existing_raw
 
 
@@ -28,18 +39,53 @@ def option_label(frame: pd.DataFrame, id_column: str, label_column: str):
     return lambda value: f"{value} - {labels.get(value, '')}".rstrip(" -")
 
 
-def log_change(message: str) -> None:
-    st.session_state["change_log"].append(message)
+def option_index(options: list, current_value: object) -> int:
+    try:
+        return options.index(current_value)
+    except ValueError:
+        return 0
+
+
+def log_change(message: str, change: dict[str, object]) -> None:
+    st.session_state["change_messages"].append(message)
+    st.session_state["pending_changes"].append(change)
     st.session_state["pending_updates"] = True
 
 
 def clear_editor_state() -> None:
-    st.session_state["change_log"] = []
+    st.session_state["change_messages"] = []
+    st.session_state["pending_changes"] = []
     st.session_state["pending_updates"] = False
 
 
-if "change_log" not in st.session_state:
-    st.session_state["change_log"] = []
+def load_latest_edit_job() -> pd.Series | None:
+    if not EDIT_HISTORY_PATH.exists():
+        return None
+
+    history = pd.read_csv(EDIT_HISTORY_PATH)
+    if history.empty:
+        return None
+
+    history = history.sort_values("started_at", ascending=False)
+    return history.iloc[0]
+
+
+def parse_message_list(raw_message: object) -> list[str]:
+    if pd.isna(raw_message) or raw_message == "":
+        return []
+    try:
+        parsed = json.loads(str(raw_message))
+    except json.JSONDecodeError:
+        return [str(raw_message)]
+    if isinstance(parsed, list):
+        return [str(message) for message in parsed]
+    return [str(parsed)]
+
+
+if "change_messages" not in st.session_state:
+    st.session_state["change_messages"] = []
+if "pending_changes" not in st.session_state:
+    st.session_state["pending_changes"] = []
 if "pending_updates" not in st.session_state:
     st.session_state["pending_updates"] = False
 
@@ -102,9 +148,9 @@ with editor_col:
             admission_type = st.selectbox("Admission type", ["Emergency", "Urgent", "Elective"])
 
             if st.button("Add admission"):
+                is_new_patient = patient_mode == "New patient"
                 if patient_mode == "New patient":
                     selected_patient_id = add_patient(int(age), str(gender), str(region))
-                    log_change(f"Added patient {selected_patient_id}")
                 visit_id = add_admission(
                     patient_id=str(selected_patient_id),
                     facility_id=str(facility_id),
@@ -113,7 +159,15 @@ with editor_col:
                     admitted_diagnosis_code=str(admitted_diagnosis_code),
                     admission_type=str(admission_type),
                 )
-                log_change(f"Added admission {visit_id} for patient {selected_patient_id}")
+                log_change(
+                    f"Added admission {visit_id} for patient {selected_patient_id}",
+                    {
+                        "action": "INSERT_ADMISSION",
+                        "visit_id": visit_id,
+                        "patient_id": selected_patient_id,
+                        "inserted_patient": is_new_patient,
+                    },
+                )
                 st.success(f"Added admission {visit_id}")
 
     with st.expander("New Event", expanded=False):
@@ -155,7 +209,13 @@ with editor_col:
 
             if st.button("Add event"):
                 event_id = add_event(str(visit_id), str(event_type), str(event_value))
-                log_change(f"Added {event_type} event {event_id} for visit {visit_id}: {event_value}")
+                log_change(
+                    f"Added {event_type} event {event_id} for visit {visit_id}: {event_value}",
+                    {
+                        "action": "INSERT_EVENT",
+                        "event_id": event_id,
+                    },
+                )
                 st.success(f"Added event {event_id}")
 
     with st.expander("Edit Historical Event", expanded=False):
@@ -182,7 +242,7 @@ with editor_col:
                     event_id = st.selectbox("Event ID", event_options, key="edited-event")
                     selected_event = patient_events[patient_events["event_id"] == event_id]
                     st.dataframe(selected_event, use_container_width=True, hide_index=True)
-
+                    current_event_value = selected_event["value"].iloc[0]
                     event_type = selected_event["type"].iloc[0]
 
                     if event_type == "location":
@@ -196,33 +256,45 @@ with editor_col:
                             event_units["unit_id"].tolist(),
                             format_func=option_label(event_units, "unit_id", "unit_name"),
                             key="edit-event-location-value",
+                            index=option_index(event_units["unit_id"].tolist(), current_event_value),
                         )
                     elif event_type == "service":
+                        service_options = services["service_id"].tolist()
                         event_value = st.selectbox(
                             "Event value",
-                            services["service_id"].tolist(),
+                            service_options,
                             format_func=option_label(services, "service_id", "service_name"),
                             key="edit-event-service-value",
+                            index=option_index(service_options, current_event_value),
                         )
                     elif event_type == "diagnosis":
+                        diagnosis_options = diagnoses["diagnosis_code"].tolist()
                         event_value = st.selectbox(
                             "Event value",
-                            diagnoses["diagnosis_code"].tolist(),
+                            diagnosis_options,
                             format_func=option_label(diagnoses, "diagnosis_code", "diagnosis_name"),
                             key="edit-event-diagnosis-value",
+                            index=option_index(diagnosis_options, current_event_value),
                         )
                     else:
+                        discharge_options = ["discharged", "home", "transfer", "expired"]
                         event_value = st.selectbox(
                             "Event value",
-                            ["discharged", "home", "transfer", "expired"],
+                            discharge_options,
                             key="edit-event-discharge-value",
+                            index=option_index(discharge_options, current_event_value),
                         )
 
                     if st.button("Update event"):
                         update_event(str(event_id), str(event_value))
                         log_change(
                             f"Updated {patient_id} event {event_id} "
-                            f"for visit {visit_id}: {event_value}"
+                            f"for visit {visit_id}: from {current_event_value} to {event_value}",
+                            {
+                                "action": "UPDATE_EVENT",
+                                "event_id": event_id,
+                                "previous_value": current_event_value,
+                            },
                         )
                         st.success(f"Updated event {event_id}")
 
@@ -242,15 +314,19 @@ with editor_col:
                 remove_event(str(event_id))
                 log_change(
                     f"Removed {event_row['type']} event {event_id} "
-                    f"for visit {event_row['visit_id']}: {event_row['value']}"
+                    f"for visit {event_row['visit_id']}: {event_row['value']}",
+                    {
+                        "action": "DELETE_EVENT",
+                        "event_row": event_row.to_dict(),
+                    },
                 )
                 st.success(f"Removed event {event_id}")
 
 with submit_col:
     st.subheader("Submit")
-    if st.session_state["change_log"]:
+    if st.session_state["change_messages"]:
         st.warning("Pending changes")
-        for item in st.session_state["change_log"]:
+        for item in st.session_state["change_messages"]:
             st.caption(f"- {item}")
     else:
         st.info("No pending changes.")
@@ -259,7 +335,10 @@ with submit_col:
         with st.spinner("Rebuilding ETL and dashboard tables..."):
             result = run_etl_from_existing_raw(
                 job_type="user_editor_update",
-                params={"changes": st.session_state["change_log"]},
+                params={
+                    "change_messages": st.session_state["change_messages"],
+                    "changes": st.session_state["pending_changes"],
+                },
             )
         clear_editor_state()
         st.success(f"Tables rebuilt: {result['status']}")
@@ -268,3 +347,34 @@ with submit_col:
         retrieve_back_up()
         clear_editor_state()
         st.success("Raw files restored from backup.")
+
+    st.divider()
+    st.subheader("Undo Last Edit Job")
+    latest_edit_job = load_latest_edit_job()
+    if latest_edit_job is None:
+        st.info("No submitted edit job to undo.")
+    else:
+        latest_job_id = str(latest_edit_job["job_id"])
+        st.caption(latest_job_id)
+        for message in parse_message_list(latest_edit_job.get("message", "")):
+            st.caption(f"- {message}")
+
+        undo_disabled = bool(st.session_state["pending_changes"])
+        if undo_disabled:
+            st.warning("Submit or clear pending changes before undoing a submitted job.")
+
+        if st.button("Undo Last Edit Job", use_container_width=True, disabled=undo_disabled):
+            with st.spinner("Undoing the latest edit job and rebuilding tables..."):
+                try:
+                    undo_job(latest_job_id)
+                    run_etl_from_existing_raw(
+                        job_type="undo_user_edit",
+                        params={"message": f"Undid edit job {latest_job_id}"},
+                    )
+                    remove_edit_history_job(latest_job_id)
+                except (FileNotFoundError, ValueError, KeyError, json.JSONDecodeError) as error:
+                    st.error(f"Undo failed: {error}")
+                else:
+                    clear_editor_state()
+                    st.success(f"Undid {latest_job_id}")
+                    st.rerun()

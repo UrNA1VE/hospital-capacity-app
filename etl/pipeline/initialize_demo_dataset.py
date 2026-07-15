@@ -35,8 +35,7 @@ from dashboard.streamlit.utils.database import (  # noqa: E402
     _unit_changes_overlapping_window,
     _visits_overlapping_window,
 )
-from etl.pipeline.job_logger import EtlJob  # noqa: E402
-from etl.pipeline.job_logger import LOG_DATA_DIR  # noqa: E402
+from etl.pipeline.job_logger import EDIT_HISTORY_PATH, LOG_DATA_DIR, RUN_HISTORY_PATH, EtlJob  # noqa: E402
 from etl.synthetic_data_generator.generate_fake_data import (  # noqa: E402
     GeneratorConfig,
     initial_fake_data,
@@ -551,13 +550,6 @@ def run_etl_from_existing_raw(
         write_tables_with_duckdb(dashboard_tables, DASHBOARD_PREPARED_DIR)
         refresh_raw_backup()
 
-        job.set_metrics(
-            validation_status=status,
-            validation_issue_count=issue_count,
-            raw_table_count=len(sources),
-            dashboard_table_count=len(dashboard_tables),
-        )
-
         return {
             "issue_count": issue_count,
             "status": status,
@@ -568,6 +560,9 @@ def run_etl_from_existing_raw(
         }
 
 def run_fake_data_pipeline(seed: int, days: int = 30, start_date: str = "2025-01-01") -> PipelineResult:
+    for path in [RUN_HISTORY_PATH, EDIT_HISTORY_PATH]:
+        if path.exists():
+            path.unlink()
     with EtlJob(
         "initial_dataset",
         params={"seed": seed, "days": days, "start_date": start_date},
@@ -593,13 +588,6 @@ def run_fake_data_pipeline(seed: int, days: int = 30, start_date: str = "2025-01
             prepared_dir=str(etl_result["prepared_dir"]),
             validation_status=str(etl_result["status"]),
             validation_issue_count=int(etl_result["issue_count"]),
-        )
-
-        job.set_metrics(
-            validation_status=result.validation_status,
-            validation_issue_count=result.validation_issue_count,
-            raw_rows=sum(len(frame) for frame in raw_tables.values()),
-            raw_tables=len(raw_tables),
         )
 
         (report_dir / "pipeline_result.json").write_text(
