@@ -20,7 +20,7 @@ hospital-capacity-app/
 ├── dashboard/streamlit/utils/ Shared dashboard data, report, and chart helpers
 ├── data/synthetic/            Synthetic CSV samples
 ├── data/container/            Container-local raw, backup, and report data
-├── data/etl_prepared/         Derived visit-level ETL output
+├── data/etl_prepared/         Derived encounter and unit-change ETL outputs
 ├── data/dashboard_prepared/   Aggregated dashboard output destination
 ├── docs/                      ETL architecture notes
 ├── etl/event_editor/          Raw event editor helpers
@@ -69,11 +69,14 @@ python etl/pipeline/initialize_demo_dataset.py
 
 Each run clears the previous container-local raw/report files and overwrites `data/dashboard_prepared/` with the latest aggregated outputs to limit local storage use.
 
-The ETL also writes derived visit-level tables to:
+Runtime data under `data/container/`, `data/etl_prepared/`, and `data/dashboard_prepared/` is ignored by git. The committed sample data under `data/synthetic/sample_data/` remains available as the fallback demo dataset.
+
+The ETL also writes derived prepared tables to:
 
 ```text
 data/etl_prepared/
-└── visits.csv
+├── visits.csv
+└── unit_changes.csv
 ```
 
 Run the Streamlit dashboard draft:
@@ -174,7 +177,7 @@ Validate duplicate keys and overlap with existing raw rows
 Rebuild derived encounter/dashboard outputs
 ```
 
-`visits.csv` is not maintained as an incremental source table. It is rebuilt from `admission_chart.csv` and `patient_events.csv` so the dashboard always reflects the complete event history, including late discharge events for existing active visits.
+`visits.csv` and `unit_changes.csv` are not maintained as incremental source tables. They are rebuilt from `admission_chart.csv` and `patient_events.csv` so the dashboard always reflects the complete event history, including late discharge and location events for existing active visits.
 
 ### Data check layer
 

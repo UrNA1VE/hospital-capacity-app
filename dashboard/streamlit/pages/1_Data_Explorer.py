@@ -2,302 +2,21 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from pathlib import Path
-
-import pandas as pd
 import streamlit as st
 
 import bootstrap  # noqa: F401
-from utils.database import (
-    DASHBOARD_PREPARED_DIR,
-    ETL_PREPARED_DIR,
-    PROJECT_ROOT,
-    RAW_DATA_DIR,
-    REPORT_DATA_DIR,
-    format_date,
-    load_quality_summary,
+from utils.database import PROJECT_ROOT, RAW_DATA_DIR
+from utils.data_explorer import (
+    LAYERS,
+    RAW_TABLES,
+    job_history_preview,
+    latest_value,
+    layer_summary,
+    matching_pipeline_checks,
+    quality_checks,
+    read_table,
+    table_path,
 )
-
-
-@dataclass(frozen=True)
-class TableMeta:
-    file_name: str
-    layer: str
-    grain: str
-    description: str
-    primary_key: str | None = None
-    freshness_column: str | None = None
-    required_columns: tuple[str, ...] = ()
-    foreign_keys: tuple[tuple[str, str, str], ...] = ()
-    allowed_values: dict[str, tuple[str, ...]] | None = None
-
-
-RAW_TABLES = {
-    "patients": TableMeta(
-        "patients.csv",
-        "Raw Data",
-        "One row per synthetic patient.",
-        "Patient demographics and first registration date.",
-        primary_key="patient_id",
-        freshness_column="registration_date",
-        required_columns=("patient_id", "registration_date", "age", "gender", "region"),
-    ),
-    "admission_chart": TableMeta(
-        "admission_chart.csv",
-        "Raw Data",
-        "One row per encounter admission/start state.",
-        "Admission facts used with patient_events to derive visit-level analytics.",
-        primary_key="visit_id",
-        freshness_column="admission_ts",
-        required_columns=(
-            "visit_id",
-            "patient_id",
-            "facility_id",
-            "admitted_unit_id",
-            "admitted_service_id",
-            "admitted_diagnosis_code",
-            "admission_ts",
-            "admission_type",
-        ),
-        foreign_keys=(
-            ("patient_id", "patients", "patient_id"),
-            ("facility_id", "facilities", "facility_id"),
-            ("admitted_service_id", "services", "service_id"),
-            ("admitted_unit_id", "units", "unit_id"),
-            ("admitted_diagnosis_code", "diagnoses", "diagnosis_code"),
-        ),
-    ),
-    "patient_events": TableMeta(
-        "patient_events.csv",
-        "Raw Data",
-        "One row per event after admission.",
-        "Event-level source of truth for location, service, diagnosis, and discharge changes.",
-        primary_key="event_id",
-        freshness_column="event_ts",
-        required_columns=("event_id", "visit_id", "patient_id", "event_ts", "type", "value", "facility_id"),
-        foreign_keys=(("visit_id", "admission_chart", "visit_id"), ("patient_id", "patients", "patient_id")),
-        allowed_values={"type": ("location", "service", "diagnosis", "discharge")},
-    ),
-    "capacity": TableMeta(
-        "capacity.csv",
-        "Raw Data",
-        "One row per facility, service, and date.",
-        "Funded/staffed capacity used as the denominator for pressure and demand analysis.",
-        freshness_column="capacity_date",
-        required_columns=("capacity_date", "facility_id", "service_id", "staffed_beds"),
-        foreign_keys=(("facility_id", "facilities", "facility_id"), ("service_id", "services", "service_id")),
-    ),
-    "facilities": TableMeta(
-        "facilities.csv",
-        "Raw Data",
-        "One row per facility.",
-        "Reference data for facility names and regions.",
-        primary_key="facility_id",
-        required_columns=("facility_id", "facility_name", "region"),
-    ),
-    "units": TableMeta(
-        "units.csv",
-        "Raw Data",
-        "One row per physical unit.",
-        "Reference data mapping units to facilities.",
-        primary_key="unit_id",
-        required_columns=("unit_id", "facility_id", "unit_name"),
-        foreign_keys=(("facility_id", "facilities", "facility_id"),),
-    ),
-    "services": TableMeta(
-        "services.csv",
-        "Raw Data",
-        "One row per clinical service.",
-        "Reference data for service labels.",
-        primary_key="service_id",
-        required_columns=("service_id", "service_name"),
-    ),
-    "diagnoses": TableMeta(
-        "diagnoses.csv",
-        "Raw Data",
-        "One row per synthetic diagnosis code.",
-        "Reference data mapping diagnosis codes to services.",
-        primary_key="diagnosis_code",
-        required_columns=("diagnosis_code", "diagnosis_name", "service_id"),
-        foreign_keys=(("service_id", "services", "service_id"),),
-    ),
-    "population_growth": TableMeta(
-        "population_growth.csv",
-        "Raw Data",
-        "One row per region, age group, gender, and projection year.",
-        "Planning input used by service projection models.",
-        required_columns=("region", "age_group", "gender", "year", "growth_index"),
-    ),
-}
-
-ETL_TABLES = {
-    "visits": TableMeta(
-        "visits.csv",
-        "ETL Prepared Layer",
-        "One row per derived encounter.",
-        "Visit-level table rebuilt from admission_chart and patient_events.",
-        primary_key="visit_id",
-        freshness_column="discharge_ts",
-        required_columns=("visit_id", "patient_id", "facility_id", "service_id", "admission_ts", "discharge_ts"),
-    ),
-}
-
-DASHBOARD_TABLES = {
-    "daily": TableMeta(
-        "daily.csv",
-        "Dashboard Mart",
-        "One row per date, facility, and service.",
-        "Daily census, capacity, and utilization mart used by dashboard charts.",
-        freshness_column="calendar_date",
-        required_columns=("calendar_date", "facility_name", "service_name", "peak_census", "staffed_beds"),
-    ),
-    "census": TableMeta(
-        "census.csv",
-        "Dashboard Mart",
-        "One row per hour, facility, and service.",
-        "Hourly census mart.",
-        freshness_column="hour_ts",
-        required_columns=("hour_ts", "facility_name", "service_name", "census"),
-    ),
-    "pressure": TableMeta(
-        "pressure.csv",
-        "Dashboard Mart",
-        "One row per date, facility, and service.",
-        "Capacity pressure categories and threshold flags.",
-        freshness_column="calendar_date",
-        required_columns=("calendar_date", "facility_name", "service_name", "peak_utilization", "pressure_level"),
-    ),
-    "demand": TableMeta(
-        "demand.csv",
-        "Dashboard Mart",
-        "One row per planning year, facility, and service.",
-        "Projected demand without service-planning adjustments.",
-        required_columns=("year", "facility_name", "service_name", "demand", "funded_capacity"),
-    ),
-    "current_demand": TableMeta(
-        "current_demand.csv",
-        "Dashboard Mart",
-        "One row per facility and service.",
-        "Current demand compared with funded capacity.",
-        required_columns=("facility_name", "service_name", "demand", "funded_capacity", "variance"),
-    ),
-    "demographics": TableMeta(
-        "demographics.csv",
-        "Dashboard Mart",
-        "One row per facility, service, age group, gender, and region.",
-        "Patient-day demographics used by projection models.",
-        required_columns=("facility_name", "service_name", "age_group", "gender", "region", "patient_days"),
-    ),
-    "projection": TableMeta(
-        "projection.csv",
-        "Dashboard Mart",
-        "One row per year, facility, and service.",
-        "Projected bed needs before and after service-planning adjustments.",
-        required_columns=("year", "facility_name", "service_name", "projection", "adjusted_projection"),
-    ),
-    "savings": TableMeta(
-        "savings.csv",
-        "Dashboard Mart",
-        "One row per facility, service, and saving algorithm.",
-        "Potential demand reduction from synthetic service-planning algorithms.",
-        required_columns=("facility_name", "service_name", "saving_type", "demand_reduction"),
-    ),
-    "quality": TableMeta(
-        "quality.csv",
-        "Dashboard Mart",
-        "One row per quality check.",
-        "Dashboard-facing data quality report.",
-        required_columns=("check_name", "severity", "issue_count", "status"),
-    ),
-}
-
-LAYERS = {
-    "Raw Data": (RAW_DATA_DIR, RAW_TABLES),
-    "ETL Prepared Layer": (ETL_PREPARED_DIR, ETL_TABLES),
-    "Dashboard Mart": (DASHBOARD_PREPARED_DIR, DASHBOARD_TABLES),
-}
-
-
-def table_path(folder: Path, meta: TableMeta) -> Path:
-    return folder / meta.file_name
-
-
-def read_table(path: Path) -> pd.DataFrame:
-    return pd.read_csv(path) if path.exists() else pd.DataFrame()
-
-
-def latest_value(frame: pd.DataFrame, column: str | None) -> str:
-    if not column or column not in frame.columns:
-        return "n/a"
-    values = pd.to_datetime(frame[column], errors="coerce")
-    return format_date(values.max()) if values.notna().any() else "n/a"
-
-
-def add_check(rows: list[dict[str, object]], name: str, passed: bool, details: str) -> None:
-    rows.append(
-        {
-            "check": name,
-            "status": "pass" if passed else "fail",
-            "details": details,
-        }
-    )
-
-
-def quality_checks(frame: pd.DataFrame, meta: TableMeta) -> pd.DataFrame:
-    rows: list[dict[str, object]] = []
-    add_check(rows, "Table is not empty", not frame.empty, f"{len(frame):,} rows")
-
-    missing_columns = [column for column in meta.required_columns if column not in frame.columns]
-    add_check(
-        rows,
-        "Required columns present",
-        not missing_columns,
-        "All required columns found" if not missing_columns else f"Missing: {', '.join(missing_columns)}",
-    )
-
-    if meta.primary_key and meta.primary_key in frame.columns:
-        null_count = int(frame[meta.primary_key].isna().sum())
-        duplicate_count = int(frame[meta.primary_key].duplicated().sum())
-        add_check(rows, "Primary key not null", null_count == 0, f"{null_count:,} null keys")
-        add_check(rows, "Primary key unique", duplicate_count == 0, f"{duplicate_count:,} duplicate keys")
-
-    if meta.freshness_column and meta.freshness_column in frame.columns:
-        valid_dates = pd.to_datetime(frame[meta.freshness_column], errors="coerce").notna()
-        invalid_count = int((~valid_dates).sum())
-        add_check(rows, "Freshness column valid", invalid_count == 0, f"{invalid_count:,} invalid dates")
-
-    if meta.allowed_values:
-        for column, allowed_values in meta.allowed_values.items():
-            if column in frame.columns:
-                invalid_count = int((~frame[column].isin(allowed_values)).sum())
-                add_check(rows, f"{column} values allowed", invalid_count == 0, f"{invalid_count:,} invalid values")
-
-    for column, target_table, target_column in meta.foreign_keys:
-        if column not in frame.columns or target_table not in RAW_TABLES:
-            continue
-        target_path = RAW_DATA_DIR / RAW_TABLES[target_table].file_name
-        target = read_table(target_path)
-        if target.empty or target_column not in target.columns:
-            add_check(rows, f"{column} references {target_table}", False, "Reference table unavailable")
-            continue
-        missing_count = int((~frame[column].dropna().isin(target[target_column].dropna())).sum())
-        add_check(
-            rows,
-            f"{column} references {target_table}",
-            missing_count == 0,
-            f"{missing_count:,} unmatched values",
-        )
-
-    return pd.DataFrame(rows)
-
-
-def matching_pipeline_checks(table_name: str) -> pd.DataFrame:
-    quality, _ = load_quality_summary()
-    if quality.empty:
-        return quality
-    text = quality.astype(str).agg(" ".join, axis=1).str.lower()
-    return quality[text.str.contains(table_name.lower(), regex=False)].reset_index(drop=True)
 
 
 st.set_page_config(page_title="Data Explorer", layout="wide")
@@ -305,53 +24,69 @@ st.set_page_config(page_title="Data Explorer", layout="wide")
 st.title("Data Explorer")
 st.caption("Inspect each ETL layer, table grain, freshness, sample rows, and table-level checks.")
 
-layer = st.radio(
-    "ETL layer",
-    list(LAYERS),
-    horizontal=True,
-)
-folder, tables = LAYERS[layer]
+if "data_explorer_layer" not in st.session_state:
+    st.session_state["data_explorer_layer"] = next(iter(LAYERS))
 
-layer_cols = st.columns(3)
+st.markdown("#### ETL Layer")
+layer_cols = st.columns(len(LAYERS))
 for column, (layer_name, (layer_folder, layer_tables)) in zip(layer_cols, LAYERS.items()):
-    existing = [table_path(layer_folder, meta) for meta in layer_tables.values() if table_path(layer_folder, meta).exists()]
-    total_rows = sum(len(read_table(path)) for path in existing)
+    existing_count, total_rows = layer_summary(layer_folder, layer_tables)
+    is_selected = layer_name == st.session_state["data_explorer_layer"]
     with column:
         with st.container(border=True):
             st.markdown(f"**{layer_name}**")
-            st.caption(f"{len(layer_tables)} expected tables")
+            st.caption("Selected layer" if is_selected else f"{existing_count}/{len(layer_tables)} tables available")
             st.metric("Rows", f"{total_rows:,}")
+            if st.button(
+                "Selected" if is_selected else "Open layer",
+                key=f"data-explorer-layer-{layer_name}",
+                disabled=is_selected,
+                use_container_width=True,
+            ):
+                st.session_state["data_explorer_layer"] = layer_name
+                st.rerun()
 
-table_name = st.selectbox("Table", list(tables))
+layer = st.session_state["data_explorer_layer"]
+folder, tables = LAYERS[layer]
+
+st.markdown("#### Table")
+table_name = st.selectbox("Choose one table", list(tables))
 meta = tables[table_name]
 path = table_path(folder, meta)
 frame = read_table(path)
 
 if not path.exists():
-    st.warning(f"{path.relative_to(PROJECT_ROOT)} does not exist yet. Initialize the demo dataset first.")
+    if layer == "Job History":
+        st.warning(f"{path.relative_to(PROJECT_ROOT)} does not exist yet. Run a job to create history.")
+    else:
+        st.warning(f"{path.relative_to(PROJECT_ROOT)} does not exist yet. Initialize the demo dataset first.")
     st.stop()
 
-summary_cols = st.columns(5)
-summary_cols[0].metric("Rows", f"{len(frame):,}")
-summary_cols[1].metric("Columns", f"{len(frame.columns):,}")
-summary_cols[2].metric("Freshness", latest_value(frame, meta.freshness_column))
-summary_cols[3].metric("Primary Key", meta.primary_key or "n/a")
-summary_cols[4].metric("Layer", meta.layer)
-
-st.markdown(f"**Grain:** {meta.grain}")
-st.caption(meta.description)
-st.caption(str(path.relative_to(PROJECT_ROOT)))
+with st.container(border=True):
+    info_cols = st.columns([1, 1, 1.2, 1.2, 1.4])
+    info_cols[0].caption(f"Rows: {len(frame):,}")
+    info_cols[1].caption(f"Columns: {len(frame.columns):,}")
+    info_cols[2].caption(f"Freshness: {latest_value(frame, meta.freshness_column)}")
+    info_cols[3].caption(f"Primary key: {meta.primary_key or 'n/a'}")
+    info_cols[4].caption(f"Layer: {meta.layer}")
+    st.caption(f"Grain: {meta.grain}")
+    st.caption(meta.description)
+    st.caption(str(path.relative_to(PROJECT_ROOT)))
 
 st.subheader("First 5 Rows")
-st.dataframe(frame.head(5), use_container_width=True, hide_index=True)
+if layer == "Job History":
+    st.dataframe(job_history_preview(frame), use_container_width=True, hide_index=True)
+else:
+    st.dataframe(frame.head(5), use_container_width=True, hide_index=True)
 
 st.subheader("Table Quality Checks")
-checks = quality_checks(frame, meta)
+checks = quality_checks(frame, meta, RAW_TABLES, RAW_DATA_DIR)
 st.dataframe(checks, use_container_width=True, hide_index=True)
 
-st.subheader("Related Report")
-pipeline_checks = matching_pipeline_checks(table_name)
-if pipeline_checks.empty:
-    st.info("No related rows found in the latest pipeline quality report.")
-else:
-    st.dataframe(pipeline_checks, use_container_width=True, hide_index=True)
+if layer != "Job History":
+    st.subheader("Related Report")
+    pipeline_checks = matching_pipeline_checks(table_name)
+    if pipeline_checks.empty:
+        st.info("No related rows found in the latest pipeline quality report.")
+    else:
+        st.dataframe(pipeline_checks, use_container_width=True, hide_index=True)

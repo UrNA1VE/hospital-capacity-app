@@ -47,6 +47,7 @@ RAW_PIPELINE_FILES = {
 }
 ETL_PIPELINE_FILES = {
     "visits.csv": ("visit_id", ("admission_ts", "discharge_ts")),
+    "unit_changes.csv": ("unit_change_id", ("event_ts",)),
 }
 DASHBOARD_PIPELINE_FILES = {
     "daily.csv": ("calendar_date", ("calendar_date",)),

@@ -15,9 +15,15 @@ from etl.pipeline.initialize_demo_dataset import (
 from utils.database import PROJECT_ROOT, read_csv_preview, read_csv_profile
 
 
-for path in [RUN_HISTORY_PATH, EDIT_HISTORY_PATH]:
-    if path.exists():
-        path.unlink()
+def clear_job_history() -> None:
+    for path in [RUN_HISTORY_PATH, EDIT_HISTORY_PATH]:
+        if path.exists():
+            path.unlink()
+
+
+if "job_history_cleared_on_open" not in st.session_state:
+    clear_job_history()
+    st.session_state["job_history_cleared_on_open"] = True
 
 
 st.set_page_config(page_title="Hospital Capacity Analytics App", page_icon="🏥", layout="wide")
@@ -123,6 +129,7 @@ with st.container(border=True):
         st.caption("Clear generated runtime data and start a clean demo session.")
         if st.button("Reset Demo", use_container_width=True):
             reset_demo_runtime()
+            clear_job_history()
             read_csv_preview.clear()
             read_csv_profile.clear()
             st.success("Demo runtime cleared. Generate initial data to start a new session.")

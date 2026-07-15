@@ -7,6 +7,12 @@ __pycache__/
 # Local data and logs
 logs/
 *.log
+data/container/
+data/dashboard_prepared/
+data/etl_prepared/
+!data/synthetic/
+!data/synthetic/sample_data/
+!data/synthetic/sample_data/**
 
 # Environment variables
 .env

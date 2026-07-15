@@ -505,6 +505,7 @@ def write_etl_prepared_tables(sources: dict[str, pd.DataFrame]) -> None:
     write_tables_with_duckdb(
         {
             "visits": sources["visits"],
+            "unit_changes": sources["unit_changes"],
         },
         ETL_PREPARED_DIR,
     )
@@ -560,9 +561,6 @@ def run_etl_from_existing_raw(
         }
 
 def run_fake_data_pipeline(seed: int, days: int = 30, start_date: str = "2025-01-01") -> PipelineResult:
-    for path in [RUN_HISTORY_PATH, EDIT_HISTORY_PATH]:
-        if path.exists():
-            path.unlink()
     with EtlJob(
         "initial_dataset",
         params={"seed": seed, "days": days, "start_date": start_date},
