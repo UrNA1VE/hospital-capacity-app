@@ -87,6 +87,42 @@ def utilization_chart(daily: pd.DataFrame) -> alt.Chart:
     )
 
 
+def capacity_pressure_chart(daily: pd.DataFrame) -> alt.Chart:
+    if daily.empty:
+        return alt.Chart(pd.DataFrame({"message": ["No capacity pressure rows"]})).mark_text().encode(text="message:N")
+
+    pressure = (
+        daily.groupby(["facility_name", "service_name"], as_index=False)
+        .agg(
+            average_utilization=("peak_utilization", "mean"),
+            peak_utilization=("peak_utilization", "max"),
+            pressure_days=("peak_utilization", lambda series: int((series >= 0.9).sum())),
+        )
+    )
+    return (
+        alt.Chart(pressure)
+        .mark_rect()
+        .encode(
+            x=alt.X("service_name:N", title="Service"),
+            y=alt.Y("facility_name:N", title="Facility"),
+            color=alt.Color(
+                "average_utilization:Q",
+                title="Avg. peak utilization",
+                scale=alt.Scale(scheme="reds"),
+                legend=alt.Legend(format="%"),
+            ),
+            tooltip=[
+                alt.Tooltip("facility_name:N", title="Facility"),
+                alt.Tooltip("service_name:N", title="Service"),
+                alt.Tooltip("average_utilization:Q", title="Average utilization", format=".1%"),
+                alt.Tooltip("peak_utilization:Q", title="Peak utilization", format=".1%"),
+                alt.Tooltip("pressure_days:Q", title="Days >= 90%"),
+            ],
+        )
+        .properties(height=330)
+    )
+
+
 def bed_demandvsfunded_chart(demand: pd.DataFrame) -> alt.LayerChart:
     funded_totals = (
         demand.groupby("service_name", as_index=False)["funded_capacity"]
