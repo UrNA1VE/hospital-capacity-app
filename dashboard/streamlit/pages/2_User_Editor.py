@@ -19,9 +19,11 @@ from etl.event_editor.editor import (
     update_event,
 )
 from etl.pipeline.initialize_demo_dataset import RAW_DATA_DIR, run_etl_from_existing_raw
+from utils.job_logs import clear_runtime_data_once_on_open, render_page_header
 
 
 st.set_page_config(page_title="User Editor", page_icon="✏️", layout="wide")
+clear_runtime_data_once_on_open()
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -103,8 +105,10 @@ raw_ready = all(
 )
 reference_ready = all(not frame.empty for frame in [facilities, services, units, diagnoses])
 
-st.title("User Editor")
-st.caption("Add admissions and events to the raw event-level data, then submit once to rebuild the dashboard tables.")
+render_page_header(
+    "User Editor",
+    "Add admissions and events to the raw event-level data, then submit once to rebuild the dashboard tables.",
+)
 
 editor_col, submit_col = st.columns([4, 1.35])
 

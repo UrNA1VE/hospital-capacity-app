@@ -11,11 +11,12 @@ from analytics.projection import bed_needs_projection
 from analytics.utilization import current_bed_demand
 import utils.charts as charts
 from utils.database import load_dashboard_data
+from utils.job_logs import clear_runtime_data_once_on_open, render_page_header
 
 charts = reload(charts)
 
 st.set_page_config(page_title="Dashboard", layout="wide")
-tables, source_label = load_dashboard_data()
+clear_runtime_data_once_on_open()
 
 st.markdown(
     """
@@ -65,6 +66,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+try:
+    tables, source_label = load_dashboard_data()
+except FileNotFoundError:
+    render_page_header("Dashboard", "Capacity analytics from dashboard-ready mart tables.")
+    st.info("No prepared dashboard data yet. Open Home and run Initialize Dataset to create the demo dataset.")
+    st.stop()
+
 daily = tables["daily"]
 visits = tables["visits"]
 services = tables["services"]
@@ -72,8 +80,7 @@ facilities = tables["facilities"]
 diagnoses = tables["diagnoses"]
 population_growth = tables["population_growth"]
 
-st.title("Dashboard")
-st.caption(f"Capacity analytics from dashboard-ready mart tables. Source: {source_label}")
+render_page_header("Dashboard", f"Capacity analytics from dashboard-ready mart tables. Source: {source_label}")
 
 with st.container(border=True):
     st.markdown("**Filters**")

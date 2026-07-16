@@ -474,7 +474,4 @@ def build_sample_marts() -> dict[str, pd.DataFrame]:
 
 
 def load_dashboard_data() -> tuple[dict[str, pd.DataFrame], str]:
-    try:
-        return read_prepared_dashboard_sources(), "prepared container-local pipeline data"
-    except Exception:
-        return build_sample_marts(), "built-in synthetic CSV data"
+    return read_prepared_dashboard_sources(), "prepared container-local pipeline data"

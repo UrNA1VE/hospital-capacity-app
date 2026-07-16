@@ -5,10 +5,17 @@ import bootstrap  # noqa: F401
 from analytics.journey import journey_segments, patient_visit_summary
 from utils.charts import patient_journey_chart
 from utils.database import load_dashboard_data
+from utils.job_logs import clear_runtime_data_once_on_open, render_page_header
 
 
 st.set_page_config(page_title="Patient Journey", layout="wide")
-tables, source_label = load_dashboard_data()
+clear_runtime_data_once_on_open()
+try:
+    tables, source_label = load_dashboard_data()
+except FileNotFoundError:
+    render_page_header("Patient Journey", "Trace one encounter through the prepared event and unit-change tables.")
+    st.info("No prepared dashboard data yet. Open Home and run Initialize Dataset to create the demo dataset.")
+    st.stop()
 
 visits = tables["visits"]
 facilities = tables["facilities"]
@@ -19,8 +26,7 @@ units = tables["units"]
 patient_events = tables.get("patient_events", pd.DataFrame())
 admission_chart = tables.get("admission_chart", pd.DataFrame())
 
-st.title("Patient Journey")
-st.caption(f"Source: {source_label}")
+render_page_header("Patient Journey", f"Source: {source_label}")
 
 patient_id = st.selectbox("Patient", sorted(visits["patient_id"].unique()))
 patient_visits = visits[visits["patient_id"] == patient_id].sort_values("admission_ts")

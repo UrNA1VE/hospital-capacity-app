@@ -8,12 +8,12 @@ import streamlit.components.v1 as components
 import bootstrap  # noqa: F401
 from etl.pipeline.incremental_run import IncrementalDataError, etl_incremental
 from etl.pipeline.initialize_demo_dataset import (
-    EDIT_HISTORY_PATH,
-    RUN_HISTORY_PATH,
     reset_demo_runtime,
     run_fake_data_pipeline,
 )
+from etl.pipeline.job_logger import EDIT_HISTORY_PATH, RUN_HISTORY_PATH
 from utils.database import PROJECT_ROOT, read_csv_preview, read_csv_profile
+from utils.job_logs import clear_runtime_data_once_on_open, render_page_header
 
 
 def clear_job_history() -> None:
@@ -22,17 +22,13 @@ def clear_job_history() -> None:
             path.unlink()
 
 
-if "job_history_cleared_on_open" not in st.session_state:
-    clear_job_history()
-    st.session_state["job_history_cleared_on_open"] = True
-
-
 st.set_page_config(page_title="Hospital Capacity Analytics App", page_icon="🏥", layout="wide")
+clear_runtime_data_once_on_open()
 
-st.title("Hospital Capacity Analytics App")
-st.caption(
+render_page_header(
+    "Hospital Capacity Analytics App",
     "Synthetic event-level healthcare data pipeline with incremental ETL, data quality checks, "
-    "editable source records, and dashboard-ready analytics."
+    "editable source records, and dashboard-ready analytics.",
 )
 
 st.markdown(

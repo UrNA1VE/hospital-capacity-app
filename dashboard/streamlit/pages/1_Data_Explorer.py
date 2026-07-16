@@ -17,9 +17,11 @@ from utils.data_explorer import (
     read_table,
     table_path,
 )
+from utils.job_logs import clear_runtime_data_once_on_open, render_page_header
 
 
 st.set_page_config(page_title="Data Explorer", layout="wide")
+clear_runtime_data_once_on_open()
 
 st.markdown(
     """
@@ -99,8 +101,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.title("Data Explorer")
-st.caption("Inspect each ETL layer, table grain, freshness, sample rows, and table-level checks.")
+render_page_header("Data Explorer", "Inspect each ETL layer, table grain, freshness, sample rows, and table-level checks.")
 
 if "data_explorer_layer" not in st.session_state:
     st.session_state["data_explorer_layer"] = next(iter(LAYERS))
