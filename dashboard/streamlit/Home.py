@@ -38,6 +38,32 @@ st.caption(
 st.markdown(
     """
     <style>
+    .hero-panel {
+        border: 1px solid rgba(250, 250, 250, 0.12);
+        border-radius: 8px;
+        padding: 1rem 1.1rem;
+        background: linear-gradient(135deg, rgba(255, 75, 75, 0.08), rgba(255, 255, 255, 0.025));
+        margin-bottom: 1rem;
+    }
+    .hero-kicker {
+        color: #ff6b6b;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        text-transform: uppercase;
+        margin-bottom: 0.35rem;
+    }
+    .hero-copy {
+        color: rgba(250, 250, 250, 0.72);
+        line-height: 1.4;
+        max-width: 920px;
+    }
+    .action-note {
+        color: rgba(250, 250, 250, 0.65);
+        font-size: 0.86rem;
+        line-height: 1.35;
+        min-height: 42px;
+    }
     .page-card {
         min-height: 158px;
         border: 1px solid rgba(250, 250, 250, 0.14);
@@ -55,7 +81,26 @@ st.markdown(
         font-size: 0.9rem;
         line-height: 1.35;
     }
+    .page-index {
+        color: #ff6b6b;
+        font-size: 0.76rem;
+        font-weight: 700;
+        margin-bottom: 0.45rem;
+    }
     </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <div class="hero-panel">
+      <div class="hero-kicker">ETL demo control center</div>
+      <div class="hero-copy">
+        Generate synthetic hospital event data, rebuild prepared tables, inspect validation results,
+        and refresh capacity analytics through a small end-to-end data application.
+      </div>
+    </div>
     """,
     unsafe_allow_html=True,
 )
@@ -67,7 +112,10 @@ with st.container(border=True):
 
     with initialize_col:
         st.markdown("**Initialize Dataset**")
-        st.caption("Create the initial synthetic month and rebuild every downstream table.")
+        st.markdown(
+            '<div class="action-note">Create the initial synthetic month and rebuild every downstream table.</div>',
+            unsafe_allow_html=True,
+        )
         if st.button("Initialize Dataset", type="primary", use_container_width=True):
             with st.spinner("Generating raw data, validating sources, and building dashboard marts..."):
                 result = run_fake_data_pipeline(seed=int(seed))
@@ -82,7 +130,10 @@ with st.container(border=True):
 
     with incremental_col:
         st.markdown("**Incremental Run**")
-        st.caption("Append the next simulated day and refresh ETL/dashboard outputs.")
+        st.markdown(
+            '<div class="action-note">Append the next simulated day and refresh ETL/dashboard outputs.</div>',
+            unsafe_allow_html=True,
+        )
         if st.button("Incremental Run", use_container_width=True):
             with st.spinner("Appending next-day data and rebuilding dashboard marts..."):
                 try:
@@ -97,7 +148,10 @@ with st.container(border=True):
 
     with reset_col:
         st.markdown("**Reset Demo**")
-        st.caption("Clear generated runtime data and start a clean demo session.")
+        st.markdown(
+            '<div class="action-note">Clear generated runtime data and start a clean demo session.</div>',
+            unsafe_allow_html=True,
+        )
         if st.button("Reset Demo", use_container_width=True):
             reset_demo_runtime()
             clear_job_history()
@@ -236,11 +290,12 @@ pages = [
     ),
 ]
 
-for column, (title, description, page_path) in zip(page_cols, pages):
+for page_index, (column, (title, description, page_path)) in enumerate(zip(page_cols, pages), start=1):
     with column:
         st.markdown(
             (
                 '<div class="page-card">'
+                f'<div class="page-index">PAGE {page_index}</div>'
                 f'<div class="page-title">{title}</div>'
                 f'<div class="page-copy">{description}</div>'
                 '</div>'

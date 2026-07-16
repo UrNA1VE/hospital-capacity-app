@@ -21,6 +21,84 @@ from utils.data_explorer import (
 
 st.set_page_config(page_title="Data Explorer", layout="wide")
 
+st.markdown(
+    """
+    <style>
+    .layer-card {
+        min-height: 116px;
+        border: 1px solid rgba(250, 250, 250, 0.14);
+        border-radius: 8px;
+        padding: 0.8rem 0.9rem;
+        background: rgba(255, 255, 255, 0.03);
+        margin-bottom: 0.55rem;
+    }
+    .layer-card.selected {
+        border-color: rgba(255, 75, 75, 0.78);
+        background: rgba(255, 75, 75, 0.08);
+    }
+    .layer-label {
+        color: rgba(250, 250, 250, 0.55);
+        font-size: 0.74rem;
+        font-weight: 700;
+        margin-bottom: 0.35rem;
+        text-transform: uppercase;
+    }
+    .layer-title {
+        font-size: 1rem;
+        font-weight: 750;
+        margin-bottom: 0.45rem;
+    }
+    .layer-meta {
+        color: rgba(250, 250, 250, 0.68);
+        font-size: 0.84rem;
+        line-height: 1.35;
+    }
+    .table-strip {
+        border: 1px solid rgba(250, 250, 250, 0.12);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.025);
+        padding: 0.7rem 0.85rem;
+        margin: 0.8rem 0 1rem;
+    }
+    .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0.6rem;
+        margin-bottom: 0.55rem;
+    }
+    .meta-chip {
+        border: 1px solid rgba(250, 250, 250, 0.1);
+        border-radius: 6px;
+        padding: 0.45rem 0.55rem;
+        background: rgba(255, 255, 255, 0.025);
+    }
+    .meta-label {
+        color: rgba(250, 250, 250, 0.52);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .meta-value {
+        color: rgba(250, 250, 250, 0.9);
+        font-size: 0.88rem;
+        margin-top: 0.15rem;
+        overflow-wrap: anywhere;
+    }
+    .table-description {
+        color: rgba(250, 250, 250, 0.68);
+        font-size: 0.86rem;
+        line-height: 1.38;
+    }
+    @media (max-width: 900px) {
+        .meta-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.title("Data Explorer")
 st.caption("Inspect each ETL layer, table grain, freshness, sample rows, and table-level checks.")
 
@@ -33,18 +111,25 @@ for column, (layer_name, (layer_folder, layer_tables)) in zip(layer_cols, LAYERS
     existing_count, total_rows = layer_summary(layer_folder, layer_tables)
     is_selected = layer_name == st.session_state["data_explorer_layer"]
     with column:
-        with st.container(border=True):
-            st.markdown(f"**{layer_name}**")
-            st.caption("Selected layer" if is_selected else f"{existing_count}/{len(layer_tables)} tables available")
-            st.metric("Rows", f"{total_rows:,}")
-            if st.button(
-                "Selected" if is_selected else "Open layer",
-                key=f"data-explorer-layer-{layer_name}",
-                disabled=is_selected,
-                use_container_width=True,
-            ):
-                st.session_state["data_explorer_layer"] = layer_name
-                st.rerun()
+        selected_class = " selected" if is_selected else ""
+        st.markdown(
+            (
+                f'<div class="layer-card{selected_class}">'
+                f'<div class="layer-label">{"Selected" if is_selected else "Layer"}</div>'
+                f'<div class="layer-title">{layer_name}</div>'
+                f'<div class="layer-meta">{existing_count}/{len(layer_tables)} tables available<br>{total_rows:,} rows</div>'
+                '</div>'
+            ),
+            unsafe_allow_html=True,
+        )
+        if st.button(
+            "Selected" if is_selected else "Open layer",
+            key=f"data-explorer-layer-{layer_name}",
+            disabled=is_selected,
+            use_container_width=True,
+        ):
+            st.session_state["data_explorer_layer"] = layer_name
+            st.rerun()
 
 layer = st.session_state["data_explorer_layer"]
 folder, tables = LAYERS[layer]
@@ -62,16 +147,23 @@ if not path.exists():
         st.warning(f"{path.relative_to(PROJECT_ROOT)} does not exist yet. Initialize the demo dataset first.")
     st.stop()
 
-with st.container(border=True):
-    info_cols = st.columns([1, 1, 1.2, 1.2, 1.4])
-    info_cols[0].caption(f"Rows: {len(frame):,}")
-    info_cols[1].caption(f"Columns: {len(frame.columns):,}")
-    info_cols[2].caption(f"Freshness: {latest_value(frame, meta.freshness_column)}")
-    info_cols[3].caption(f"Primary key: {meta.primary_key or 'n/a'}")
-    info_cols[4].caption(f"Layer: {meta.layer}")
-    st.caption(f"Grain: {meta.grain}")
-    st.caption(meta.description)
-    st.caption(str(path.relative_to(PROJECT_ROOT)))
+st.markdown(
+    f"""
+    <div class="table-strip">
+      <div class="meta-grid">
+        <div class="meta-chip"><div class="meta-label">Rows</div><div class="meta-value">{len(frame):,}</div></div>
+        <div class="meta-chip"><div class="meta-label">Columns</div><div class="meta-value">{len(frame.columns):,}</div></div>
+        <div class="meta-chip"><div class="meta-label">Freshness</div><div class="meta-value">{latest_value(frame, meta.freshness_column)}</div></div>
+        <div class="meta-chip"><div class="meta-label">Primary key</div><div class="meta-value">{meta.primary_key or "n/a"}</div></div>
+        <div class="meta-chip"><div class="meta-label">Layer</div><div class="meta-value">{meta.layer}</div></div>
+      </div>
+      <div class="table-description"><strong>Grain:</strong> {meta.grain}</div>
+      <div class="table-description">{meta.description}</div>
+      <div class="table-description">{path.relative_to(PROJECT_ROOT)}</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 st.subheader("First 5 Rows")
 if layer == "Job History":
@@ -81,7 +173,16 @@ else:
 
 st.subheader("Table Quality Checks")
 checks = quality_checks(frame, meta, RAW_TABLES, RAW_DATA_DIR)
-st.dataframe(checks, use_container_width=True, hide_index=True)
+styled_checks = checks.style.apply(
+    lambda row: [
+        "color: #5be28c; font-weight: 700" if row["status"] == "pass" and column == "status"
+        else "color: #ff6b6b; font-weight: 700" if row["status"] == "fail" and column == "status"
+        else ""
+        for column in row.index
+    ],
+    axis=1,
+)
+st.dataframe(styled_checks, use_container_width=True, hide_index=True)
 
 if layer != "Job History":
     st.subheader("Related Report")
