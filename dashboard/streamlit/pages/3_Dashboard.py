@@ -6,17 +6,18 @@ import pandas as pd
 import streamlit as st
 
 import bootstrap  # noqa: F401
+from etl.pipeline.demo_runtime import initialize_demo_session_once
 from analytics.demographics import demographics_summary
 from analytics.projection import bed_needs_projection
 from analytics.utilization import current_bed_demand
 import utils.charts as charts
 from utils.database import load_dashboard_data
-from utils.job_logs import clear_runtime_data_once_on_open, render_page_header
+from utils.job_logs import render_page_header
 
 charts = reload(charts)
 
 st.set_page_config(page_title="Dashboard", layout="wide")
-clear_runtime_data_once_on_open()
+initialize_demo_session_once(st.session_state)
 
 st.markdown(
     """

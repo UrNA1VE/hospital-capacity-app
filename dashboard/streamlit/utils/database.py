@@ -8,15 +8,22 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from etl.pipeline.job_logger import RUN_HISTORY_PATH
+from etl.pipeline.job_history import load_job_history
+from etl.pipeline.paths import (
+    DASHBOARD_PREPARED_DIR,
+    ETL_PREPARED_DIR,
+    PROJECT_ROOT,
+    RAW_DATA_DIR,
+    REPORT_DATA_DIR,
+    SAMPLE_DATA_DIR,
+)
+from etl.pipeline.transform_helpers import (
+    hourly_snapshots as _hourly_snapshots,
+    reporting_window as _reporting_window,
+    unit_changes_overlapping_window as _unit_changes_overlapping_window,
+    visits_overlapping_window as _visits_overlapping_window,
+)
 
-
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-SAMPLE_DATA_DIR = PROJECT_ROOT / "data" / "synthetic" / "sample_data"
-RAW_DATA_DIR = PROJECT_ROOT / "data" / "container" / "raw"
-REPORT_DATA_DIR = PROJECT_ROOT / "data" / "container" / "reports"
-ETL_PREPARED_DIR = PROJECT_ROOT / "data" / "etl_prepared"
-DASHBOARD_PREPARED_DIR = PROJECT_ROOT / "data" / "dashboard_prepared"
 PREPARED_DATA_DIR = DASHBOARD_PREPARED_DIR
 EVENT_SOURCE_FILES = {"patients.csv", "admission_chart.csv", "patient_events.csv"}
 REFERENCE_SOURCE_FILES = {
@@ -162,57 +169,7 @@ def load_incremental_summary() -> dict[str, object] | None:
 
 
 def load_run_history() -> pd.DataFrame:
-    if not RUN_HISTORY_PATH.exists():
-        return pd.DataFrame(
-            columns=[
-                "job_id",
-                "job_type",
-                "status",
-                "started_at",
-                "finished_at",
-                "duration_seconds",
-                "message",
-                "changes",
-            ]
-        )
-    history = pd.read_csv(RUN_HISTORY_PATH)
-    return history.sort_values("started_at", ascending=False)
-
-
-def _hourly_snapshots(
-    visits: pd.DataFrame,
-    start: pd.Timestamp | None = None,
-    end: pd.Timestamp | None = None,
-) -> pd.DataFrame:
-    frames: list[pd.DataFrame] = []
-    for _, row in visits.iterrows():
-        admission_ts = pd.Timestamp(row["admission_ts"])
-        discharge_ts = pd.Timestamp(row["discharge_ts"])
-        if pd.isna(discharge_ts):
-            if end is None:
-                continue
-            discharge_ts = end
-        snapshot_start = max(admission_ts, start) if start is not None else admission_ts
-        snapshot_end = min(discharge_ts, end) if end is not None else discharge_ts
-        first_hour = snapshot_start.ceil("h")
-        if first_hour >= snapshot_end:
-            continue
-        hours = pd.date_range(first_hour, snapshot_end, freq="h", inclusive="left")
-        if hours.empty:
-            continue
-        frames.append(
-            pd.DataFrame(
-                {
-                    "visit_id": row["visit_id"],
-                    "facility_id": row["facility_id"],
-                    "service_id": row["service_id"],
-                    "hour_ts": hours,
-                }
-            )
-        )
-    if not frames:
-        return pd.DataFrame(columns=["visit_id", "facility_id", "service_id", "hour_ts"])
-    return pd.concat(frames, ignore_index=True)
+    return load_job_history()
 
 
 def read_sample_sources() -> dict[str, pd.DataFrame]:
@@ -303,65 +260,6 @@ def read_prepared_dashboard_sources() -> dict[str, pd.DataFrame]:
         "raw_capacity": pd.read_csv(RAW_DATA_DIR / "capacity.csv", parse_dates=["capacity_date"]),
         "patient_events": patient_events,
     }
-
-
-def _reporting_window(capacity: pd.DataFrame) -> tuple[pd.Timestamp, pd.Timestamp]:
-    start = pd.Timestamp(capacity["capacity_date"].min())
-    end = pd.Timestamp(capacity["capacity_date"].max()) + pd.to_timedelta(1, unit="D")
-    return start, end
-
-
-def _visits_overlapping_window(
-    visits: pd.DataFrame,
-    start: pd.Timestamp,
-    end: pd.Timestamp,
-) -> pd.DataFrame:
-    admission_ts = pd.to_datetime(visits["admission_ts"], errors="coerce")
-    discharge_ts = pd.to_datetime(visits["discharge_ts"], errors="coerce")
-    effective_discharge = discharge_ts.where(discharge_ts.notna(), end)
-    clipped = visits[
-        (effective_discharge > start)
-        & (admission_ts < end)
-    ].copy()
-    clipped["admission_ts"] = admission_ts.loc[clipped.index].clip(lower=start)
-    clipped["discharge_ts"] = effective_discharge.loc[clipped.index].clip(upper=end)
-    return clipped.reset_index(drop=True)
-
-
-def _unit_changes_overlapping_window(
-    unit_changes: pd.DataFrame,
-    raw_visits: pd.DataFrame,
-    visits: pd.DataFrame,
-) -> pd.DataFrame:
-    rows: list[dict[str, object]] = []
-    unit_changes = unit_changes.copy()
-    unit_changes["event_ts"] = pd.to_datetime(unit_changes["event_ts"], errors="coerce")
-    raw_visit_lookup = raw_visits.set_index("visit_id")
-
-    for _, visit in visits.iterrows():
-        visit_id = visit["visit_id"]
-        admission_ts = pd.Timestamp(visit["admission_ts"])
-        discharge_ts = pd.Timestamp(visit["discharge_ts"])
-        visit_changes = unit_changes[unit_changes["visit_id"] == visit_id].sort_values("event_ts")
-        in_window = visit_changes[
-            (visit_changes["event_ts"] >= admission_ts)
-            & (visit_changes["event_ts"] < discharge_ts)
-        ]
-
-        raw_admission_ts = pd.Timestamp(raw_visit_lookup.loc[visit_id, "admission_ts"])
-        if admission_ts > raw_admission_ts:
-            previous_changes = visit_changes[visit_changes["event_ts"] < admission_ts]
-            if not previous_changes.empty and (in_window.empty or pd.Timestamp(in_window.iloc[0]["event_ts"]) > admission_ts):
-                previous = previous_changes.iloc[-1].to_dict()
-                previous["unit_change_id"] = f"{previous['unit_change_id']}-CLIP"
-                previous["event_ts"] = admission_ts
-                rows.append(previous)
-
-        rows.extend(in_window.to_dict("records"))
-
-    if not rows:
-        return unit_changes.iloc[0:0].copy()
-    return pd.DataFrame(rows, columns=unit_changes.columns)
 
 
 def build_sample_marts() -> dict[str, pd.DataFrame]:

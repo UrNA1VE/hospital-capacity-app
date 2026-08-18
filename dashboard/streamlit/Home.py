@@ -6,24 +6,15 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 import bootstrap  # noqa: F401
+from etl.pipeline.demo_runtime import initialize_demo_session_once, reset_demo_session
 from etl.pipeline.incremental_run import IncrementalDataError, etl_incremental
-from etl.pipeline.initialize_demo_dataset import (
-    reset_demo_runtime,
-    run_fake_data_pipeline,
-)
-from etl.pipeline.job_logger import EDIT_HISTORY_PATH, RUN_HISTORY_PATH
+from etl.pipeline.initialize_demo_dataset import run_fake_data_pipeline
 from utils.database import PROJECT_ROOT, read_csv_preview, read_csv_profile
-from utils.job_logs import clear_runtime_data_once_on_open, render_page_header
-
-
-def clear_job_history() -> None:
-    for path in [RUN_HISTORY_PATH, EDIT_HISTORY_PATH]:
-        if path.exists():
-            path.unlink()
+from utils.job_logs import render_page_header
 
 
 st.set_page_config(page_title="Hospital Capacity Analytics App", page_icon="🏥", layout="wide")
-clear_runtime_data_once_on_open()
+initialize_demo_session_once(st.session_state)
 
 render_page_header(
     "Hospital Capacity Analytics App",
@@ -149,11 +140,14 @@ with st.container(border=True):
             unsafe_allow_html=True,
         )
         if st.button("Reset Demo", use_container_width=True):
-            reset_demo_runtime()
-            clear_job_history()
-            read_csv_preview.clear()
-            read_csv_profile.clear()
-            st.success("Demo runtime cleared. Generate initial data to start a new session.")
+            with st.spinner("Resetting demo runtime and rebuilding the initial dataset..."):
+                result = reset_demo_session(seed=int(seed))
+                read_csv_preview.clear()
+                read_csv_profile.clear()
+            st.success(
+                f"Demo reset complete: {result.validation_status.upper()} "
+                f"({result.validation_issue_count} blocking validation issues)."
+            )
 
 st.subheader("Pipeline Workflow")
 st.caption("The workflow scales to show the full end-to-end pipeline at a glance.")

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
@@ -13,12 +14,17 @@ import pandas as pd
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "data" / "synthetic" / "sample_data"
-CONTAINER_DATA_ROOT = PROJECT_ROOT / "data" / "container"
-RAW_DATA_DIR = CONTAINER_DATA_ROOT / "raw"
-BACKUP_DATA_DIR = CONTAINER_DATA_ROOT / "backup"
-REPORT_DATA_DIR = CONTAINER_DATA_ROOT / "reports"
-ETL_PREPARED_DIR = PROJECT_ROOT / "data" / "etl_prepared"
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from etl.pipeline.paths import (  # noqa: E402
+    BACKUP_DATA_DIR,
+    ETL_PREPARED_DIR,
+    RAW_DATA_DIR,
+    REPORT_DATA_DIR,
+    SAMPLE_DATA_DIR,
+)
+
+DEFAULT_OUTPUT_DIR = SAMPLE_DATA_DIR
 
 
 @dataclass(frozen=True)

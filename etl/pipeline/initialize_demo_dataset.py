@@ -29,13 +29,23 @@ from analytics.utilization import (  # noqa: E402
     current_bed_demand,
     service_census_summary,
 )
-from dashboard.streamlit.utils.database import (  # noqa: E402
-    _hourly_snapshots,
-    _reporting_window,
-    _unit_changes_overlapping_window,
-    _visits_overlapping_window,
+from etl.pipeline.job_logger import EtlJob  # noqa: E402
+from etl.pipeline.paths import (  # noqa: E402
+    BACKUP_DATA_DIR,
+    DASHBOARD_PREPARED_DIR,
+    EDIT_HISTORY_PATH,
+    ETL_PREPARED_DIR,
+    LOG_DATA_DIR,
+    RAW_DATA_DIR,
+    REPORT_DATA_DIR,
+    RUN_HISTORY_PATH,
 )
-from etl.pipeline.job_logger import EDIT_HISTORY_PATH, LOG_DATA_DIR, RUN_HISTORY_PATH, EtlJob  # noqa: E402
+from etl.pipeline.transform_helpers import (  # noqa: E402
+    hourly_snapshots,
+    reporting_window,
+    unit_changes_overlapping_window,
+    visits_overlapping_window,
+)
 from etl.synthetic_data_generator.generate_fake_data import (  # noqa: E402
     GeneratorConfig,
     initial_fake_data,
@@ -43,12 +53,6 @@ from etl.synthetic_data_generator.generate_fake_data import (  # noqa: E402
 )
 
 
-CONTAINER_DATA_ROOT = PROJECT_ROOT / "data" / "container"
-RAW_DATA_DIR = CONTAINER_DATA_ROOT / "raw"
-BACKUP_DATA_DIR = CONTAINER_DATA_ROOT / "backup"
-REPORT_DATA_DIR = CONTAINER_DATA_ROOT / "reports"
-ETL_PREPARED_DIR = PROJECT_ROOT / "data" / "etl_prepared"
-DASHBOARD_PREPARED_DIR = PROJECT_ROOT / "data" / "dashboard_prepared"
 EDITABLE_RAW_FILES = ["patients.csv", "admission_chart.csv", "patient_events.csv"]
 
 
@@ -334,10 +338,10 @@ def build_marts_from_sources(sources: dict[str, pd.DataFrame]) -> dict[str, pd.D
     services = sources["services"]
     capacity = sources["capacity"]
 
-    reporting_start, reporting_end = _reporting_window(capacity)
-    visits = _visits_overlapping_window(raw_visits, reporting_start, reporting_end)
-    unit_changes = _unit_changes_overlapping_window(sources["unit_changes"], raw_visits, visits)
-    snapshots = _hourly_snapshots(visits, start=reporting_start, end=reporting_end)
+    reporting_start, reporting_end = reporting_window(capacity)
+    visits = visits_overlapping_window(raw_visits, reporting_start, reporting_end)
+    unit_changes = unit_changes_overlapping_window(sources["unit_changes"], raw_visits, visits)
+    snapshots = hourly_snapshots(visits, start=reporting_start, end=reporting_end)
     grouped_snapshots = snapshots.groupby(
         ["hour_ts", "facility_id", "service_id"],
         as_index=False,

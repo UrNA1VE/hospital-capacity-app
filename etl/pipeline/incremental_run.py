@@ -12,16 +12,16 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-CONTAINER_DATA_ROOT = PROJECT_ROOT / "data" / "container"
-RAW_DATA_DIR = CONTAINER_DATA_ROOT / "raw"
-BACKUP_DATA_DIR = CONTAINER_DATA_ROOT / "backup"
-REPORT_DATA_DIR = CONTAINER_DATA_ROOT / "reports"
-ETL_PREPARED_DIR = PROJECT_ROOT / "data" / "etl_prepared"
-DASHBOARD_PREPARED_DIR = PROJECT_ROOT / "data" / "dashboard_prepared"
-
 from etl.event_editor.editor import next_number
 from etl.pipeline.job_logger import EtlJob
 from etl.pipeline.initialize_demo_dataset import run_etl_from_existing_raw
+from etl.pipeline.paths import (
+    BACKUP_DATA_DIR,
+    DASHBOARD_PREPARED_DIR,
+    ETL_PREPARED_DIR,
+    RAW_DATA_DIR,
+    REPORT_DATA_DIR,
+)
 from etl.synthetic_data_generator.generate_fake_data import (
     GeneratorConfig,
     build_admission_chart,

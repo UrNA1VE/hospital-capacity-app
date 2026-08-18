@@ -10,12 +10,8 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
-RAW_DATA_DIR = PROJECT_ROOT / "data" / "container" / "raw"
-BACKUP_DATA_DIR = PROJECT_ROOT / "data" / "container" / "backup"
 EDITABLE_RAW_FILES = ["patients.csv", "admission_chart.csv", "patient_events.csv"]
-CONTAINER_DATA_ROOT = PROJECT_ROOT / "data" / "container"
-LOG_DATA_DIR = CONTAINER_DATA_ROOT / "logs"
-EDIT_HISTORY_PATH = LOG_DATA_DIR / "edit_history.csv"
+from etl.pipeline.paths import BACKUP_DATA_DIR, EDIT_HISTORY_PATH, RAW_DATA_DIR
 from etl.synthetic_data_generator.generate_fake_data import write_csvs
 
 

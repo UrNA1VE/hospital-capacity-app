@@ -7,6 +7,7 @@ import pandas as pd
 import streamlit as st
 
 import bootstrap  # noqa: F401
+from etl.pipeline.demo_runtime import initialize_demo_session_once
 from etl.event_editor.editor import (
     EDIT_HISTORY_PATH,
     add_admission,
@@ -19,11 +20,11 @@ from etl.event_editor.editor import (
     update_event,
 )
 from etl.pipeline.initialize_demo_dataset import RAW_DATA_DIR, run_etl_from_existing_raw
-from utils.job_logs import clear_runtime_data_once_on_open, render_page_header
+from utils.job_logs import render_page_header
 
 
 st.set_page_config(page_title="User Editor", page_icon="✏️", layout="wide")
-clear_runtime_data_once_on_open()
+initialize_demo_session_once(st.session_state)
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 

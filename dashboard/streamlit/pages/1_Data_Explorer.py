@@ -5,6 +5,7 @@ from __future__ import annotations
 import streamlit as st
 
 import bootstrap  # noqa: F401
+from etl.pipeline.demo_runtime import initialize_demo_session_once
 from utils.database import PROJECT_ROOT, RAW_DATA_DIR
 from utils.data_explorer import (
     LAYERS,
@@ -17,11 +18,11 @@ from utils.data_explorer import (
     read_table,
     table_path,
 )
-from utils.job_logs import clear_runtime_data_once_on_open, render_page_header
+from utils.job_logs import render_page_header
 
 
 st.set_page_config(page_title="Data Explorer", layout="wide")
-clear_runtime_data_once_on_open()
+initialize_demo_session_once(st.session_state)
 
 st.markdown(
     """

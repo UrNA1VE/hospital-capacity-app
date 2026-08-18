@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from etl.pipeline.job_logger import RUN_HISTORY_PATH
+from etl.pipeline.paths import RUN_HISTORY_PATH
 from utils.database import (
     ETL_PIPELINE_FILES,
     ETL_PREPARED_DIR,

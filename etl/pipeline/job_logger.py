@@ -6,15 +6,9 @@ import csv
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
-from pathlib import Path
 from uuid import uuid4
 
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-CONTAINER_DATA_ROOT = PROJECT_ROOT / "data" / "container"
-LOG_DATA_DIR = CONTAINER_DATA_ROOT / "logs"
-RUN_HISTORY_PATH = LOG_DATA_DIR / "run_history.csv"
-EDIT_HISTORY_PATH = LOG_DATA_DIR / "edit_history.csv"
+from etl.pipeline.paths import EDIT_HISTORY_PATH, LOG_DATA_DIR, RUN_HISTORY_PATH
 RUN_HISTORY_COLUMNS = [
     "job_id",
     "job_type",
