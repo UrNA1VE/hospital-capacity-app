@@ -21,10 +21,9 @@ from etl.pipeline.paths import (  # noqa: E402
     ETL_PREPARED_DIR,
     RAW_DATA_DIR,
     REPORT_DATA_DIR,
-    SAMPLE_DATA_DIR,
 )
 
-DEFAULT_OUTPUT_DIR = SAMPLE_DATA_DIR
+DEFAULT_OUTPUT_DIR = RAW_DATA_DIR
 
 
 @dataclass(frozen=True)

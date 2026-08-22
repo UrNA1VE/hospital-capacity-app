@@ -15,10 +15,8 @@ from etl.pipeline.paths import (
     PROJECT_ROOT,
     RAW_DATA_DIR,
     REPORT_DATA_DIR,
-    SAMPLE_DATA_DIR,
 )
 from etl.pipeline.transform_helpers import (
-    hourly_snapshots as _hourly_snapshots,
     reporting_window as _reporting_window,
     unit_changes_overlapping_window as _unit_changes_overlapping_window,
     visits_overlapping_window as _visits_overlapping_window,
@@ -172,22 +170,6 @@ def load_run_history() -> pd.DataFrame:
     return load_job_history()
 
 
-def read_sample_sources() -> dict[str, pd.DataFrame]:
-    return {
-        "visits": pd.read_csv(
-            SAMPLE_DATA_DIR / "visits.csv",
-            parse_dates=["admission_ts", "discharge_ts"],
-        ),
-        "facilities": pd.read_csv(SAMPLE_DATA_DIR / "facilities.csv"),
-        "services": pd.read_csv(SAMPLE_DATA_DIR / "services.csv"),
-        "units": pd.read_csv(SAMPLE_DATA_DIR / "units.csv"),
-        "unit_changes": pd.read_csv(SAMPLE_DATA_DIR / "unit_changes.csv", parse_dates=["event_ts"]),
-        "diagnoses": pd.read_csv(SAMPLE_DATA_DIR / "diagnoses.csv"),
-        "population_growth": pd.read_csv(SAMPLE_DATA_DIR / "population_growth.csv"),
-        "capacity": pd.read_csv(SAMPLE_DATA_DIR / "capacity.csv", parse_dates=["capacity_date"]),
-    }
-
-
 def read_prepared_dashboard_sources() -> dict[str, pd.DataFrame]:
     required_files = [
         DASHBOARD_PREPARED_DIR / "daily.csv",
@@ -263,112 +245,7 @@ def read_prepared_dashboard_sources() -> dict[str, pd.DataFrame]:
 
 
 def build_sample_marts() -> dict[str, pd.DataFrame]:
-    sources = read_sample_sources()
-    raw_visits = sources["visits"]
-    facilities = sources["facilities"]
-    services = sources["services"]
-    capacity = sources["capacity"]
-
-    reporting_start, reporting_end = _reporting_window(capacity)
-    visits = _visits_overlapping_window(raw_visits, reporting_start, reporting_end)
-    unit_changes = _unit_changes_overlapping_window(sources["unit_changes"], raw_visits, visits)
-    snapshots = _hourly_snapshots(visits, start=reporting_start, end=reporting_end)
-    grouped_snapshots = snapshots.groupby(
-        ["hour_ts", "facility_id", "service_id"],
-        as_index=False,
-    ).agg(census=("visit_id", "nunique"))
-    hourly = grouped_snapshots.merge(
-        facilities[["facility_id", "facility_name"]],
-        on="facility_id",
-        how="left",
-    )
-    hourly = hourly.merge(
-        services[["service_id", "service_name"]],
-        on="service_id",
-        how="left",
-    )
-    hourly["calendar_date"] = hourly["hour_ts"].dt.normalize()
-    hourly["hour_of_day"] = hourly["hour_ts"].dt.hour
-
-    daily = (
-        hourly.groupby(
-            ["calendar_date", "facility_id", "facility_name", "service_id", "service_name"],
-            as_index=False,
-        )
-        .agg(average_census=("census", "mean"), peak_census=("census", "max"))
-        .merge(
-            capacity,
-            left_on=["calendar_date", "facility_id", "service_id"],
-            right_on=["capacity_date", "facility_id", "service_id"],
-            how="left",
-        )
-    )
-    daily["average_utilization"] = daily["average_census"] / daily["staffed_beds"]
-    daily["peak_utilization"] = daily["peak_census"] / daily["staffed_beds"]
-    daily = daily.drop(columns=["capacity_date"])
-
-    pressure = daily.copy()
-    pressure["pressure_level"] = pd.cut(
-        pressure["peak_utilization"],
-        bins=[-float("inf"), 0.85, 0.90, 0.95, float("inf")],
-        labels=["Normal", "High", "Severe", "Critical"],
-        right=False,
-    ).astype(str)
-    for threshold in (85, 90, 95):
-        pressure[f"above_{threshold}_percent"] = pressure["peak_utilization"] >= threshold / 100
-
-    quality = pd.DataFrame(
-        [
-            {
-                "check_name": "visits_missing_required_fields",
-                "issue_count": int(
-                    visits[
-                        [
-                            "visit_id",
-                            "patient_id",
-                            "facility_id",
-                            "service_id",
-                            "diagnosis_code",
-                            "age",
-                            "gender",
-                            "admission_ts",
-                            "discharge_ts",
-                        ]
-                    ]
-                    .isna()
-                    .any(axis=1)
-                    .sum()
-                ),
-                "severity": "error",
-            },
-            {
-                "check_name": "visits_with_invalid_date_range",
-                "issue_count": int((visits["discharge_ts"] <= visits["admission_ts"]).sum()),
-                "severity": "error",
-            },
-            {
-                "check_name": "capacity_missing_or_nonpositive",
-                "issue_count": int((capacity["staffed_beds"].isna() | (capacity["staffed_beds"] <= 0)).sum()),
-                "severity": "warning",
-            },
-            {
-                "check_name": "utilization_rows_without_capacity",
-                "issue_count": int(daily["staffed_beds"].isna().sum()),
-                "severity": "warning",
-            },
-        ]
-    )
-    quality["status"] = quality["issue_count"].map(lambda count: "pass" if count == 0 else "warn")
-    return {
-        "hourly": hourly,
-        "daily": daily,
-        "pressure": pressure,
-        "quality": quality,
-        "raw_visits": raw_visits,
-        **sources,
-        "visits": visits,
-        "unit_changes": unit_changes,
-    }
+    return read_prepared_dashboard_sources()
 
 
 def load_dashboard_data() -> tuple[dict[str, pd.DataFrame], str]:

@@ -18,8 +18,7 @@ Do not add real SHA data, patient data, internal screenshots, internal table nam
 hospital-capacity-app/
 ├── dashboard/streamlit/       Current dashboard draft
 ├── dashboard/streamlit/utils/ Shared dashboard data, report, and chart helpers
-├── data/synthetic/            Synthetic CSV samples
-├── data/container/            Container-local raw, backup, and report data
+├── data/container/            Committed demo raw, backup, log, and report data
 ├── data/etl_prepared/         Derived encounter and unit-change ETL outputs
 ├── data/dashboard_prepared/   Aggregated dashboard output destination
 ├── docs/                      ETL architecture notes
@@ -39,7 +38,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Generate synthetic CSV files:
+Generate synthetic CSV files into the raw container layer:
 
 ```sh
 python etl/synthetic_data_generator/generate_fake_data.py
@@ -67,9 +66,9 @@ Initialize the local demo dataset and rebuild the DuckDB/dashboard-prepared outp
 python etl/pipeline/initialize_demo_dataset.py
 ```
 
-Each run clears the previous container-local raw/report files and overwrites `data/dashboard_prepared/` with the latest aggregated outputs to limit local storage use.
+Each run clears the previous container-local raw/report files and overwrites `data/etl_prepared/` and `data/dashboard_prepared/` with the latest derived and aggregated outputs.
 
-Runtime data under `data/container/`, `data/etl_prepared/`, and `data/dashboard_prepared/` is ignored by git. The committed sample data under `data/synthetic/sample_data/` remains available as the fallback demo dataset.
+The repository includes a committed demo dataset under `data/container/raw/` plus matching prepared outputs under `data/etl_prepared/` and `data/dashboard_prepared/`. This lets the Streamlit app render immediately on first load instead of generating data during startup.
 
 The ETL also writes derived prepared tables to:
 
@@ -117,9 +116,9 @@ The Streamlit home page includes three main runtime actions:
 
 - **Initial First Month Data** regenerates the initial synthetic raw layer, validates it, rebuilds ETL/dashboard outputs, and starts a new `initial_dataset` job log entry.
 - **Incremental Run(add next-day data)** appends the next simulated day of raw data, validates duplicate/overlap rules, rebuilds downstream tables, and records an `incremental_run` job.
-- **Reset Demo** clears local runtime artifacts. It removes generated raw data, backups, reports, run logs, ETL-prepared tables, and dashboard-prepared tables. It does not remove `data/synthetic/sample_data`.
+- **Reset Demo** regenerates the initial demo dataset, rebuilds downstream outputs, and starts a fresh job history.
 
-The reset target folders are:
+The demo data folders are:
 
 ```text
 data/container/raw/

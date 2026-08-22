@@ -1,0 +1,9 @@
+{
+  "seed": 42,
+  "raw_dir": "data/container/raw",
+  "report_dir": "data/container/reports",
+  "etl_prepared_dir": "data/etl_prepared",
+  "prepared_dir": "data/dashboard_prepared",
+  "validation_status": "pass",
+  "validation_issue_count": 0
+}

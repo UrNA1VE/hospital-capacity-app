@@ -1,9 +1,9 @@
 # Independent Python Environment
 
-Create this environment from the `healthcare-capacity` folder:
+Create this environment from the `hospital-capacity-app` folder:
 
 ```bash
-cd /Users/qiankangwang/Desktop/personal-portfolio/demos/healthcare-capacity
+cd hospital-capacity-app
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
