@@ -114,7 +114,7 @@ pytest tests/python
 
 The Streamlit home page includes three main runtime actions:
 
-- **Initial First Month Data** regenerates the initial synthetic raw layer, validates it, rebuilds ETL/dashboard outputs, and starts a new `initial_dataset` job log entry.
+- **Initial 10-Day Data** regenerates the initial synthetic raw layer, validates it, rebuilds ETL/dashboard outputs, and starts a new `initial_dataset` job log entry.
 - **Incremental Run(add next-day data)** appends the next simulated day of raw data, validates duplicate/overlap rules, rebuilds downstream tables, and records an `incremental_run` job.
 - **Reset Demo** regenerates the initial demo dataset, rebuilds downstream outputs, and starts a fresh job history.
 

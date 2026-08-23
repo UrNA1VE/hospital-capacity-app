@@ -29,7 +29,7 @@ DEFAULT_OUTPUT_DIR = RAW_DATA_DIR
 @dataclass(frozen=True)
 class GeneratorConfig:
     start_date: str = "2025-01-01"
-    days: int = 30
+    days: int = 10
     seed: int = 42
     lookback_days: int = 30
     patient_id:int = 1
@@ -744,7 +744,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--start-date", default="2025-01-01")
-    parser.add_argument("--days", type=int, default=30)
+    parser.add_argument("--days", type=int, default=10)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--lookback-days", type=int, default=30)
     return parser.parse_args()

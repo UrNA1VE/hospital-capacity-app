@@ -100,7 +100,7 @@ with st.container(border=True):
     with initialize_col:
         st.markdown("**Initialize Dataset**")
         st.markdown(
-            '<div class="action-note">Create the initial synthetic month and rebuild every downstream table.</div>',
+            '<div class="action-note">Create the initial 10-day synthetic dataset and rebuild every downstream table.</div>',
             unsafe_allow_html=True,
         )
         if st.button("Initialize Dataset", type="primary", use_container_width=True):

@@ -524,6 +524,13 @@ def refresh_raw_backup() -> None:
         shutil.copy2(RAW_DATA_DIR / file_name, BACKUP_DATA_DIR / file_name)
 
 
+def pipeline_result_json(result: PipelineResult) -> dict[str, object]:
+    payload = asdict(result)
+    for key in ("raw_dir", "report_dir", "etl_prepared_dir", "prepared_dir"):
+        payload[key] = str(Path(payload[key]).relative_to(PROJECT_ROOT))
+    return payload
+
+
 def run_etl_from_existing_raw(
     job_type: str = "etl_refresh",
     params: dict[str, object] | None = None,
@@ -564,7 +571,7 @@ def run_etl_from_existing_raw(
             "prepared_dir": DASHBOARD_PREPARED_DIR,
         }
 
-def run_fake_data_pipeline(seed: int, days: int = 30, start_date: str = "2025-01-01") -> PipelineResult:
+def run_fake_data_pipeline(seed: int, days: int = 10, start_date: str = "2025-01-01") -> PipelineResult:
     with EtlJob(
         "initial_dataset",
         params={"seed": seed, "days": days, "start_date": start_date},
@@ -593,7 +600,7 @@ def run_fake_data_pipeline(seed: int, days: int = 30, start_date: str = "2025-01
         )
 
         (report_dir / "pipeline_result.json").write_text(
-            json.dumps(asdict(result), indent=2),
+            json.dumps(pipeline_result_json(result), indent=2),
             encoding="utf-8",
         )
         return result
