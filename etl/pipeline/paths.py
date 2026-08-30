@@ -1,4 +1,4 @@
-"""Shared filesystem paths for the demo ETL runtime."""
+"""Shared filesystem paths for the ETL runtime."""
 
 from __future__ import annotations
 

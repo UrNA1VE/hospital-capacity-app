@@ -14,7 +14,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from etl.event_editor.editor import next_number
 from etl.pipeline.job_logger import EtlJob
-from etl.pipeline.initialize_demo_dataset import run_etl_from_existing_raw
+from etl.pipeline.initialize_dataset import run_etl_from_existing_raw
 from etl.pipeline.paths import (
     BACKUP_DATA_DIR,
     DASHBOARD_PREPARED_DIR,

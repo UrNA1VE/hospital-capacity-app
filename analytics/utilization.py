@@ -1,15 +1,6 @@
 """Capacity, census, and bed-demand calculations."""
 
 from __future__ import annotations
-from __future__ import annotations
-
-import sys
-from pathlib import Path
-
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PROJECT_ROOT))
-
-from dashboard.streamlit.utils.database import *
 
 import numpy as np
 import pandas as pd
@@ -118,18 +109,3 @@ def bed_demand_no_adjustment(
     projected["variance"] = projected["funded_capacity"] - projected["demand"]
     return projected.sort_values(["year", "facility_name", "demand"], ascending=[True, True, False])
 
-
-# if __name__ == "__main__":
-#     tables = build_sample_marts()
-#     daily = tables["daily"]
-#     from analytics.demographics import demographics_summary
-
-#     demographics = demographics_summary(
-#         tables["visits"],
-#         tables["services"],
-#         tables["facilities"],
-#         tables["diagnoses"],
-#     )
-#     test1 = capacity_summary(daily=daily)
-#     test2 = service_census_summary(daily=daily)
-#     test3 = bed_demand_no_adjustment(daily, demographics, tables["population_growth"])

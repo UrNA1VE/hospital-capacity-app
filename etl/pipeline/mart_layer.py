@@ -1,60 +1,36 @@
-"""Initialize the container-local demo dataset for the dashboard.
-
-This is a lightweight runtime workflow for the containerized Streamlit app:
-
-container raw data -> validation report -> DuckDB-backed transforms -> dashboard_prepared.
-"""
+"""Build ETL prepared tables and dashboard marts from raw CSV sources."""
 
 from __future__ import annotations
 
-import json
 import shutil
-import sys
-from dataclasses import asdict, dataclass
 from pathlib import Path
 
-import duckdb
 import pandas as pd
 
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(PROJECT_ROOT))
-
-from analytics.demographics import demographics_summary  # noqa: E402
-from analytics.projection import bed_needs_projection  # noqa: E402
-from analytics.savings import savings_scenarios  # noqa: E402
-from analytics.utilization import (  # noqa: E402
+from analytics.demographics import demographics_summary
+from analytics.projection import bed_needs_projection
+from analytics.savings import savings_scenarios
+from analytics.utilization import (
     bed_demand_no_adjustment,
     capacity_summary,
     current_bed_demand,
     service_census_summary,
 )
-from etl.pipeline.job_logger import EtlJob  # noqa: E402
-from etl.pipeline.paths import (  # noqa: E402
+from etl.pipeline.paths import (
     BACKUP_DATA_DIR,
     DASHBOARD_PREPARED_DIR,
-    EDIT_HISTORY_PATH,
     ETL_PREPARED_DIR,
-    LOG_DATA_DIR,
     RAW_DATA_DIR,
     REPORT_DATA_DIR,
-    RUN_HISTORY_PATH,
 )
-from etl.pipeline.transform_helpers import (  # noqa: E402
+from etl.pipeline.transform_helpers import (
     hourly_snapshots,
     reporting_window,
     unit_changes_overlapping_window,
     visits_overlapping_window,
 )
-from etl.synthetic_data_generator.generate_fake_data import (  # noqa: E402
-    GeneratorConfig,
-    initial_fake_data,
-    write_csvs,
-)
-
 
 EDITABLE_RAW_FILES = ["patients.csv", "admission_chart.csv", "patient_events.csv"]
-
 
 REQUIRED_COLUMNS = {
     "facilities": {"facility_id", "facility_name", "region"},
@@ -86,17 +62,6 @@ REQUIRED_COLUMNS = {
 }
 
 
-@dataclass(frozen=True)
-class PipelineResult:
-    seed: int
-    raw_dir: str
-    report_dir: str
-    etl_prepared_dir: str
-    prepared_dir: str
-    validation_status: str
-    validation_issue_count: int
-
-
 def read_raw_sources(raw_dir: Path) -> dict[str, pd.DataFrame]:
     sources = {
         "patients": pd.read_csv(raw_dir / "patients.csv"),
@@ -113,21 +78,12 @@ def read_raw_sources(raw_dir: Path) -> dict[str, pd.DataFrame]:
     return {**sources, **derived}
 
 
-def _first_event(events: pd.DataFrame, event_type: str) -> pd.DataFrame:
-    return (
-        events[events["type"] == event_type]
-        .sort_values(["visit_id", "event_ts", "event_id"])
-        .drop_duplicates("visit_id", keep="first")
-    )
-
-
 def _last_event(events: pd.DataFrame, event_type: str) -> pd.DataFrame:
     return (
         events[events["type"] == event_type]
         .sort_values(["visit_id", "event_ts", "event_id"])
         .drop_duplicates("visit_id", keep="last")
     )
-
 
 
 def build_encounter_tables_from_events(sources: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
@@ -161,16 +117,12 @@ def build_encounter_tables_from_events(sources: dict[str, pd.DataFrame]) -> dict
             ]
         ]
         .merge(
-            last_services[["visit_id", "value"]].rename(
-                columns={"value": "event_service_id"}
-            ),
+            last_services[["visit_id", "value"]].rename(columns={"value": "event_service_id"}),
             on="visit_id",
             how="left",
         )
         .merge(
-            last_diagnoses[["visit_id", "value"]].rename(
-                columns={"value": "event_diagnosis_code"}
-            ),
+            last_diagnoses[["visit_id", "value"]].rename(columns={"value": "event_diagnosis_code"}),
             on="visit_id",
             how="left",
         )
@@ -184,13 +136,11 @@ def build_encounter_tables_from_events(sources: dict[str, pd.DataFrame]) -> dict
     discharge_ts = pd.to_datetime(visits["discharge_ts"], errors="coerce")
     effective_discharge_ts = discharge_ts.where(
         discharge_ts.notna(),
-        admission_ts + pd.Timedelta(days=1),
+        admission_ts + pd.to_timedelta(1, unit="D"),
     )
     visits["admission_ts"] = admission_ts
     visits["discharge_ts"] = discharge_ts
-    visits["length_days"] = (
-        effective_discharge_ts - admission_ts
-    ).dt.total_seconds() / 86_400
+    visits["length_days"] = (effective_discharge_ts - admission_ts).dt.total_seconds() / 86_400
     visits["alclos"] = (visits["length_days"] - visits["elos_days"]).clip(lower=0).fillna(0).round(2)
     visits["elos"] = visits["elos_days"].round(2)
     visits["riwexcl"] = "01"
@@ -219,19 +169,11 @@ def build_encounter_tables_from_events(sources: dict[str, pd.DataFrame]) -> dict
     unit_changes = (
         pd.concat(
             [
-                admission_chart[
-                    ["visit_id", "admission_ts", "facility_id", "admitted_unit_id"]
-                ].rename(
-                    columns={
-                        "admission_ts": "event_ts",
-                        "admitted_unit_id": "unit_id",
-                    }
-                ).assign(unit_change_id=lambda frame: "ADM-" + frame["visit_id"].astype(str)),
+                admission_chart[["visit_id", "admission_ts", "facility_id", "admitted_unit_id"]]
+                .rename(columns={"admission_ts": "event_ts", "admitted_unit_id": "unit_id"})
+                .assign(unit_change_id=lambda frame: "ADM-" + frame["visit_id"].astype(str)),
                 location_events[["event_id", "visit_id", "event_ts", "facility_id", "value"]].rename(
-                    columns={
-                        "event_id": "unit_change_id",
-                        "value": "unit_id",
-                    }
+                    columns={"event_id": "unit_change_id", "value": "unit_id"}
                 ),
             ],
             ignore_index=True,
@@ -346,16 +288,8 @@ def build_marts_from_sources(sources: dict[str, pd.DataFrame]) -> dict[str, pd.D
         ["hour_ts", "facility_id", "service_id"],
         as_index=False,
     ).agg(census=("visit_id", "nunique"))
-    hourly = grouped_snapshots.merge(
-        facilities[["facility_id", "facility_name"]],
-        on="facility_id",
-        how="left",
-    )
-    hourly = hourly.merge(
-        services[["service_id", "service_name"]],
-        on="service_id",
-        how="left",
-    )
+    hourly = grouped_snapshots.merge(facilities[["facility_id", "facility_name"]], on="facility_id", how="left")
+    hourly = hourly.merge(services[["service_id", "service_name"]], on="service_id", how="left")
     hourly["calendar_date"] = hourly["hour_ts"].dt.normalize()
     hourly["hour_of_day"] = hourly["hour_ts"].dt.hour
 
@@ -461,36 +395,10 @@ def build_dashboard_tables(tables: dict[str, pd.DataFrame]) -> dict[str, pd.Data
     }
 
 
-def write_tables_with_duckdb(tables: dict[str, pd.DataFrame], output_dir: Path) -> None:
+def write_tables(tables: dict[str, pd.DataFrame], output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
-    connection = duckdb.connect(":memory:")
-    try:
-        for name, frame in tables.items():
-            connection.register(name, frame)
-            connection.sql(f"COPY (SELECT * FROM {name}) TO '{output_dir / f'{name}.csv'}' (HEADER, DELIMITER ',')")
-    finally:
-        connection.close()
-
-
-def clear_container_run_data() -> None:
-    for folder in (RAW_DATA_DIR, REPORT_DATA_DIR):
-        if folder.exists():
-            shutil.rmtree(folder)
-        folder.mkdir(parents=True, exist_ok=True)
-
-
-def reset_demo_runtime() -> None:
-    for folder in (
-        RAW_DATA_DIR,
-        BACKUP_DATA_DIR,
-        REPORT_DATA_DIR,
-        LOG_DATA_DIR,
-        ETL_PREPARED_DIR,
-        DASHBOARD_PREPARED_DIR,
-    ):
-        if folder.exists():
-            shutil.rmtree(folder)
-        folder.mkdir(parents=True, exist_ok=True)
+    for name, frame in tables.items():
+        frame.to_csv(output_dir / f"{name}.csv", index=False)
 
 
 def clear_dashboard_prepared() -> None:
@@ -506,7 +414,7 @@ def clear_etl_prepared() -> None:
 
 
 def write_etl_prepared_tables(sources: dict[str, pd.DataFrame]) -> None:
-    write_tables_with_duckdb(
+    write_tables(
         {
             "visits": sources["visits"],
             "unit_changes": sources["unit_changes"],
@@ -524,87 +432,39 @@ def refresh_raw_backup() -> None:
         shutil.copy2(RAW_DATA_DIR / file_name, BACKUP_DATA_DIR / file_name)
 
 
-def pipeline_result_json(result: PipelineResult) -> dict[str, object]:
-    payload = asdict(result)
-    for key in ("raw_dir", "report_dir", "etl_prepared_dir", "prepared_dir"):
-        payload[key] = str(Path(payload[key]).relative_to(PROJECT_ROOT))
-    return payload
-
-
-def run_etl_from_existing_raw(
-    job_type: str = "etl_refresh",
-    params: dict[str, object] | None = None,
-    log_job: bool = True,
+def generate_mart_layer(
+    raw_dir: Path = RAW_DATA_DIR,
+    report_dir: Path = REPORT_DATA_DIR,
 ) -> dict[str, object]:
-    with EtlJob(job_type, params=params, enabled=log_job) as job:
-        raw_dir = RAW_DATA_DIR
-        report_dir = REPORT_DATA_DIR
-        clear_etl_prepared()
-        clear_dashboard_prepared()
-        report_dir.mkdir(parents=True, exist_ok=True)
+    """Validate raw sources and rebuild ETL prepared plus dashboard mart outputs."""
+    clear_etl_prepared()
+    clear_dashboard_prepared()
+    report_dir.mkdir(parents=True, exist_ok=True)
 
-        sources = read_raw_sources(raw_dir)
-        validation_report = validate_sources(sources)
-        validation_report.to_csv(report_dir / "data_check_report.csv", index=False)
+    sources = read_raw_sources(raw_dir)
+    validation_report = validate_sources(sources)
+    validation_report.to_csv(report_dir / "data_check_report.csv", index=False)
 
-        issue_count = int(
-            validation_report.loc[
-                validation_report["severity"] == "error",
-                "issue_count",
-            ].sum()
-        )
-        status = "pass" if issue_count == 0 else "fail"
+    issue_count = int(
+        validation_report.loc[
+            validation_report["severity"] == "error",
+            "issue_count",
+        ].sum()
+    )
+    status = "pass" if issue_count == 0 else "fail"
 
-        write_etl_prepared_tables(sources)
+    write_etl_prepared_tables(sources)
 
-        marts = build_marts_from_sources(sources)
-        dashboard_tables = build_dashboard_tables(marts)
-        write_tables_with_duckdb(dashboard_tables, DASHBOARD_PREPARED_DIR)
-        refresh_raw_backup()
+    marts = build_marts_from_sources(sources)
+    dashboard_tables = build_dashboard_tables(marts)
+    write_tables(dashboard_tables, DASHBOARD_PREPARED_DIR)
+    refresh_raw_backup()
 
-        return {
-            "issue_count": issue_count,
-            "status": status,
-            "raw_dir": raw_dir,
-            "report_dir": report_dir,
-            "etl_prepared_dir": ETL_PREPARED_DIR,
-            "prepared_dir": DASHBOARD_PREPARED_DIR,
-        }
-
-def run_fake_data_pipeline(seed: int, days: int = 10, start_date: str = "2025-01-01") -> PipelineResult:
-    with EtlJob(
-        "initial_dataset",
-        params={"seed": seed, "days": days, "start_date": start_date},
-    ) as job:
-        clear_container_run_data()
-
-        raw_dir = RAW_DATA_DIR
-        report_dir = REPORT_DATA_DIR
-        raw_dir.mkdir(parents=True, exist_ok=True)
-        report_dir.mkdir(parents=True, exist_ok=True)
-
-        config = GeneratorConfig(start_date=start_date, days=days, seed=seed)
-        raw_tables = initial_fake_data(config)
-        write_csvs(raw_tables, raw_dir)
-
-        etl_result = run_etl_from_existing_raw(log_job=False)
-
-        result = PipelineResult(
-            seed=seed,
-            raw_dir=str(etl_result["raw_dir"]),
-            report_dir=str(etl_result["report_dir"]),
-            etl_prepared_dir=str(etl_result["etl_prepared_dir"]),
-            prepared_dir=str(etl_result["prepared_dir"]),
-            validation_status=str(etl_result["status"]),
-            validation_issue_count=int(etl_result["issue_count"]),
-        )
-
-        (report_dir / "pipeline_result.json").write_text(
-            json.dumps(pipeline_result_json(result), indent=2),
-            encoding="utf-8",
-        )
-        return result
-
-if __name__ == "__main__":
-    result = run_fake_data_pipeline(seed=42)
-    print(json.dumps(asdict(result), indent=2))
+    return {
+        "issue_count": issue_count,
+        "status": status,
+        "raw_dir": raw_dir,
+        "report_dir": report_dir,
+        "etl_prepared_dir": ETL_PREPARED_DIR,
+        "prepared_dir": DASHBOARD_PREPARED_DIR,
+    }

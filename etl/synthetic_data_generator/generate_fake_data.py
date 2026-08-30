@@ -1,4 +1,4 @@
-"""Generate fully synthetic hospital capacity demo data."""
+"""Generate fully synthetic hospital capacity data."""
 
 from __future__ import annotations
 

@@ -8,8 +8,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "etl"))
 
-from dashboard.streamlit.utils.database import _reporting_window, _unit_changes_overlapping_window, _visits_overlapping_window
-from etl.pipeline.initialize_demo_dataset import build_encounter_tables_from_events
+from etl.pipeline.mart_layer import build_encounter_tables_from_events
+from etl.pipeline.transform_helpers import reporting_window, unit_changes_overlapping_window, visits_overlapping_window
 from synthetic_data_generator.generate_fake_data import GeneratorConfig, generate_all
 
 
@@ -53,9 +53,9 @@ def test_generated_visits_include_report_window_carryover_stays():
 def test_analysis_visits_are_clipped_to_reporting_window():
     config = GeneratorConfig(start_date="2025-01-01", days=7, seed=7, lookback_days=30)
     tables = with_derived_encounters(generate_all(config))
-    start, end = _reporting_window(tables["capacity"])
-    visits = _visits_overlapping_window(tables["visits"], start, end)
-    unit_changes = _unit_changes_overlapping_window(tables["unit_changes"], tables["visits"], visits)
+    start, end = reporting_window(tables["capacity"])
+    visits = visits_overlapping_window(tables["visits"], start, end)
+    unit_changes = unit_changes_overlapping_window(tables["unit_changes"], tables["visits"], visits)
 
     assert (tables["visits"]["admission_ts"] < start).any()
     assert (visits["admission_ts"] >= start).all()

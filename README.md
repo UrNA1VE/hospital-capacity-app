@@ -1,14 +1,14 @@
 # Hospital Capacity Analytics App
 
-Synthetic hospital capacity analytics demo.
+Synthetic hospital capacity analytics application.
 
-This project is a public-safe technical demo. It combines a Python synthetic data generator, container-local raw data, validation reports, derived encounter tables, dashboard-prepared outputs, and a Streamlit dashboard. The local version does not use persistent cloud storage; data edits are intended for demo sessions only.
+This project is a public-safe technical application. It combines a Python synthetic data generator, container-local raw data, validation reports, derived encounter tables, dashboard-prepared outputs, and a Streamlit dashboard. The local version does not use persistent cloud storage; data edits are intended for temporary runtime sessions only.
 
 The raw generated layer is event-level. It stores patient demographics in `patients.csv` and hospital activity in `patient_events.csv`; visit-level tables are derived during ETL rather than stored as raw source files.
 
 ## Data safety boundary
 
-All demo data must remain synthetic or explicitly public-safe.
+All generated data must remain synthetic or explicitly public-safe.
 
 Do not add real SHA data, patient data, internal screenshots, internal table names, private operational numbers, credentials, local network paths, or confidential documents.
 
@@ -18,7 +18,7 @@ Do not add real SHA data, patient data, internal screenshots, internal table nam
 hospital-capacity-app/
 ├── dashboard/streamlit/       Current dashboard draft
 ├── dashboard/streamlit/utils/ Shared dashboard data, report, and chart helpers
-├── data/container/            Committed demo raw, backup, log, and report data
+├── data/container/            Committed sample raw, backup, log, and report data
 ├── data/etl_prepared/         Derived encounter and unit-change ETL outputs
 ├── data/dashboard_prepared/   Aggregated dashboard output destination
 ├── docs/                      ETL architecture notes
@@ -60,15 +60,15 @@ population_growth.csv
 
 `admission_chart.csv` stores one admission/start-state row per visit, including admitted unit, service, diagnosis, facility, admission time, and admission type. `patient_events.csv` stores updates after admission with `type` values of `location`, `service`, `diagnosis`, and `discharge`. Open inpatient encounters simply do not have a discharge event. The ETL derives analytical `visits` from admission chart rows plus the latest service, diagnosis, location, and discharge events.
 
-Initialize the local demo dataset and rebuild the DuckDB/dashboard-prepared outputs:
+Initialize the local dataset and rebuild the dashboard-prepared outputs:
 
 ```sh
-python etl/pipeline/initialize_demo_dataset.py
+python etl/pipeline/initialize_dataset.py
 ```
 
 Each run clears the previous container-local raw/report files and overwrites `data/etl_prepared/` and `data/dashboard_prepared/` with the latest derived and aggregated outputs.
 
-The repository includes a committed demo dataset under `data/container/raw/` plus matching prepared outputs under `data/etl_prepared/` and `data/dashboard_prepared/`. This lets the Streamlit app render immediately on first load instead of generating data during startup.
+The repository includes a committed sample dataset under `data/container/raw/` plus matching prepared outputs under `data/etl_prepared/` and `data/dashboard_prepared/`. This lets the Streamlit app render immediately on first load instead of generating data during startup.
 
 The ETL also writes derived prepared tables to:
 
@@ -110,15 +110,15 @@ Run Python tests:
 pytest tests/python
 ```
 
-## Demo controls
+## Dataset controls
 
 The Streamlit home page includes three main runtime actions:
 
 - **Initial 10-Day Data** regenerates the initial synthetic raw layer, validates it, rebuilds ETL/dashboard outputs, and starts a new `initial_dataset` job log entry.
 - **Incremental Run(add next-day data)** appends the next simulated day of raw data, validates duplicate/overlap rules, rebuilds downstream tables, and records an `incremental_run` job.
-- **Reset Demo** regenerates the initial demo dataset, rebuilds downstream outputs, and starts a fresh job history.
+- **Clear Runtime** removes generated raw data, prepared outputs, reports, and job history. Run Initialize Dataset again when you want fresh data.
 
-The demo data folders are:
+The runtime data folders are:
 
 ```text
 data/container/raw/
@@ -131,9 +131,9 @@ data/dashboard_prepared/
 
 ## Pipeline workflow
 
-The local demo has two run modes:
+The local app has two run modes:
 
-- `initialize_demo_dataset.py` performs a full demo refresh. It regenerates synthetic raw files, validates the source data, rebuilds derived encounter tables, and rewrites dashboard-ready outputs.
+- `initialize_dataset.py` creates the synthetic raw CSV layer, then calls `mart_layer.py` to validate raw sources, rebuild derived encounter tables, and rewrite dashboard-ready outputs.
 - `incremental_run.py` simulates the next day of activity. It appends new raw rows to selected source tables, validates the incremental batch, then rebuilds the derived/dashboard tables from the full raw history.
 
 ```mermaid
@@ -142,7 +142,7 @@ flowchart LR
     B --> C["Validation Layer<br/>schema, keys, ranges, references"]
     B --> D["Encounter ETL<br/>derive visits + unit_changes"]
     C --> E["Quality Report"]
-    D --> F["Dashboard Marts<br/>daily, census, pressure, demand, savings"]
+    D --> F["Dashboard Marts<br/>daily, census, pressure, demand, projection"]
     E --> F
     F --> G["Streamlit App<br/>pipeline status + dashboards"]
 ```
@@ -224,4 +224,4 @@ Current job types include:
 
 The **User Editor** records submitted edits as `user_editor_update` jobs. Each edit job writes human-readable messages to the `message` column and undo-ready structured actions to the `changes` column.
 
-The editor supports undoing the latest submitted edit job only. This keeps the demo state deterministic when edits depend on each other. After an undo, the app rebuilds the derived ETL/dashboard outputs and removes that job from `edit_history.csv` so the same job cannot be undone twice.
+The editor supports undoing the latest submitted edit job only. This keeps the runtime state deterministic when edits depend on each other. After an undo, the app rebuilds the derived ETL/dashboard outputs and removes that job from `edit_history.csv` so the same job cannot be undone twice.

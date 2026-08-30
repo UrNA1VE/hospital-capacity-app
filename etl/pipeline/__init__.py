@@ -1,1 +1,1 @@
-"""Local ETL pipeline modules for the healthcare capacity demo."""
+"""Local ETL pipeline modules for the healthcare capacity app."""

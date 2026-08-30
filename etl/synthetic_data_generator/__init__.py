@@ -1,1 +1,1 @@
-"""Synthetic data generation utilities for the healthcare capacity demo."""
+"""Synthetic data generation utilities for the healthcare capacity app."""

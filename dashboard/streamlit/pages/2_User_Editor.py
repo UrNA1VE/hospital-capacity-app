@@ -7,7 +7,7 @@ import pandas as pd
 import streamlit as st
 
 import bootstrap  # noqa: F401
-from etl.pipeline.demo_runtime import initialize_demo_session_once
+from etl.pipeline.runtime_state import runtime_data_exists
 from etl.event_editor.editor import (
     EDIT_HISTORY_PATH,
     add_admission,
@@ -19,12 +19,12 @@ from etl.event_editor.editor import (
     undo_job,
     update_event,
 )
-from etl.pipeline.initialize_demo_dataset import RAW_DATA_DIR, run_etl_from_existing_raw
+from etl.pipeline.initialize_dataset import run_etl_from_existing_raw
+from etl.pipeline.paths import RAW_DATA_DIR
 from utils.job_logs import render_page_header
 
 
 st.set_page_config(page_title="User Editor", page_icon="✏️", layout="wide")
-initialize_demo_session_once(st.session_state)
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -111,13 +111,18 @@ render_page_header(
     "Add admissions and events to the raw event-level data, then submit once to rebuild the dashboard tables.",
 )
 
+if not runtime_data_exists():
+    st.info("No generated data yet. Open Home and run Initialize Dataset before using the editor.")
+    st.stop()
+
 editor_col, submit_col = st.columns([4, 1.35])
 
 with editor_col:
-    with st.expander("New Admission", expanded=False):
-        if not raw_ready or not reference_ready:
-            st.info("Generate fake data on the main page before using the editor.")
-        else:
+    if not raw_ready or not reference_ready:
+        st.info("Generate fake data on the main page before using the editor.")
+    else: 
+
+        with st.expander("New Admission", expanded=False):
             patient_mode = st.radio("Patient", ["New patient", "Returning patient"], horizontal=True)
             if patient_mode == "New patient":
                 age = st.selectbox("Age", list(range(0, 96)))
@@ -175,10 +180,7 @@ with editor_col:
                 )
                 st.success(f"Added admission {visit_id}")
 
-    with st.expander("New Event", expanded=False):
-        if not raw_ready or not reference_ready:
-            st.info("Generate fake data on the main page before using the editor.")
-        else:
+        with st.expander("New Event", expanded=False):            
             visit_id = st.selectbox("Visit", admission_chart["visit_id"].tolist(), key="new-event-visit")
             event_type = st.selectbox("Event type", ["location", "service", "diagnosis", "discharge"])
 
@@ -223,10 +225,8 @@ with editor_col:
                 )
                 st.success(f"Added event {event_id}")
 
-    with st.expander("Edit Historical Event", expanded=False):
-        if not raw_ready or not reference_ready:
-            st.info("Generate fake data on the main page before using the editor.")
-        else:
+        with st.expander("Edit Historical Event", expanded=False):
+
             patient_id = st.selectbox("Patient ID", patients["patient_id"].tolist(), key="patient-id")
             visit_options = admission_chart.loc[
                 admission_chart["patient_id"] == patient_id,
@@ -246,7 +246,7 @@ with editor_col:
                 else:
                     event_id = st.selectbox("Event ID", event_options, key="edited-event")
                     selected_event = patient_events[patient_events["event_id"] == event_id]
-                    st.dataframe(selected_event, use_container_width=True, hide_index=True)
+                    st.dataframe(selected_event, width="stretch", hide_index=True)
                     current_event_value = selected_event["value"].iloc[0]
                     event_type = selected_event["type"].iloc[0]
 
@@ -304,14 +304,12 @@ with editor_col:
                         st.success(f"Updated event {event_id}")
 
 
-    with st.expander("Remove Previous Event", expanded=False):
-        if patient_events.empty:
-            st.info("Generate fake data on the main page before removing events.")
-        else:
+        with st.expander("Remove Previous Event", expanded=False):
+
             removable_events = patient_events.sort_values("event_ts", ascending=False)
             event_id = st.selectbox("Event", removable_events["event_id"].tolist())
             selected_event = removable_events[removable_events["event_id"] == event_id]
-            st.dataframe(selected_event, use_container_width=True, hide_index=True)
+            st.dataframe(selected_event, width="stretch", hide_index=True)
             confirm_remove = st.checkbox("Confirm removal")
 
             if st.button("Remove event", disabled=not confirm_remove):
@@ -327,59 +325,61 @@ with editor_col:
                 )
                 st.success(f"Removed event {event_id}")
 
-with submit_col:
-    st.subheader("Submit")
-    if st.session_state["change_messages"]:
-        st.warning("Pending changes")
-        for item in st.session_state["change_messages"]:
-            st.caption(f"- {item}")
-    else:
-        st.info("No pending changes.")
+    with submit_col:
+        st.subheader("Submit")
+        if st.session_state["change_messages"]:
+            st.warning("Pending changes")
+            for item in st.session_state["change_messages"]:
+                st.caption(f"- {item}")
+        else:
+            st.info("No pending changes.")
 
-    if st.button("Submit Updates", type="primary", use_container_width=True):
-        with st.spinner("Rebuilding ETL and dashboard tables..."):
-            result = run_etl_from_existing_raw(
-                job_type="user_editor_update",
-                params={
-                    "change_messages": st.session_state["change_messages"],
-                    "changes": st.session_state["pending_changes"],
-                },
+        if st.button("Submit Updates", type="primary", width="stretch"):
+            with st.spinner("Rebuilding ETL and dashboard tables..."):
+                result = run_etl_from_existing_raw(
+                    job_type="user_editor_update",
+                    params={
+                        "change_messages": st.session_state["change_messages"],
+                        "changes": st.session_state["pending_changes"],
+                    },
             )
-        clear_editor_state()
-        st.success(f"Tables rebuilt: {result['status']}")
+            st.cache_data.clear()
+            clear_editor_state()
+            st.success(f"Tables rebuilt: {result['status']}")
 
-    if st.button("Clear All Pending Changes", use_container_width=True):
-        retrieve_back_up()
-        clear_editor_state()
-        st.success("Raw files restored from backup.")
+        if st.button("Clear All Pending Changes", width="stretch"):
+            retrieve_back_up()
+            clear_editor_state()
+            st.success("Raw files restored from backup.")
 
-    st.divider()
-    st.subheader("Undo Last Edit Job")
-    latest_edit_job = load_latest_edit_job()
-    if latest_edit_job is None:
-        st.info("No submitted edit job to undo.")
-    else:
-        latest_job_id = str(latest_edit_job["job_id"])
-        st.caption(latest_job_id)
-        for message in parse_message_list(latest_edit_job.get("message", "")):
-            st.caption(f"- {message}")
+        st.divider()
+        st.subheader("Undo Last Edit Job")
+        latest_edit_job = load_latest_edit_job()
+        if latest_edit_job is None:
+            st.info("No submitted edit job to undo.")
+        else:
+            latest_job_id = str(latest_edit_job["job_id"])
+            st.caption(latest_job_id)
+            for message in parse_message_list(latest_edit_job.get("message", "")):
+                st.caption(f"- {message}")
 
-        undo_disabled = bool(st.session_state["pending_changes"])
-        if undo_disabled:
-            st.warning("Submit or clear pending changes before undoing a submitted job.")
+            undo_disabled = bool(st.session_state["pending_changes"])
+            if undo_disabled:
+                st.warning("Submit or clear pending changes before undoing a submitted job.")
 
-        if st.button("Undo Last Edit Job", use_container_width=True, disabled=undo_disabled):
-            with st.spinner("Undoing the latest edit job and rebuilding tables..."):
-                try:
-                    undo_job(latest_job_id)
-                    run_etl_from_existing_raw(
-                        job_type="undo_user_edit",
-                        params={"message": f"Undid edit job {latest_job_id}"},
-                    )
-                    remove_edit_history_job(latest_job_id)
-                except (FileNotFoundError, ValueError, KeyError, json.JSONDecodeError) as error:
-                    st.error(f"Undo failed: {error}")
-                else:
-                    clear_editor_state()
-                    st.success(f"Undid {latest_job_id}")
-                    st.rerun()
+            if st.button("Undo Last Edit Job", width="stretch", disabled=undo_disabled):
+                with st.spinner("Undoing the latest edit job and rebuilding tables..."):
+                    try:
+                        undo_job(latest_job_id)
+                        run_etl_from_existing_raw(
+                            job_type="undo_user_edit",
+                            params={"message": f"Undid edit job {latest_job_id}"},
+                        )
+                        st.cache_data.clear()
+                        remove_edit_history_job(latest_job_id)
+                    except (FileNotFoundError, ValueError, KeyError, json.JSONDecodeError) as error:
+                        st.error(f"Undo failed: {error}")
+                    else:
+                        clear_editor_state()
+                        st.success(f"Undid {latest_job_id}")
+                        st.rerun()

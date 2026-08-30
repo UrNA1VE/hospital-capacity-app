@@ -2,22 +2,16 @@
 
 from importlib import reload
 
-import pandas as pd
 import streamlit as st
 
 import bootstrap  # noqa: F401
-from etl.pipeline.demo_runtime import initialize_demo_session_once
-from analytics.demographics import demographics_summary
-from analytics.projection import bed_needs_projection
-from analytics.utilization import current_bed_demand
 import utils.charts as charts
-from utils.database import load_dashboard_data
+from utils.dashboard_data import read_dashboard_marts
 from utils.job_logs import render_page_header
 
 charts = reload(charts)
 
 st.set_page_config(page_title="Dashboard", layout="wide")
-initialize_demo_session_once(st.session_state)
 
 st.markdown(
     """
@@ -68,20 +62,18 @@ st.markdown(
 )
 
 try:
-    tables, source_label = load_dashboard_data()
+    tables = read_dashboard_marts()
 except FileNotFoundError:
     render_page_header("Dashboard", "Capacity analytics from dashboard-ready mart tables.")
-    st.info("No prepared dashboard data yet. Open Home and run Initialize Dataset to create the demo dataset.")
+    st.info("No prepared dashboard data yet. Open Home and run Initialize Dataset to create the initial dataset.")
     st.stop()
 
 daily = tables["daily"]
-visits = tables["visits"]
-services = tables["services"]
-facilities = tables["facilities"]
-diagnoses = tables["diagnoses"]
-population_growth = tables["population_growth"]
+current_demand = tables["current_demand"]
+projection = tables["projection"]
+facility_filters = tables["facility_filters"]
 
-render_page_header("Dashboard", f"Capacity analytics from dashboard-ready mart tables. Source: {source_label}")
+render_page_header("Dashboard", "Capacity analytics from dashboard-ready mart tables.")
 
 with st.container(border=True):
     st.markdown("**Filters**")
@@ -91,7 +83,7 @@ with st.container(border=True):
     )
     facility_col, service_col = st.columns([1, 2])
     with facility_col:
-        facility = st.selectbox("Facility", ["All"] + sorted(daily["facility_name"].dropna().unique().tolist()))
+        facility = st.selectbox("Facility", facility_filters["facility_filter"].dropna().tolist())
     with service_col:
         service_options = sorted(daily["service_name"].dropna().unique().tolist())
         selected_services = st.multiselect("Services", service_options, default=service_options)
@@ -121,43 +113,34 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-facility_ids = filtered_daily["facility_id"].unique()
-service_ids = filtered_daily["service_id"].unique()
-filtered_visits = visits[
-    visits["facility_id"].isin(facility_ids)
-    & visits["service_id"].isin(service_ids)
-]
-
 st.subheader("Daily Census & Capacity")
 st.markdown('<div class="section-caption">Peak daily census by service compared with available staffed capacity.</div>', unsafe_allow_html=True)
-st.altair_chart(charts.daily_census_capacity_chart(filtered_daily), use_container_width=True)
+st.altair_chart(charts.daily_census_capacity_chart(filtered_daily), width="stretch")
 
 st.subheader("Capacity Pressure")
 st.markdown('<div class="section-caption">Utilization pressure over time after applying the selected facility and service filters.</div>', unsafe_allow_html=True)
-st.altair_chart(charts.capacity_pressure_chart(filtered_daily), use_container_width=True)
+st.altair_chart(charts.capacity_pressure_chart(filtered_daily), width="stretch")
 
 st.subheader("Bed Projection")
 st.markdown('<div class="section-caption">Current demand and projected bed need using the prepared dashboard marts.</div>', unsafe_allow_html=True)
-current_demand = current_bed_demand(filtered_daily)
-demographics = demographics_summary(
-    filtered_visits,
-    services,
-    facilities,
-    diagnoses,
-)
-projection = bed_needs_projection(
-    current_demand,
-    savings=pd.DataFrame(columns=["facility_name", "service_name", "demand_reduction"]),
-    start_year=int(filtered_daily["calendar_date"].dt.year.min()),
-    demographics=demographics,
-    population_growth=population_growth,
-)
+filtered_current_demand = current_demand[
+    (current_demand["facility_filter"] == facility)
+    & (current_demand["service_name"].isin(selected_services))
+].drop(columns=["facility_filter"], errors="ignore")
+filtered_projection = projection[
+    (projection["facility_filter"] == facility)
+    & (projection["service_name"].isin(selected_services))
+].drop(columns=["facility_filter"], errors="ignore")
+
+if filtered_current_demand.empty or filtered_projection.empty:
+    st.warning("No demand or projection rows are available for the selected filters.")
+    st.stop()
 
 demand_col, projection_col = st.columns(2)
 with demand_col:
     st.caption("Demand vs Funded Capacity")
-    st.altair_chart(charts.bed_demandvsfunded_chart(current_demand), use_container_width=True)
+    st.altair_chart(charts.bed_demandvsfunded_chart(filtered_current_demand), width="stretch")
 
 with projection_col:
     st.caption("Projected Bed Need")
-    st.altair_chart(charts.bed_needs_projection_chart(projection), use_container_width=True)
+    st.altair_chart(charts.bed_needs_projection_chart(filtered_projection), width="stretch")

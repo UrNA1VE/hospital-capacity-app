@@ -3,21 +3,19 @@
 from pathlib import Path
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 import bootstrap  # noqa: F401
-from etl.pipeline.demo_runtime import initialize_demo_session_once, reset_demo_session
 from etl.pipeline.incremental_run import IncrementalDataError, etl_incremental
-from etl.pipeline.initialize_demo_dataset import run_fake_data_pipeline
-from utils.database import PROJECT_ROOT, read_csv_preview, read_csv_profile
+from etl.pipeline.initialize_dataset import clear_runtime_data, initialize_dataset
+from etl.pipeline.paths import PROJECT_ROOT
+from etl.pipeline.runtime_state import runtime_summary
 from utils.job_logs import render_page_header
 
 
-st.set_page_config(page_title="Hospital Capacity Analytics App", page_icon="🏥", layout="wide")
-initialize_demo_session_once(st.session_state)
+st.set_page_config(page_title="Hospital Capacity ETL and Analytics App", page_icon="🏥", layout="wide")
 
 render_page_header(
-    "Hospital Capacity Analytics App",
+    "Hospital Capacity ETL and Analytics App",
     "Synthetic event-level healthcare data pipeline with incremental ETL, data quality checks, "
     "editable source records, and dashboard-ready analytics.",
 )
@@ -51,6 +49,19 @@ st.markdown(
         line-height: 1.35;
         min-height: 42px;
     }
+    .how-to-use {
+        border: 1px solid rgba(250, 250, 250, 0.12);
+        border-radius: 8px;
+        padding: 0.75rem 0.9rem;
+        background: rgba(255, 255, 255, 0.035);
+        color: rgba(250, 250, 250, 0.86);
+        font-size: 1rem;
+        font-weight: 650;
+        margin-bottom: 1rem;
+    }
+    .how-to-use span {
+        color: #ff6b6b;
+    }
     .page-card {
         min-height: 158px;
         border: 1px solid rgba(250, 250, 250, 0.14);
@@ -79,79 +90,109 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+summary = runtime_summary()
+if not summary.data_exists:
+    st.warning("Dataset is missing. Click Initialize Dataset to generate the initial 10-day dataset.")
+elif summary.data_dirty:
+    st.warning("Raw source data is newer than prepared outputs. Submit updates or initialize the dataset to refresh the marts.")
+
 st.markdown(
-    """
-    <div class="hero-panel">
-      <div class="hero-kicker">ETL demo control center</div>
-      <div class="hero-copy">
-        Generate synthetic hospital event data, rebuild prepared tables, inspect validation results,
-        and refresh capacity analytics through a small end-to-end data application.
-      </div>
-    </div>
-    """,
+    '<div class="how-to-use"><span>How to use:</span> Explore seed data -> Run incremental ETL -> '
+    "Edit or undo records -> Clear runtime.</div>",
     unsafe_allow_html=True,
 )
 
 with st.container(border=True):
-    st.subheader("Demo Actions")
-    seed = st.number_input("Seed", min_value=1, max_value=999999, value=42, step=1)
+    st.subheader("Dataset Actions")
+    seed = st.number_input("Select Seed", min_value=1, max_value=999999, value=42, step=1)
     initialize_col, incremental_col, reset_col = st.columns(3)
 
     with initialize_col:
-        st.markdown("**Initialize Dataset**")
-        st.markdown(
-            '<div class="action-note">Create the initial 10-day synthetic dataset and rebuild every downstream table.</div>',
-            unsafe_allow_html=True,
-        )
-        if st.button("Initialize Dataset", type="primary", use_container_width=True):
+        if st.button("Initialize Dataset", type="primary", width="stretch"):
             with st.spinner("Generating raw data, validating sources, and building dashboard marts..."):
-                result = run_fake_data_pipeline(seed=int(seed))
-                read_csv_preview.clear()
-                read_csv_profile.clear()
+                result = initialize_dataset(seed=int(seed))
+                st.cache_data.clear()
             st.success(
                 f"Pipeline complete: {result.validation_status.upper()} "
                 f"({result.validation_issue_count} blocking validation issues)."
             )
             st.caption(f"Raw: {Path(result.raw_dir).relative_to(PROJECT_ROOT)}")
             st.caption(f"Prepared: {Path(result.prepared_dir).relative_to(PROJECT_ROOT)}")
-
-    with incremental_col:
-        st.markdown("**Incremental Run**")
         st.markdown(
-            '<div class="action-note">Append the next simulated day and refresh ETL/dashboard outputs.</div>',
+            '<div class="action-note">Create the initial 10-day synthetic dataset and rebuild every downstream table.</div>',
             unsafe_allow_html=True,
         )
-        if st.button("Incremental Run", use_container_width=True):
+    with incremental_col:
+        if st.button("Incremental Run", width="stretch"):
             with st.spinner("Appending next-day data and rebuilding dashboard marts..."):
                 try:
                     log = etl_incremental(seed=int(seed), length=1)
                 except (FileNotFoundError, IncrementalDataError, KeyError) as error:
                     st.error(f"Incremental run failed: {error}")
                 else:
-                    read_csv_preview.clear()
-                    read_csv_profile.clear()
+                    st.cache_data.clear()
                     st.success("Incremental run complete.")
                     st.code(log, language="json")
-
-    with reset_col:
-        st.markdown("**Reset Demo**")
         st.markdown(
-            '<div class="action-note">Clear generated runtime data and start a clean demo session.</div>',
+            '<div class="action-note">Append the next simulated day and refresh ETL/dashboard outputs.</div>',
             unsafe_allow_html=True,
         )
-        if st.button("Reset Demo", use_container_width=True):
-            with st.spinner("Resetting demo runtime and rebuilding the initial dataset..."):
-                result = reset_demo_session(seed=int(seed))
-                read_csv_preview.clear()
-                read_csv_profile.clear()
-            st.success(
-                f"Demo reset complete: {result.validation_status.upper()} "
-                f"({result.validation_issue_count} blocking validation issues)."
-            )
+
+    with reset_col:
+        if st.button("Clear Runtime", width="stretch"):
+            with st.spinner("Clearing generated runtime data and job history..."):
+                clear_runtime_data()
+                st.cache_data.clear()
+            st.success("Runtime data cleared. Run Initialize Dataset to create fresh data.")
+        st.markdown(
+            '<div class="action-note">Clear generated data, prepared outputs, reports, and job history.</div>',
+            unsafe_allow_html=True,
+        )
+
+
+st.subheader("App Pages")
+page_cols = st.columns(4)
+pages = [
+    (
+        "Data Explorer",
+        "Inspect raw, ETL-prepared, and dashboard mart tables with freshness, grain, previews, and table checks.",
+        "pages/1_Data_Explorer.py",
+    ),
+    (
+        "User Editor",
+        "Edit source records, submit changes as ETL jobs, and undo the latest submitted edit job.",
+        "pages/2_User_Editor.py",
+    ),
+    (
+        "Dashboard",
+        "Analyze census, capacity pressure, funded capacity gaps, and service planning opportunities.",
+        "pages/3_Dashboard.py",
+    ),
+    (
+        "Patient Journey",
+        "Trace one encounter through admission, location, service, diagnosis, and discharge events.",
+        "pages/4_Patient_Journey.py",
+    ),
+]
+
+for page_index, (column, (title, description, page_path)) in enumerate(zip(page_cols, pages), start=1):
+    with column:
+        st.markdown(
+            (
+                '<div class="page-card">'
+                f'<div class="page-index">PAGE {page_index}</div>'
+                f'<div class="page-title">{title}</div>'
+                f'<div class="page-copy">{description}</div>'
+                '</div>'
+            ),
+            unsafe_allow_html=True,
+        )
+        st.page_link(page_path, label=f"Open {title}", width="stretch")
+
 
 st.subheader("Pipeline Workflow")
 st.caption("The workflow scales to show the full end-to-end pipeline at a glance.")
-components.html(
+st.html(
     """
     <style>
       body {
@@ -250,46 +291,5 @@ components.html(
             </div>
         </div>
     </div>
-    """,
-    height=240,
-    scrolling=False,
+    """
 )
-
-st.subheader("App Pages")
-page_cols = st.columns(4)
-pages = [
-    (
-        "Data Explorer",
-        "Inspect raw, ETL-prepared, and dashboard mart tables with freshness, grain, previews, and table checks.",
-        "pages/1_Data_Explorer.py",
-    ),
-    (
-        "User Editor",
-        "Edit source records, submit changes as ETL jobs, and undo the latest submitted edit job.",
-        "pages/2_User_Editor.py",
-    ),
-    (
-        "Dashboard",
-        "Analyze census, capacity pressure, funded capacity gaps, and service planning opportunities.",
-        "pages/3_Dashboard.py",
-    ),
-    (
-        "Patient Journey",
-        "Trace one encounter through admission, location, service, diagnosis, and discharge events.",
-        "pages/4_Patient_Journey.py",
-    ),
-]
-
-for page_index, (column, (title, description, page_path)) in enumerate(zip(page_cols, pages), start=1):
-    with column:
-        st.markdown(
-            (
-                '<div class="page-card">'
-                f'<div class="page-index">PAGE {page_index}</div>'
-                f'<div class="page-title">{title}</div>'
-                f'<div class="page-copy">{description}</div>'
-                '</div>'
-            ),
-            unsafe_allow_html=True,
-        )
-        st.page_link(page_path, label=f"Open {title}", use_container_width=True)

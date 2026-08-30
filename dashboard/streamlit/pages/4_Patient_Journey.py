@@ -2,20 +2,18 @@ import streamlit as st
 import pandas as pd
 
 import bootstrap  # noqa: F401
-from etl.pipeline.demo_runtime import initialize_demo_session_once
 from analytics.journey import journey_segments, patient_visit_summary
 from utils.charts import patient_journey_chart
-from utils.database import load_dashboard_data
+from utils.dashboard_data import read_patient_journey_data
 from utils.job_logs import render_page_header
 
 
 st.set_page_config(page_title="Patient Journey", layout="wide")
-initialize_demo_session_once(st.session_state)
 try:
-    tables, source_label = load_dashboard_data()
+    tables = read_patient_journey_data()
 except FileNotFoundError:
     render_page_header("Patient Journey", "Trace one encounter through the prepared event and unit-change tables.")
-    st.info("No prepared dashboard data yet. Open Home and run Initialize Dataset to create the demo dataset.")
+    st.info("No prepared dashboard data yet. Open Home and run Initialize Dataset to create the initial dataset.")
     st.stop()
 
 visits = tables["visits"]
@@ -27,7 +25,7 @@ units = tables["units"]
 patient_events = tables.get("patient_events", pd.DataFrame())
 admission_chart = tables.get("admission_chart", pd.DataFrame())
 
-render_page_header("Patient Journey", f"Source: {source_label}")
+render_page_header("Patient Journey", "Source: prepared container-local pipeline data")
 
 patient_id = st.selectbox("Patient", sorted(visits["patient_id"].unique()))
 patient_visits = visits[visits["patient_id"] == patient_id].sort_values("admission_ts")
@@ -63,7 +61,7 @@ cols[3].metric("Service", summary["service_name"])
 cols[4].metric("Admission", summary["admission_type"])
 
 st.subheader("Timeline")
-st.altair_chart(patient_journey_chart(segments), use_container_width=True)
+st.altair_chart(patient_journey_chart(segments), width="stretch")
 
 st.subheader("Visit Details")
 details = {
@@ -80,8 +78,8 @@ details = {
     "Trim days": summary["trim_days"],
 }
 st.dataframe(
-    pd.DataFrame([{"field": field, "value": value} for field, value in details.items()]),
-    use_container_width=True,
+    pd.DataFrame([{"field": field, "value": str(value)} for field, value in details.items()]),
+    width="stretch",
     hide_index=True,
 )
 
@@ -90,6 +88,6 @@ st.dataframe(
     unit_changes[unit_changes["visit_id"] == visit_id]
     .merge(units[["unit_id", "unit_name", "unit_service"]], on="unit_id", how="left")
     .sort_values("event_ts"),
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )

@@ -5,8 +5,8 @@ from __future__ import annotations
 import streamlit as st
 
 import bootstrap  # noqa: F401
-from etl.pipeline.demo_runtime import initialize_demo_session_once
-from utils.database import PROJECT_ROOT, RAW_DATA_DIR
+from etl.pipeline.paths import PROJECT_ROOT, RAW_DATA_DIR
+from etl.pipeline.runtime_state import runtime_data_exists
 from utils.data_explorer import (
     LAYERS,
     RAW_TABLES,
@@ -22,7 +22,6 @@ from utils.job_logs import render_page_header
 
 
 st.set_page_config(page_title="Data Explorer", layout="wide")
-initialize_demo_session_once(st.session_state)
 
 st.markdown(
     """
@@ -104,13 +103,17 @@ st.markdown(
 
 render_page_header("Data Explorer", "Inspect each ETL layer, table grain, freshness, sample rows, and table-level checks.")
 
+if not runtime_data_exists():
+    st.warning("Dataset is missing. Open Home and run Initialize Dataset to create the initial dataset.")
+    st.stop()
+
 if "data_explorer_layer" not in st.session_state:
     st.session_state["data_explorer_layer"] = next(iter(LAYERS))
 
 st.markdown("#### ETL Layer")
 layer_cols = st.columns(len(LAYERS))
 for column, (layer_name, (layer_folder, layer_tables)) in zip(layer_cols, LAYERS.items()):
-    existing_count, total_rows = layer_summary(layer_folder, layer_tables)
+    existing_count = layer_summary(layer_folder, layer_tables)
     is_selected = layer_name == st.session_state["data_explorer_layer"]
     with column:
         selected_class = " selected" if is_selected else ""
@@ -119,7 +122,7 @@ for column, (layer_name, (layer_folder, layer_tables)) in zip(layer_cols, LAYERS
                 f'<div class="layer-card{selected_class}">'
                 f'<div class="layer-label">{"Selected" if is_selected else "Layer"}</div>'
                 f'<div class="layer-title">{layer_name}</div>'
-                f'<div class="layer-meta">{existing_count}/{len(layer_tables)} tables available<br>{total_rows:,} rows</div>'
+                f'<div class="layer-meta">{existing_count}/{len(layer_tables)} tables available<br>Select a table to inspect rows</div>'
                 '</div>'
             ),
             unsafe_allow_html=True,
@@ -128,7 +131,7 @@ for column, (layer_name, (layer_folder, layer_tables)) in zip(layer_cols, LAYERS
             "Selected" if is_selected else "Open layer",
             key=f"data-explorer-layer-{layer_name}",
             disabled=is_selected,
-            use_container_width=True,
+            width="stretch",
         ):
             st.session_state["data_explorer_layer"] = layer_name
             st.rerun()
@@ -146,7 +149,7 @@ if not path.exists():
     if layer == "Job History":
         st.warning(f"{path.relative_to(PROJECT_ROOT)} does not exist yet. Run a job to create history.")
     else:
-        st.warning(f"{path.relative_to(PROJECT_ROOT)} does not exist yet. Initialize the demo dataset first.")
+        st.warning(f"{path.relative_to(PROJECT_ROOT)} does not exist yet. Initialize the dataset first.")
     st.stop()
 
 st.markdown(
@@ -169,9 +172,9 @@ st.markdown(
 
 st.subheader("First 5 Rows")
 if layer == "Job History":
-    st.dataframe(job_history_preview(frame), use_container_width=True, hide_index=True)
+    st.dataframe(job_history_preview(frame), width="stretch", hide_index=True)
 else:
-    st.dataframe(frame.head(5), use_container_width=True, hide_index=True)
+    st.dataframe(frame.head(5), width="stretch", hide_index=True)
 
 st.subheader("Table Quality Checks")
 checks = quality_checks(frame, meta, RAW_TABLES, RAW_DATA_DIR)
@@ -184,7 +187,7 @@ styled_checks = checks.style.apply(
     ],
     axis=1,
 )
-st.dataframe(styled_checks, use_container_width=True, hide_index=True)
+st.dataframe(styled_checks, width="stretch", hide_index=True)
 
 if layer != "Job History":
     st.subheader("Related Report")
@@ -192,4 +195,4 @@ if layer != "Job History":
     if pipeline_checks.empty:
         st.info("No related rows found in the latest pipeline quality report.")
     else:
-        st.dataframe(pipeline_checks, use_container_width=True, hide_index=True)
+        st.dataframe(pipeline_checks, width="stretch", hide_index=True)

@@ -16,11 +16,15 @@ from analytics.savings import (  # noqa: E402
     savings_scenarios,
 )
 from analytics.utilization import bed_demand_no_adjustment, capacity_summary, current_bed_demand  # noqa: E402
-from utils.database import build_sample_marts  # noqa: E402
+from utils.dashboard_data import read_analysis_tables  # noqa: E402
+
+
+def analysis_tables():
+    return read_analysis_tables()
 
 
 def test_sanitized_bed_analysis_outputs_are_nonempty():
-    tables = build_sample_marts()
+    tables = analysis_tables()
     daily = tables["daily"]
     visits = tables["visits"]
     services = tables["services"]
@@ -57,7 +61,7 @@ def test_sanitized_bed_analysis_outputs_are_nonempty():
 
 
 def test_saving_algorithms_can_be_selected():
-    tables = build_sample_marts()
+    tables = analysis_tables()
     selected = savings_scenarios(
         tables["visits"],
         tables["services"],
@@ -70,7 +74,7 @@ def test_saving_algorithms_can_be_selected():
 
 
 def test_patient_journey_segments_include_location_and_service_tracks():
-    tables = build_sample_marts()
+    tables = analysis_tables()
     visit_id = tables["visits"]["visit_id"].iloc[0]
 
     summary = patient_visit_summary(

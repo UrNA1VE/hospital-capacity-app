@@ -9,7 +9,7 @@ from etl.pipeline.paths import PROJECT_ROOT, RUN_HISTORY_PATH
 
 
 def render_job_logs(limit: int = 50) -> None:
-    with st.popover("Job Logs", use_container_width=True):
+    with st.popover("Job Logs", width="stretch"):
         history = load_job_history()
         st.markdown("**Job Logs**")
         st.caption("Newest jobs first.")
@@ -21,7 +21,7 @@ def render_job_logs(limit: int = 50) -> None:
 
         st.dataframe(
             history.head(limit),
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
         st.caption(f"Showing {min(len(history), limit):,} of {len(history):,} jobs")
