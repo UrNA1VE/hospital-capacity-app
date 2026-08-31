@@ -232,13 +232,6 @@ st.html(
         border-radius: 8px;
         background: var(--hc-soft);
       }
-      .pipeline-lines {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-      }
       .pipeline-node {
         position: absolute;
         width: 13.8%;
@@ -270,26 +263,26 @@ st.html(
         line-height: 1.35;
         margin-top: 0.25rem;
       }
+      .pipeline-arrow {
+        position: absolute;
+        color: var(--hc-line);
+        font-size: clamp(1.1rem, 2vw, 1.45rem);
+        font-weight: 700;
+        line-height: 1;
+        transform: translate(-50%, -50%);
+      }
+      .pipeline-arrow.editor-flow {
+        color: var(--hc-blue);
+      }
     </style>
     <div class="pipeline-map">
         <div class="pipeline-canvas">
-            <svg class="pipeline-lines" viewBox="0 0 1190 300" preserveAspectRatio="none">
-                <defs>
-                    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                        <path d="M0,0 L8,4 L0,8 Z" fill="var(--hc-line)" />
-                    </marker>
-                    <marker id="blue-arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                        <path d="M0,0 L8,4 L0,8 Z" fill="var(--hc-blue)" />
-                    </marker>
-                </defs>
-                <path d="M188 156 L214 156" stroke="var(--hc-line)" stroke-width="1.4" fill="none" marker-end="url(#arrowhead)" />
-                <path d="M378 156 L405 156" stroke="var(--hc-line)" stroke-width="1.4" fill="none" marker-end="url(#arrowhead)" />
-                <path d="M569 156 L595 156" stroke="var(--hc-line)" stroke-width="1.4" fill="none" marker-end="url(#arrowhead)" />
-                <path d="M759 156 L785 156" stroke="var(--hc-line)" stroke-width="1.4" fill="none" marker-end="url(#arrowhead)" />
-                <path d="M950 156 L976 156" stroke="var(--hc-line)" stroke-width="1.4" fill="none" marker-end="url(#arrowhead)" />
-                <path d="M296 92 L296 118" stroke="var(--hc-blue)" stroke-width="1.4" fill="none" marker-end="url(#blue-arrowhead)" />
-            </svg>
-
+            <div class="pipeline-arrow" style="left: 17%; top: 55%;">→</div>
+            <div class="pipeline-arrow" style="left: 33%; top: 55%;">→</div>
+            <div class="pipeline-arrow" style="left: 49%; top: 55%;">→</div>
+            <div class="pipeline-arrow" style="left: 65%; top: 55%;">→</div>
+            <div class="pipeline-arrow" style="left: 81%; top: 55%;">→</div>
+            <div class="pipeline-arrow editor-flow" style="left: 24.9%; top: 37%;">↓</div>
             <div class="pipeline-node" style="left: 2%; top: 42%;">
                 <div class="pipeline-title">Run Control</div>
                 <div class="pipeline-copy">initialize +<br>incremental run</div>
