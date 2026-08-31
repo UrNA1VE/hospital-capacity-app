@@ -10,7 +10,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "etl"))
 
 from etl.pipeline.mart_layer import build_encounter_tables_from_events
 from etl.pipeline.transform_helpers import reporting_window, unit_changes_overlapping_window, visits_overlapping_window
-from synthetic_data_generator.generate_fake_data import GeneratorConfig, generate_all
+from synthetic_data_generator.data_generator import GeneratorConfig, generate_all
 
 
 def with_derived_encounters(tables):

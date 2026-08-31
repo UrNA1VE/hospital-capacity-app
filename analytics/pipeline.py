@@ -7,7 +7,6 @@ import pandas as pd
 from analytics.access import outpatient_surgery_access_placeholder
 from analytics.demographics import demographics_summary
 from analytics.projection import bed_needs_projection
-from analytics.savings import savings_scenarios
 from analytics.utilization import bed_demand_no_adjustment, capacity_summary, current_bed_demand, service_census_summary
 
 
@@ -24,10 +23,8 @@ def build_report_tables(tables: dict[str, pd.DataFrame]) -> dict[str, pd.DataFra
     demographics = demographics_summary(visits, services, facilities, diagnoses)
     demand = bed_demand_no_adjustment(daily, demographics, population_growth)
     current_demand = current_bed_demand(daily)
-    savings = savings_scenarios(visits, services, facilities, diagnoses)
     projection = bed_needs_projection(
         current_demand,
-        savings,
         start_year=int(daily["calendar_date"].dt.year.min()),
         demographics=demographics,
         population_growth=population_growth,
@@ -37,7 +34,6 @@ def build_report_tables(tables: dict[str, pd.DataFrame]) -> dict[str, pd.DataFra
         "census": census,
         "demand": demand,
         "current_demand": current_demand,
-        "savings": savings,
         "demographics": demographics,
         "projection": projection,
         "access_placeholder": outpatient_surgery_access_placeholder(),

@@ -16,11 +16,9 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from etl.pipeline.paths import (  # noqa: E402
-    BACKUP_DATA_DIR,
-    ETL_PREPARED_DIR,
+from config.paths import (  # noqa: E402
+    ETL_PREPARED_TABLE_PATHS,
     RAW_DATA_DIR,
-    REPORT_DATA_DIR,
 )
 
 DEFAULT_OUTPUT_DIR = RAW_DATA_DIR
@@ -693,7 +691,7 @@ def generate_next_run_active_visits(
 
     rng = np.random.default_rng(config.seed + 4)
     active_patients = pd.read_csv(
-        ETL_PREPARED_DIR / "visits.csv",
+        ETL_PREPARED_TABLE_PATHS["visits"],
         parse_dates=["admission_ts", "discharge_ts"],
     )
     active_patients = active_patients.loc[active_patients["discharge_ts"].isna()].copy()

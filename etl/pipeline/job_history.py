@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from etl.pipeline.paths import EDIT_HISTORY_PATH, RUN_HISTORY_PATH
+from config.paths import EDIT_HISTORY_PATH, RUN_HISTORY_PATH
 
 
 JOB_HISTORY_COLUMNS = ["job_id", "job_type", "status", "started_at", "finished_at", "duration_seconds"]

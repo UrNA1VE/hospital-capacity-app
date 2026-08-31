@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from uuid import uuid4
 
-from etl.pipeline.paths import EDIT_HISTORY_PATH, LOG_DATA_DIR, RUN_HISTORY_PATH
+from config.paths import EDIT_HISTORY_PATH, LOG_DATA_DIR, RUN_HISTORY_PATH
 RUN_HISTORY_COLUMNS = [
     "job_id",
     "job_type",

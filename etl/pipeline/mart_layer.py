@@ -9,16 +9,16 @@ import pandas as pd
 
 from analytics.demographics import demographics_summary
 from analytics.projection import bed_needs_projection
-from analytics.savings import savings_scenarios
 from analytics.utilization import (
     bed_demand_no_adjustment,
     capacity_summary,
     current_bed_demand,
     service_census_summary,
 )
-from etl.pipeline.paths import (
+from config.paths import (
     BACKUP_DATA_DIR,
     DASHBOARD_PREPARED_DIR,
+    EDITABLE_RAW_FILE_NAMES,
     ETL_PREPARED_DIR,
     RAW_DATA_DIR,
     REPORT_DATA_DIR,
@@ -29,8 +29,6 @@ from etl.pipeline.transform_helpers import (
     unit_changes_overlapping_window,
     visits_overlapping_window,
 )
-
-EDITABLE_RAW_FILES = ["patients.csv", "admission_chart.csv", "patient_events.csv"]
 
 REQUIRED_COLUMNS = {
     "facilities": {"facility_id", "facility_name", "region"},
@@ -351,7 +349,6 @@ def build_dashboard_tables(tables: dict[str, pd.DataFrame]) -> dict[str, pd.Data
     prepared: dict[str, list[pd.DataFrame]] = {
         "capacity": [],
         "census": [],
-        "savings": [],
         "demographics": [],
         "demand": [],
         "current_demand": [],
@@ -364,13 +361,11 @@ def build_dashboard_tables(tables: dict[str, pd.DataFrame]) -> dict[str, pd.Data
         ]
         capacity = capacity_summary(filtered_daily)
         census = service_census_summary(filtered_daily)
-        savings = savings_scenarios(filtered_visits, services, facilities, diagnoses)
         demographics = demographics_summary(filtered_visits, services, facilities, diagnoses)
         demand = bed_demand_no_adjustment(filtered_daily, demographics, population_growth)
         current_demand = current_bed_demand(filtered_daily)
         projection = bed_needs_projection(
             current_demand,
-            savings,
             start_year=int(filtered_daily["calendar_date"].dt.year.min()),
             demographics=demographics,
             population_growth=population_growth,
@@ -378,7 +373,6 @@ def build_dashboard_tables(tables: dict[str, pd.DataFrame]) -> dict[str, pd.Data
         for name, frame in {
             "capacity": capacity,
             "census": census,
-            "savings": savings,
             "demographics": demographics,
             "demand": demand,
             "current_demand": current_demand,
@@ -428,7 +422,7 @@ def refresh_raw_backup() -> None:
         shutil.rmtree(BACKUP_DATA_DIR)
     BACKUP_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    for file_name in EDITABLE_RAW_FILES:
+    for file_name in EDITABLE_RAW_FILE_NAMES:
         shutil.copy2(RAW_DATA_DIR / file_name, BACKUP_DATA_DIR / file_name)
 
 

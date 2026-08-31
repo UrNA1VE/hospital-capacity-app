@@ -7,38 +7,12 @@ from dataclasses import dataclass
 import pandas as pd
 
 from etl.pipeline.job_history import load_job_history
-from etl.pipeline.paths import DASHBOARD_PREPARED_DIR, ETL_PREPARED_DIR, RAW_DATA_DIR, RUN_HISTORY_PATH
-
-REQUIRED_RUNTIME_FILES = [
-    RAW_DATA_DIR / "patients.csv",
-    RAW_DATA_DIR / "admission_chart.csv",
-    RAW_DATA_DIR / "patient_events.csv",
-    RAW_DATA_DIR / "capacity.csv",
-    ETL_PREPARED_DIR / "visits.csv",
-    ETL_PREPARED_DIR / "unit_changes.csv",
-    DASHBOARD_PREPARED_DIR / "daily.csv",
-    DASHBOARD_PREPARED_DIR / "pressure.csv",
-    DASHBOARD_PREPARED_DIR / "current_demand.csv",
-    DASHBOARD_PREPARED_DIR / "projection.csv",
-    DASHBOARD_PREPARED_DIR / "facility_filters.csv",
-    RUN_HISTORY_PATH,
-]
-
-RAW_STATE_FILES = [
-    RAW_DATA_DIR / "patients.csv",
-    RAW_DATA_DIR / "admission_chart.csv",
-    RAW_DATA_DIR / "patient_events.csv",
-    RAW_DATA_DIR / "capacity.csv",
-]
-
-PREPARED_STATE_FILES = [
-    ETL_PREPARED_DIR / "visits.csv",
-    ETL_PREPARED_DIR / "unit_changes.csv",
-    DASHBOARD_PREPARED_DIR / "daily.csv",
-    DASHBOARD_PREPARED_DIR / "pressure.csv",
-    DASHBOARD_PREPARED_DIR / "current_demand.csv",
-    DASHBOARD_PREPARED_DIR / "projection.csv",
-]
+from config.paths import (
+    DASHBOARD_TABLE_PATHS,
+    PREPARED_STATE_PATHS,
+    RAW_STATE_PATHS,
+    RUNTIME_REQUIRED_PATHS,
+)
 
 
 @dataclass(frozen=True)
@@ -53,13 +27,13 @@ class RuntimeSummary:
 
 def runtime_data_exists() -> bool:
     """Return whether the app has enough generated data to render all pages."""
-    return all(path.exists() for path in REQUIRED_RUNTIME_FILES)
+    return all(path.exists() for path in RUNTIME_REQUIRED_PATHS)
 
 
 def data_dirty() -> bool:
     """Return whether raw source files are newer than prepared outputs."""
-    existing_raw = [path for path in RAW_STATE_FILES if path.exists()]
-    existing_prepared = [path for path in PREPARED_STATE_FILES if path.exists()]
+    existing_raw = [path for path in RAW_STATE_PATHS if path.exists()]
+    existing_prepared = [path for path in PREPARED_STATE_PATHS if path.exists()]
     if not existing_raw or not existing_prepared:
         return False
 
@@ -69,7 +43,7 @@ def data_dirty() -> bool:
 
 
 def latest_data_date() -> str:
-    daily_path = DASHBOARD_PREPARED_DIR / "daily.csv"
+    daily_path = DASHBOARD_TABLE_PATHS["daily"]
     if not daily_path.exists():
         return "n/a"
 
@@ -89,4 +63,3 @@ def runtime_summary() -> RuntimeSummary:
         last_job_type=str(last_job.get("job_type", "not run")),
         job_count=len(history),
     )
-

@@ -10,9 +10,8 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
-EDITABLE_RAW_FILES = ["patients.csv", "admission_chart.csv", "patient_events.csv"]
-from etl.pipeline.paths import BACKUP_DATA_DIR, EDIT_HISTORY_PATH, RAW_DATA_DIR
-from etl.synthetic_data_generator.generate_fake_data import write_csvs
+from config.paths import BACKUP_DATA_DIR, EDITABLE_RAW_FILE_NAMES, EDIT_HISTORY_PATH, RAW_DATA_DIR, RAW_TABLE_PATHS
+from etl.synthetic_data_generator.data_generator import write_csvs
 
 
 def _next_id(frame: pd.DataFrame, column: str, prefix: str, width: int) -> str:
@@ -28,7 +27,7 @@ def next_number(frame: pd.DataFrame, column: str, prefix: str) -> int:
 
 
 def add_patient(age: int, gender: str, region: str) -> str:
-    raw_table = {"patients": pd.read_csv(RAW_DATA_DIR / "patients.csv")}
+    raw_table = {"patients": pd.read_csv(RAW_TABLE_PATHS["patients"])}
     patients = raw_table["patients"]
     patient_id = _next_id(patients, "patient_id", "PAT-", 6)
     new_patient = pd.DataFrame([
@@ -55,7 +54,7 @@ def add_admission(
     admitted_diagnosis_code: str,
     admission_type: str,
 ) -> str:
-    raw_table = {"admission_chart": pd.read_csv(RAW_DATA_DIR / "admission_chart.csv")}
+    raw_table = {"admission_chart": pd.read_csv(RAW_TABLE_PATHS["admission_chart"])}
     admission_chart = raw_table["admission_chart"]
     admission_ts = pd.Timestamp.now().floor("min")
 
@@ -81,12 +80,12 @@ def add_event(visit_id: str, event_type: str, value: str) -> str:
     if event_type not in allowed_event_types:
         raise ValueError(f"event_type must be one of {sorted(allowed_event_types)}")
 
-    raw_table = {"patient_events": pd.read_csv(RAW_DATA_DIR / "patient_events.csv")}
+    raw_table = {"patient_events": pd.read_csv(RAW_TABLE_PATHS["patient_events"])}
     patient_events = raw_table["patient_events"]
     event_id = _next_id(patient_events, "event_id", "EVT-", 8)
     event_ts = pd.Timestamp.now().floor("min")
 
-    admission_chart = pd.read_csv(RAW_DATA_DIR / "admission_chart.csv")
+    admission_chart = pd.read_csv(RAW_TABLE_PATHS["admission_chart"])
     matches = admission_chart.loc[admission_chart["visit_id"] == visit_id]
     if matches.empty:
         raise ValueError(f"visit_id not found in admission_chart.csv: {visit_id}")
@@ -111,7 +110,7 @@ def add_event(visit_id: str, event_type: str, value: str) -> str:
 
 
 def update_event(event_id: str, value: str) -> None:
-    raw_table = {"patient_events": pd.read_csv(RAW_DATA_DIR / "patient_events.csv")}
+    raw_table = {"patient_events": pd.read_csv(RAW_TABLE_PATHS["patient_events"])}
     patient_events = raw_table["patient_events"]
     if not patient_events["event_id"].eq(event_id).any():
         raise ValueError(f"event_id not found in patient_events.csv: {event_id}")
@@ -121,7 +120,7 @@ def update_event(event_id: str, value: str) -> None:
 
 
 def remove_event(event_id: str) -> None:
-    raw_table = {"patient_events": pd.read_csv(RAW_DATA_DIR / "patient_events.csv")}
+    raw_table = {"patient_events": pd.read_csv(RAW_TABLE_PATHS["patient_events"])}
     patient_events = raw_table["patient_events"]
     if not patient_events["event_id"].eq(event_id).any():
         raise ValueError(f"event_id not found in patient_events.csv: {event_id}")
@@ -135,7 +134,7 @@ def retrieve_back_up() -> None:
         raise FileNotFoundError(f"Backup folder not found: {BACKUP_DATA_DIR}")
 
     RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
-    for file_name in EDITABLE_RAW_FILES:
+    for file_name in EDITABLE_RAW_FILE_NAMES:
         source = BACKUP_DATA_DIR / file_name
         if not source.exists():
             raise FileNotFoundError(f"Backup file not found: {source}")
@@ -143,36 +142,36 @@ def retrieve_back_up() -> None:
 
 
 def undo_new_patient(patient_id: str) -> None:
-    patients = pd.read_csv(RAW_DATA_DIR / "patients.csv")
+    patients = pd.read_csv(RAW_TABLE_PATHS["patients"])
     patients = patients.loc[patients["patient_id"] != patient_id].reset_index(drop=True)
-    patients.to_csv(RAW_DATA_DIR / "patients.csv", index=False)
+    patients.to_csv(RAW_TABLE_PATHS["patients"], index=False)
 
 
 def undo_new_admission(visit_id: str, patient_id: str | None = None, inserted_patient: bool = False) -> None:
-    patient_events = pd.read_csv(RAW_DATA_DIR / "patient_events.csv")
+    patient_events = pd.read_csv(RAW_TABLE_PATHS["patient_events"])
     patient_events = patient_events.loc[patient_events["visit_id"] != visit_id].reset_index(drop=True)
-    patient_events.to_csv(RAW_DATA_DIR / "patient_events.csv", index=False)
+    patient_events.to_csv(RAW_TABLE_PATHS["patient_events"], index=False)
 
-    admission_chart = pd.read_csv(RAW_DATA_DIR / "admission_chart.csv")
+    admission_chart = pd.read_csv(RAW_TABLE_PATHS["admission_chart"])
     admission_chart = admission_chart.loc[admission_chart["visit_id"] != visit_id].reset_index(drop=True)
-    admission_chart.to_csv(RAW_DATA_DIR / "admission_chart.csv", index=False)
+    admission_chart.to_csv(RAW_TABLE_PATHS["admission_chart"], index=False)
 
     if inserted_patient and patient_id:
         undo_new_patient(patient_id)
 
 
 def undo_new_event(event_id: str) -> None:
-    patient_events = pd.read_csv(RAW_DATA_DIR / "patient_events.csv")
+    patient_events = pd.read_csv(RAW_TABLE_PATHS["patient_events"])
     patient_events = patient_events.loc[patient_events["event_id"] != event_id].reset_index(drop=True)
-    patient_events.to_csv(RAW_DATA_DIR / "patient_events.csv", index=False)
+    patient_events.to_csv(RAW_TABLE_PATHS["patient_events"], index=False)
 
 
 def undo_update_event(event_id: str, previous_value: str) -> None:
-    patient_events = pd.read_csv(RAW_DATA_DIR / "patient_events.csv")
+    patient_events = pd.read_csv(RAW_TABLE_PATHS["patient_events"])
     if not patient_events["event_id"].eq(event_id).any():
         raise ValueError(f"event_id not found in patient_events.csv: {event_id}")
     patient_events.loc[patient_events["event_id"] == event_id, "value"] = previous_value
-    patient_events.to_csv(RAW_DATA_DIR / "patient_events.csv", index=False)
+    patient_events.to_csv(RAW_TABLE_PATHS["patient_events"], index=False)
 
 
 def undo_delete_event(change: dict[str, object]) -> None:
@@ -180,7 +179,7 @@ def undo_delete_event(change: dict[str, object]) -> None:
     if not isinstance(event_row, dict):
         raise ValueError("DELETE_EVENT change is missing event_row")
 
-    patient_events = pd.read_csv(RAW_DATA_DIR / "patient_events.csv")
+    patient_events = pd.read_csv(RAW_TABLE_PATHS["patient_events"])
     event_id = str(event_row["event_id"])
     if patient_events["event_id"].eq(event_id).any():
         return
@@ -188,7 +187,7 @@ def undo_delete_event(change: dict[str, object]) -> None:
     restored_event = pd.DataFrame([event_row])
     patient_events = pd.concat([patient_events, restored_event], ignore_index=True)
     patient_events = patient_events.sort_values(["visit_id", "event_ts", "event_id"]).reset_index(drop=True)
-    patient_events.to_csv(RAW_DATA_DIR / "patient_events.csv", index=False)
+    patient_events.to_csv(RAW_TABLE_PATHS["patient_events"], index=False)
 
 
 def undo_job(job_id: str) -> None:

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from etl.pipeline.job_logger import LOG_DATA_DIR
-from etl.pipeline.paths import DASHBOARD_PREPARED_DIR, ETL_PREPARED_DIR, RAW_DATA_DIR
+from config.paths import DASHBOARD_PREPARED_DIR, ETL_PREPARED_DIR, RAW_DATA_DIR
+from config.paths import LOG_DATA_DIR
 
 
 @dataclass(frozen=True)
@@ -193,13 +193,6 @@ DASHBOARD_TABLES = {
         "One row per year, facility, and service.",
         "Projected bed needs before and after service-planning adjustments.",
         required_columns=("year", "facility_name", "service_name", "projection", "adjusted_projection"),
-    ),
-    "savings": TableMeta(
-        "savings.csv",
-        "Dashboard Mart",
-        "One row per facility, service, and saving algorithm.",
-        "Potential demand reduction from synthetic service-planning algorithms.",
-        required_columns=("facility_name", "service_name", "saving_type", "demand_reduction"),
     ),
     "quality": TableMeta(
         "quality.csv",

@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from etl.pipeline.paths import RAW_DATA_DIR
+from config.paths import RAW_DATA_DIR
 from utils.csv_io import format_date
 from utils.pipeline_status import load_quality_summary
 from utils.table_catalog import LAYERS, RAW_TABLES, TableMeta

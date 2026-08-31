@@ -15,15 +15,16 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from etl.pipeline.job_logger import EtlJob  # noqa: E402
 from etl.pipeline.mart_layer import generate_mart_layer  # noqa: E402
-from etl.pipeline.paths import (  # noqa: E402
+from config.paths import (  # noqa: E402
     BACKUP_DATA_DIR,
     DASHBOARD_PREPARED_DIR,
     ETL_PREPARED_DIR,
     LOG_DATA_DIR,
     RAW_DATA_DIR,
     REPORT_DATA_DIR,
+    REPORT_PATHS,
 )
-from etl.synthetic_data_generator.generate_fake_data import GeneratorConfig, initial_fake_data, write_csvs  # noqa: E402
+from etl.synthetic_data_generator.data_generator import GeneratorConfig, initial_fake_data, write_csvs  # noqa: E402
 
 
 @dataclass(frozen=True)
@@ -105,7 +106,7 @@ def initialize_dataset(seed: int, days: int = 10, start_date: str = "2025-01-01"
             validation_issue_count=int(mart_result["issue_count"]),
         )
 
-        (REPORT_DATA_DIR / "pipeline_result.json").write_text(
+        REPORT_PATHS["pipeline_result"].write_text(
             json.dumps(pipeline_result_json(result), indent=2),
             encoding="utf-8",
         )

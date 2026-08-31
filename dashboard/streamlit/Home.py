@@ -7,7 +7,7 @@ import streamlit as st
 import bootstrap  # noqa: F401
 from etl.pipeline.incremental_run import IncrementalDataError, etl_incremental
 from etl.pipeline.initialize_dataset import clear_runtime_data, initialize_dataset
-from etl.pipeline.paths import PROJECT_ROOT
+from config.paths import PROJECT_ROOT
 from etl.pipeline.runtime_state import runtime_summary
 from utils.job_logs import render_page_header
 
@@ -23,15 +23,24 @@ render_page_header(
 st.markdown(
     """
     <style>
+    :root {
+        --hc-accent: #ff6b6b;
+        --hc-blue: #6fc7ff;
+        --hc-border: rgba(250, 250, 250, 0.16);
+        --hc-muted: rgba(250, 250, 250, 0.72);
+        --hc-soft: rgba(255, 255, 255, 0.035);
+        --hc-accent-soft: rgba(255, 107, 107, 0.08);
+        --hc-blue-soft: rgba(111, 199, 255, 0.08);
+    }
     .hero-panel {
-        border: 1px solid rgba(250, 250, 250, 0.12);
+        border: 1px solid var(--hc-border);
         border-radius: 8px;
         padding: 1rem 1.1rem;
-        background: linear-gradient(135deg, rgba(255, 75, 75, 0.08), rgba(255, 255, 255, 0.025));
+        background: linear-gradient(135deg, var(--hc-accent-soft), var(--hc-soft));
         margin-bottom: 1rem;
     }
     .hero-kicker {
-        color: #ff6b6b;
+        color: var(--hc-accent);
         font-size: 0.78rem;
         font-weight: 700;
         letter-spacing: 0;
@@ -39,35 +48,35 @@ st.markdown(
         margin-bottom: 0.35rem;
     }
     .hero-copy {
-        color: rgba(250, 250, 250, 0.72);
+        color: var(--hc-muted);
         line-height: 1.4;
         max-width: 920px;
     }
     .action-note {
-        color: rgba(250, 250, 250, 0.65);
+        color: var(--hc-muted);
         font-size: 0.86rem;
         line-height: 1.35;
         min-height: 42px;
     }
     .how-to-use {
-        border: 1px solid rgba(250, 250, 250, 0.12);
+        border: 1px solid var(--hc-border);
         border-radius: 8px;
         padding: 0.75rem 0.9rem;
-        background: rgba(255, 255, 255, 0.035);
-        color: rgba(250, 250, 250, 0.86);
+        background: var(--hc-soft);
+        color: var(--text-color);
         font-size: 1rem;
         font-weight: 650;
         margin-bottom: 1rem;
     }
     .how-to-use span {
-        color: #ff6b6b;
+        color: var(--hc-accent);
     }
     .page-card {
         min-height: 158px;
-        border: 1px solid rgba(250, 250, 250, 0.14);
+        border: 1px solid var(--hc-border);
         border-radius: 8px;
         padding: 0.95rem;
-        background: rgba(255, 255, 255, 0.035);
+        background: var(--hc-soft);
         margin-bottom: 0.7rem;
     }
     .page-title {
@@ -75,12 +84,12 @@ st.markdown(
         margin-bottom: 0.5rem;
     }
     .page-copy {
-        color: rgba(250, 250, 250, 0.68);
+        color: var(--hc-muted);
         font-size: 0.9rem;
         line-height: 1.35;
     }
     .page-index {
-        color: #ff6b6b;
+        color: var(--hc-accent);
         font-size: 0.76rem;
         font-weight: 700;
         margin-bottom: 0.45rem;
@@ -191,15 +200,25 @@ for page_index, (column, (title, description, page_path)) in enumerate(zip(page_
 
 
 st.subheader("Pipeline Workflow")
-st.caption("The workflow scales to show the full end-to-end pipeline at a glance.")
+st.caption("User edits feed back into the raw source layer, then validation and downstream marts are rebuilt.")
 st.html(
     """
     <style>
       body {
         margin: 0;
         background: transparent;
-        color: rgb(250, 250, 250);
+        color: #f5f5f5;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      :root {
+        --hc-accent: #ff6b6b;
+        --hc-blue: #6fc7ff;
+        --hc-border: rgba(250, 250, 250, 0.18);
+        --hc-line: rgba(250, 250, 250, 0.68);
+        --hc-muted: rgba(250, 250, 250, 0.72);
+        --hc-soft: rgba(255, 255, 255, 0.04);
+        --hc-accent-soft: rgba(255, 107, 107, 0.08);
+        --hc-blue-soft: rgba(111, 199, 255, 0.08);
       }
       .pipeline-map {
         width: 100%;
@@ -207,11 +226,11 @@ st.html(
       .pipeline-canvas {
         position: relative;
         width: 100%;
-        aspect-ratio: 1190 / 270;
-        min-height: 210px;
-        border: 1px solid rgba(250, 250, 250, 0.08);
+        aspect-ratio: 1190 / 300;
+        min-height: 230px;
+        border: 1px solid var(--hc-border);
         border-radius: 8px;
-        background: rgba(255, 255, 255, 0.018);
+        background: var(--hc-soft);
       }
       .pipeline-lines {
         position: absolute;
@@ -222,17 +241,23 @@ st.html(
       }
       .pipeline-node {
         position: absolute;
-        width: 13.1%;
+        width: 13.8%;
         min-height: 54px;
-        border: 1px solid rgba(250, 250, 250, 0.18);
-        border-radius: 2px;
+        border: 1px solid var(--hc-border);
+        border-radius: 6px;
         padding: 0.55rem 0.65rem;
-        background: rgba(255, 255, 255, 0.04);
+        background: var(--background-color, transparent);
         text-align: center;
         box-sizing: border-box;
       }
-      .pipeline-node.wide {
-        width: 15.6%;
+      .pipeline-node.source {
+        border-color: var(--hc-accent);
+        background: var(--hc-accent-soft);
+      }
+      .pipeline-node.editor {
+        width: 13.8%;
+        border-color: var(--hc-blue);
+        background: var(--hc-blue-soft);
       }
       .pipeline-title {
         font-weight: 700;
@@ -240,7 +265,7 @@ st.html(
         line-height: 1.2;
       }
       .pipeline-copy {
-        color: rgba(250, 250, 250, 0.68);
+        color: var(--hc-muted);
         font-size: clamp(0.52rem, 0.9vw, 0.8rem);
         line-height: 1.35;
         margin-top: 0.25rem;
@@ -248,46 +273,50 @@ st.html(
     </style>
     <div class="pipeline-map">
         <div class="pipeline-canvas">
-            <svg class="pipeline-lines" viewBox="0 0 1190 270" preserveAspectRatio="none">
+            <svg class="pipeline-lines" viewBox="0 0 1190 300" preserveAspectRatio="none">
                 <defs>
                     <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                        <path d="M0,0 L8,4 L0,8 Z" fill="rgba(250,250,250,0.72)" />
+                        <path d="M0,0 L8,4 L0,8 Z" fill="var(--hc-line)" />
+                    </marker>
+                    <marker id="blue-arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                        <path d="M0,0 L8,4 L0,8 Z" fill="var(--hc-blue)" />
                     </marker>
                 </defs>
-                <path d="M166 135 L210 135" stroke="rgba(250,250,250,0.62)" stroke-width="1.2" fill="none" marker-end="url(#arrowhead)" />
-                <path d="M396 110 C430 88, 482 82, 552 82 L610 82" stroke="rgba(250,250,250,0.62)" stroke-width="1.2" fill="none" marker-end="url(#arrowhead)" />
-                <path d="M396 160 C410 178, 418 185, 426 185" stroke="rgba(250,250,250,0.62)" stroke-width="1.2" fill="none" marker-end="url(#arrowhead)" />
-                <path d="M796 82 C816 82, 820 116, 836 116" stroke="rgba(250,250,250,0.62)" stroke-width="1.2" fill="none" marker-end="url(#arrowhead)" />
-                <path d="M612 185 L650 185" stroke="rgba(250,250,250,0.62)" stroke-width="1.2" fill="none" marker-end="url(#arrowhead)" />
-                <path d="M806 185 C822 185, 822 166, 836 166" stroke="rgba(250,250,250,0.62)" stroke-width="1.2" fill="none" marker-end="url(#arrowhead)" />
-                <path d="M992 141 L1034 141" stroke="rgba(250,250,250,0.62)" stroke-width="1.2" fill="none" marker-end="url(#arrowhead)" />
+                <path d="M188 156 L214 156" stroke="var(--hc-line)" stroke-width="1.4" fill="none" marker-end="url(#arrowhead)" />
+                <path d="M378 156 L405 156" stroke="var(--hc-line)" stroke-width="1.4" fill="none" marker-end="url(#arrowhead)" />
+                <path d="M569 156 L595 156" stroke="var(--hc-line)" stroke-width="1.4" fill="none" marker-end="url(#arrowhead)" />
+                <path d="M759 156 L785 156" stroke="var(--hc-line)" stroke-width="1.4" fill="none" marker-end="url(#arrowhead)" />
+                <path d="M950 156 L976 156" stroke="var(--hc-line)" stroke-width="1.4" fill="none" marker-end="url(#arrowhead)" />
+                <path d="M296 92 L296 118" stroke="var(--hc-blue)" stroke-width="1.4" fill="none" marker-end="url(#blue-arrowhead)" />
             </svg>
 
-            <div class="pipeline-node" style="left: 2%; top: 40%;">
-                <div class="pipeline-title">Initial / Incremental Run</div>
+            <div class="pipeline-node" style="left: 2%; top: 42%;">
+                <div class="pipeline-title">Run Control</div>
+                <div class="pipeline-copy">initialize +<br>incremental run</div>
             </div>
-            <div class="pipeline-node wide" style="left: 17.6%; top: 31.9%;">
-                <div class="pipeline-title">Raw CSV Layer</div>
+            <div class="pipeline-node editor" style="left: 18%; top: 10%;">
+                <div class="pipeline-title">User Editor</div>
+                <div class="pipeline-copy">edit events +<br>undo latest edit</div>
+            </div>
+            <div class="pipeline-node source" style="left: 18%; top: 42%;">
+                <div class="pipeline-title">Synthetic Raw Sources</div>
                 <div class="pipeline-copy">patients, admissions,<br>events, capacity</div>
             </div>
-            <div class="pipeline-node wide" style="left: 51.3%; top: 17.8%;">
-                <div class="pipeline-title">Encounter ETL</div>
-                <div class="pipeline-copy">derive visits +<br>unit_changes</div>
+            <div class="pipeline-node" style="left: 34%; top: 42%;">
+                <div class="pipeline-title">Data Quality Checks</div>
+                <div class="pipeline-copy">schema, keys,<br>ranges, references</div>
             </div>
-            <div class="pipeline-node wide" style="left: 35.8%; top: 54.8%;">
-                <div class="pipeline-title">Validation Layer</div>
-                <div class="pipeline-copy">schema, keys, ranges,<br>references</div>
+            <div class="pipeline-node" style="left: 50%; top: 42%;">
+                <div class="pipeline-title">ETL Prepared Layer</div>
+                <div class="pipeline-copy">visits +<br>unit_changes</div>
             </div>
-            <div class="pipeline-node" style="left: 54.6%; top: 58.5%;">
-                <div class="pipeline-title">Quality Report</div>
-            </div>
-            <div class="pipeline-node wide" style="left: 70.3%; top: 37.8%;">
+            <div class="pipeline-node" style="left: 66%; top: 42%;">
                 <div class="pipeline-title">Dashboard Marts</div>
                 <div class="pipeline-copy">daily, census, pressure,<br>demand, projection</div>
             </div>
-            <div class="pipeline-node" style="left: 86.9%; top: 37.8%;">
-                <div class="pipeline-title">Streamlit App</div>
-                <div class="pipeline-copy">status, explorer,<br>editor, dashboard</div>
+            <div class="pipeline-node" style="left: 82%; top: 42%;">
+                <div class="pipeline-title">Analytics App</div>
+                <div class="pipeline-copy">explore data,<br>edit, dashboard</div>
             </div>
         </div>
     </div>

@@ -5,7 +5,7 @@ from __future__ import annotations
 import streamlit as st
 
 from etl.pipeline.job_history import load_job_history
-from etl.pipeline.paths import PROJECT_ROOT, RUN_HISTORY_PATH
+from config.paths import PROJECT_ROOT, RUN_HISTORY_PATH
 
 
 def render_job_logs(limit: int = 50) -> None:

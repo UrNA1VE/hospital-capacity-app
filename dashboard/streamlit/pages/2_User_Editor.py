@@ -1,7 +1,6 @@
 """User editor for raw healthcare-capacity event data."""
 
 import json
-from pathlib import Path
 
 import pandas as pd
 import streamlit as st
@@ -20,20 +19,19 @@ from etl.event_editor.editor import (
     update_event,
 )
 from etl.pipeline.initialize_dataset import run_etl_from_existing_raw
-from etl.pipeline.paths import RAW_DATA_DIR
+from config.paths import RAW_TABLE_PATHS
 from utils.job_logs import render_page_header
 
 
 st.set_page_config(page_title="User Editor", page_icon="✏️", layout="wide")
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 
 def raw_file_exists(file_name: str) -> bool:
-    return (RAW_DATA_DIR / file_name).exists()
+    return RAW_TABLE_PATHS[file_name.removesuffix(".csv")].exists()
 
 
 def load_raw_table(file_name: str, **kwargs) -> pd.DataFrame:
-    path = RAW_DATA_DIR / file_name
+    path = RAW_TABLE_PATHS[file_name.removesuffix(".csv")]
     return pd.read_csv(path, **kwargs) if path.exists() else pd.DataFrame()
 
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import streamlit as st
 
 import bootstrap  # noqa: F401
-from etl.pipeline.paths import PROJECT_ROOT, RAW_DATA_DIR
+from config.paths import PROJECT_ROOT, RAW_DATA_DIR
 from etl.pipeline.runtime_state import runtime_data_exists
 from utils.data_explorer import (
     LAYERS,

@@ -15,14 +15,13 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from etl.event_editor.editor import next_number
 from etl.pipeline.job_logger import EtlJob
 from etl.pipeline.initialize_dataset import run_etl_from_existing_raw
-from etl.pipeline.paths import (
-    BACKUP_DATA_DIR,
-    DASHBOARD_PREPARED_DIR,
-    ETL_PREPARED_DIR,
+from config.paths import (
     RAW_DATA_DIR,
+    RAW_TABLE_PATHS,
     REPORT_DATA_DIR,
+    REPORT_PATHS,
 )
-from etl.synthetic_data_generator.generate_fake_data import (
+from etl.synthetic_data_generator.data_generator import (
     GeneratorConfig,
     build_admission_chart,
     build_patient_events,
@@ -47,17 +46,17 @@ class IncrementalDataError(Exception):
 
 
 def load_simulation_state():
-    capacity_table = pd.read_csv(RAW_DATA_DIR / "capacity.csv")
+    capacity_table = pd.read_csv(RAW_TABLE_PATHS["capacity"])
     lastest_date = capacity_table["capacity_date"].max()
 
-    admission_chart = pd.read_csv(RAW_DATA_DIR / "admission_chart.csv")
+    admission_chart = pd.read_csv(RAW_TABLE_PATHS["admission_chart"])
     next_visit_id = next_number(admission_chart, "visit_id", "ENC-")
 
-    patient_table = pd.read_csv(RAW_DATA_DIR / "patients.csv")
+    patient_table = pd.read_csv(RAW_TABLE_PATHS["patients"])
     next_patient_id = next_number(patient_table, "patient_id", "PAT-")
 
 
-    event_table = pd.read_csv(RAW_DATA_DIR / "patient_events.csv")
+    event_table = pd.read_csv(RAW_TABLE_PATHS["patient_events"])
     next_event_id = next_number(event_table, "event_id", "EVT-")
 
     state = SimulationState(
@@ -70,10 +69,9 @@ def load_simulation_state():
 
 
 def generate_next_run_raw(seed: int, length: int = 1) -> dict[str, pd.DataFrame]:
-    units = pd.read_csv(RAW_DATA_DIR / "units.csv")
-    diagnoses = pd.read_csv(RAW_DATA_DIR / "diagnoses.csv")
-    # admission_chart = pd.read_csv(RAW_DATA_DIR / "admission_chart.csv")
-    facilities = pd.read_csv(RAW_DATA_DIR / "facilities.csv")
+    units = pd.read_csv(RAW_TABLE_PATHS["units"])
+    diagnoses = pd.read_csv(RAW_TABLE_PATHS["diagnoses"])
+    facilities = pd.read_csv(RAW_TABLE_PATHS["facilities"])
     state = load_simulation_state()
     start = pd.Timestamp(state.last_generated_date) + pd.Timedelta(days=1)
     start_string = f"{start:%Y-%m-%d}"
@@ -142,14 +140,14 @@ def log_incremental(tables: dict[str, pd.DataFrame]) -> str:
         # "last_event_ts": event_times.max().isoformat() if event_times.notna().any() else "",
     }
 
-    log_path = REPORT_DATA_DIR / "incremental_runs.csv"
+    log_path = REPORT_PATHS["incremental_runs"]
     log_row = pd.DataFrame([summary])
     if log_path.exists():
         existing_log = pd.read_csv(log_path)
         log_row = pd.concat([existing_log, log_row], ignore_index=True)
     log_row.to_csv(log_path, index=False)
 
-    latest_path = REPORT_DATA_DIR / "latest_incremental_run.json"
+    latest_path = REPORT_PATHS["latest_incremental_run"]
     latest_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return json.dumps(summary, indent=2)
 
@@ -198,7 +196,7 @@ def ensure_patient_registration_date(patients: pd.DataFrame) -> pd.DataFrame:
     if "registration_date" in patients.columns:
         return patients
 
-    admission_chart = pd.read_csv(RAW_DATA_DIR / "admission_chart.csv", parse_dates=["admission_ts"])
+    admission_chart = pd.read_csv(RAW_TABLE_PATHS["admission_chart"], parse_dates=["admission_ts"])
     first_registration = (
         admission_chart.sort_values("admission_ts")
         .drop_duplicates("patient_id", keep="first")
@@ -217,7 +215,7 @@ def etl_incremental(seed: int, length: int = 1) -> str:
         updated_tables = {}
 
         for name, delta_table in delta_tables.items():
-            current = pd.read_csv(RAW_DATA_DIR / f"{name}.csv")
+            current = pd.read_csv(RAW_TABLE_PATHS[name])
             if name == "patients":
                 current = ensure_patient_registration_date(current)
             check_incremental(name, current, delta_table)

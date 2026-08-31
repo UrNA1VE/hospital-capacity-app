@@ -8,35 +8,44 @@ from pathlib import Path
 import pandas as pd
 
 from etl.pipeline.job_history import load_job_history
-from etl.pipeline.paths import DASHBOARD_PREPARED_DIR, PROJECT_ROOT, RAW_DATA_DIR, REPORT_DATA_DIR
+from config.paths import (
+    DASHBOARD_TABLE_PATHS,
+    ETL_PREPARED_TABLE_PATHS,
+    PROJECT_ROOT,
+    RAW_TABLE_PATHS,
+    REPORT_PATHS,
+)
 from utils.csv_io import read_csv_profile
 
-RAW_PIPELINE_FILES = {
-    "patients.csv": ("patient_id", ("registration_date",)),
-    "admission_chart.csv": ("visit_id", ("admission_ts",)),
-    "patient_events.csv": ("event_id", ("event_ts",)),
-    "capacity.csv": ("capacity_date", ("capacity_date",)),
+RAW_PIPELINE_TABLES = {
+    "patients": ("patient_id", ("registration_date",)),
+    "admission_chart": ("visit_id", ("admission_ts",)),
+    "patient_events": ("event_id", ("event_ts",)),
+    "capacity": ("capacity_date", ("capacity_date",)),
 }
-ETL_PIPELINE_FILES = {
-    "visits.csv": ("visit_id", ("admission_ts", "discharge_ts")),
-    "unit_changes.csv": ("unit_change_id", ("event_ts",)),
+ETL_PIPELINE_TABLES = {
+    "visits": ("visit_id", ("admission_ts", "discharge_ts")),
+    "unit_changes": ("unit_change_id", ("event_ts",)),
 }
-DASHBOARD_PIPELINE_FILES = {
-    "daily.csv": ("calendar_date", ("calendar_date",)),
-    "census.csv": ("hour_ts", ("hour_ts",)),
-    "pressure.csv": ("calendar_date", ("calendar_date",)),
-    "quality.csv": ("check_name", ()),
+DASHBOARD_PIPELINE_TABLES = {
+    "daily": ("calendar_date", ("calendar_date",)),
+    "census": ("hour_ts", ("hour_ts",)),
+    "pressure": ("calendar_date", ("calendar_date",)),
+    "quality": ("check_name", ()),
 }
 
 
-def profile_csvs(folder: Path, file_config: dict[str, tuple[str, tuple[str, ...]]]) -> pd.DataFrame:
+def profile_csvs(
+    table_paths: dict[str, Path],
+    table_config: dict[str, tuple[str, tuple[str, ...]]],
+) -> pd.DataFrame:
     rows = []
-    for file_name, (_, freshness_columns) in file_config.items():
-        path = folder / file_name
+    for table_name, (_, freshness_columns) in table_config.items():
+        path = table_paths[table_name]
         if not path.exists():
             rows.append(
                 {
-                    "table": file_name.removesuffix(".csv"),
+                    "table": table_name,
                     "rows": "missing",
                     "columns": "missing",
                     "freshness": "missing",
@@ -46,7 +55,7 @@ def profile_csvs(folder: Path, file_config: dict[str, tuple[str, tuple[str, ...]
         profile = read_csv_profile(str(path), freshness_columns, path.stat().st_mtime_ns)
         rows.append(
             {
-                "table": file_name.removesuffix(".csv"),
+                "table": table_name,
                 "rows": profile["rows"],
                 "columns": profile["columns"],
                 "freshness": profile["latest"],
@@ -56,13 +65,13 @@ def profile_csvs(folder: Path, file_config: dict[str, tuple[str, tuple[str, ...]
 
 
 def dashboard_mart_end_date() -> str:
-    daily_path = DASHBOARD_PREPARED_DIR / "daily.csv"
+    daily_path = DASHBOARD_TABLE_PATHS["daily"]
     if daily_path.exists():
         daily_profile = read_csv_profile(str(daily_path), ("calendar_date",), daily_path.stat().st_mtime_ns)
         if daily_profile["latest"] != "n/a":
             return str(daily_profile["latest"])
 
-    raw_capacity_path = RAW_DATA_DIR / "capacity.csv"
+    raw_capacity_path = RAW_TABLE_PATHS["capacity"]
     if raw_capacity_path.exists():
         capacity_profile = read_csv_profile(
             str(raw_capacity_path),
@@ -77,16 +86,16 @@ def dashboard_mart_end_date() -> str:
 def profile_dashboard_marts() -> pd.DataFrame:
     end_date = dashboard_mart_end_date()
     profile = profile_csvs(
-        DASHBOARD_PREPARED_DIR,
-        {name: (key, ()) for name, (key, _) in DASHBOARD_PIPELINE_FILES.items()},
+        DASHBOARD_TABLE_PATHS,
+        {name: (key, ()) for name, (key, _) in DASHBOARD_PIPELINE_TABLES.items()},
     )
     profile["freshness"] = end_date
     return profile
 
 
 def load_quality_summary() -> tuple[pd.DataFrame, str]:
-    quality_path = DASHBOARD_PREPARED_DIR / "quality.csv"
-    report_path = REPORT_DATA_DIR / "data_check_report.csv"
+    quality_path = DASHBOARD_TABLE_PATHS["quality"]
+    report_path = REPORT_PATHS["data_check_report"]
     if quality_path.exists():
         return pd.read_csv(quality_path), str(quality_path.relative_to(PROJECT_ROOT))
     if report_path.exists():
@@ -95,7 +104,7 @@ def load_quality_summary() -> tuple[pd.DataFrame, str]:
 
 
 def load_incremental_summary() -> dict[str, object] | None:
-    path = REPORT_DATA_DIR / "latest_incremental_run.json"
+    path = REPORT_PATHS["latest_incremental_run"]
     if not path.exists():
         return None
     try:

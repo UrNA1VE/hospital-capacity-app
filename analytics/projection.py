@@ -38,19 +38,19 @@ def _population_growth_by_service(
 
 def bed_needs_projection(
     demand: pd.DataFrame,
-    savings: pd.DataFrame,
-    start_year: int,
+    savings: pd.DataFrame | None = None,
+    start_year: int = 2025,
     end_year: int = 2040,
     demographics: pd.DataFrame | None = None,
     population_growth: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     savings_by_service = (
         savings.groupby(["facility_name", "service_name"], as_index=False)["demand_reduction"].sum()
-        if not savings.empty
+        if savings is not None and not savings.empty
         else pd.DataFrame(columns=["facility_name", "service_name", "demand_reduction"])
     )
     base = demand.merge(savings_by_service, on=["facility_name", "service_name"], how="left")
-    base["demand_reduction"] = base["demand_reduction"].fillna(0)
+    base["demand_reduction"] = pd.to_numeric(base["demand_reduction"], errors="coerce").fillna(0.0)
 
     growth_lookup = pd.DataFrame()
     if demographics is not None and population_growth is not None:

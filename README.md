@@ -18,6 +18,7 @@ Do not add real SHA data, patient data, internal screenshots, internal table nam
 hospital-capacity-app/
 ├── dashboard/streamlit/       Current dashboard draft
 ├── dashboard/streamlit/utils/ Shared dashboard data, report, and chart helpers
+├── config/                    Project-level paths and runtime configuration
 ├── data/container/            Committed sample raw, backup, log, and report data
 ├── data/etl_prepared/         Derived encounter and unit-change ETL outputs
 ├── data/dashboard_prepared/   Aggregated dashboard output destination
@@ -41,7 +42,7 @@ pip install -r requirements.txt
 Generate synthetic CSV files into the raw container layer:
 
 ```sh
-python etl/synthetic_data_generator/generate_fake_data.py
+python etl/synthetic_data_generator/data_generator.py
 ```
 
 The generated raw source files include:
