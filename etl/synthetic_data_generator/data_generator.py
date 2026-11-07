@@ -685,13 +685,14 @@ def generate_next_run_active_visits(
     length: int = 1,
     unit: str = "day",
     target_discharges: int | None = None,
+    visits_path: str | Path | None = None,
 ) -> pd.DataFrame:
     if unit not in {"hour", "day"}:
         raise ValueError("unit must be either 'hour' or 'day'")
 
     rng = np.random.default_rng(config.seed + 4)
     active_patients = pd.read_csv(
-        ETL_PREPARED_TABLE_PATHS["visits"],
+        ETL_PREPARED_TABLE_PATHS["visits"] if visits_path is None else visits_path,
         parse_dates=["admission_ts", "discharge_ts"],
     )
     active_patients = active_patients.loc[active_patients["discharge_ts"].isna()].copy()
