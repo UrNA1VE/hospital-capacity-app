@@ -45,22 +45,27 @@ class IncrementalDataError(Exception):
     pass
 
 
-def load_simulation_state():
-    capacity_table = pd.read_csv(RAW_TABLE_PATHS["capacity"])
-    lastest_date = capacity_table["capacity_date"].max()
+def load_simulation_state(sources: dict[str, pd.DataFrame] | None = None):
+    def read_table(name):
+        return pd.read_csv(RAW_TABLE_PATHS[name]) if sources is None else sources[name]
 
-    admission_chart = pd.read_csv(RAW_TABLE_PATHS["admission_chart"])
+    capacity_table = read_table("capacity")
+    lastest_date = pd.to_datetime(capacity_table["capacity_date"]).max()
+    if pd.isna(lastest_date):
+        raise ValueError("Capacity table is empty. Initialize data first.")
+
+    admission_chart = read_table("admission_chart")
     next_visit_id = next_number(admission_chart, "visit_id", "ENC-")
 
-    patient_table = pd.read_csv(RAW_TABLE_PATHS["patients"])
+    patient_table = read_table("patients")
     next_patient_id = next_number(patient_table, "patient_id", "PAT-")
 
 
-    event_table = pd.read_csv(RAW_TABLE_PATHS["patient_events"])
+    event_table = read_table("patient_events")
     next_event_id = next_number(event_table, "event_id", "EVT-")
 
     state = SimulationState(
-        last_generated_date = lastest_date,
+        last_generated_date = lastest_date.date().isoformat(),
         next_visit_number=next_visit_id,
         next_patient_number=next_patient_id,
         next_event_number = next_event_id
@@ -68,11 +73,30 @@ def load_simulation_state():
     return state
 
 
-def generate_next_run_raw(seed: int, length: int = 1) -> dict[str, pd.DataFrame]:
-    units = pd.read_csv(RAW_TABLE_PATHS["units"])
-    diagnoses = pd.read_csv(RAW_TABLE_PATHS["diagnoses"])
-    facilities = pd.read_csv(RAW_TABLE_PATHS["facilities"])
-    state = load_simulation_state()
+def generate_next_run_raw(
+    seed: int,
+    length: int = 1,
+    *,
+    sources: dict[str, pd.DataFrame] | None = None,
+) -> dict[str, pd.DataFrame]:
+    """Generate a batch from supplied DataFrames or the existing local CSV files."""
+    if sources is None:
+        units = pd.read_csv(RAW_TABLE_PATHS["units"])
+        diagnoses = pd.read_csv(RAW_TABLE_PATHS["diagnoses"])
+        facilities = pd.read_csv(RAW_TABLE_PATHS["facilities"])
+        existing_visits = None
+    else:
+        from etl.pipeline.mart_layer import build_encounter_tables_from_events
+
+        units = sources["units"]
+        diagnoses = sources["diagnoses"]
+        facilities = sources["facilities"]
+        normalized_sources = dict(sources)
+        for name, column in (("admission_chart", "admission_ts"), ("patient_events", "event_ts")):
+            normalized_sources[name] = sources[name].copy()
+            normalized_sources[name][column] = pd.to_datetime(sources[name][column])
+        existing_visits = build_encounter_tables_from_events(normalized_sources)["visits"]
+    state = load_simulation_state(sources)
     start = pd.Timestamp(state.last_generated_date) + pd.Timedelta(days=1)
     start_string = f"{start:%Y-%m-%d}"
 
@@ -96,6 +120,7 @@ def generate_next_run_raw(seed: int, length: int = 1) -> dict[str, pd.DataFrame]
         new_config,
         length,
         target_discharges=len(new_admission_chart),
+        visits_df=existing_visits,
     )
     active_unit_changes = generate_unit_changes(new_config, active_visits, units)
     new_events = build_patient_events(new_config, pd.concat([active_visits, new_visits]), pd.concat([active_unit_changes, new_unit_changes]), diagnoses)
